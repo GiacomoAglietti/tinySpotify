@@ -10,12 +10,8 @@
     padding: 0%;
 }
 
-.html, body{
+.container{
     width: 100%;
-    height: 100%;
-}
-
-.row .column{
     float: left;
     height: 100%;
 }
@@ -28,8 +24,7 @@
 
 .row .right{
     width: 75%; 
-    background-color: aqua;
-    overflow-y: scroll;
+    background-color: brown;
     height: 100%;
 }
 
@@ -38,11 +33,6 @@ header{
     height: 100%;
 }
 
-.row .right .navbar{
-    background-color: var(--dark);
-    
-
-}
 
 /* Clear floats after the columns */
 .row:after {
