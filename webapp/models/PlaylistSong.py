@@ -10,4 +10,6 @@ class PlaylistSong(Base):
 
     id_playlist = Column(Integer, ForeignKey('playlist.id'), primary_key=True)
     id_song = Column(Integer, ForeignKey('songs.id'), primary_key=True)
-    num_order = Column(Integer, unique=True)
+    num_order = Column(Integer)
+    
+    

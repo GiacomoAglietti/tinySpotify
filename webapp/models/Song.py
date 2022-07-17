@@ -3,11 +3,12 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
+from . import Playlist, Genre, Artist, Album, PlaylistSong, GenreSong, SongArtist
 
 class Song(Base):
     __tablename__ = "songs"
     id  = Column(Integer, primary_key=True)
-    title = Column(String(30))
+    title = Column(String(150))
     year = Column(Integer)
     playlist = relationship("Playlist", secondary="playlist_song", back_populates="songs")
     genres = relationship("Genre", secondary="genre_song", back_populates="songs")

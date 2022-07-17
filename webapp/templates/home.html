@@ -1,5 +1,47 @@
-{% extends "base.html" %} {% block title %}Home{% endblock %}
+{% extends "base.html" %} 
+
+{% block title %}Home
+{% endblock %}
 
 {% block content %}
-<h1>This is the homepage</h1>
+<h1>Home</h1>
 {% endblock %}
+
+<!--
+<header>
+    <h1>Playlist</h1>
+    <ul>
+
+            <li>{{ playlist1 }}</li>
+
+
+    </ul>
+</header>
+
+
+    {%- for playlist in playlist1 -%}
+        <li>{{ playlist.name }}</li>
+    {%- endfor -%}
+
+<h1>Playlist</h1>
+<main>
+    <section class="playlist">
+        <div id="plylist">
+            <div class="plylist-elem">
+                <div class="content">
+                    <input 
+                        type="text"
+                        class="text"
+                        value="my playlist"
+                        readonly>
+                </div>
+                <div class="action">
+                    <button class="play">Play</button>
+                    <button class="delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+-->
+

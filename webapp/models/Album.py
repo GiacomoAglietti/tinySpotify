@@ -7,9 +7,9 @@ from sqlalchemy.sql import func
 class Album(Base):
     __tablename__ = "album"
     id  = Column(Integer, primary_key=True)
-    name = Column(String(30))
+    name = Column(String(150))
     year = Column(Integer)
-    image = Column(String(50), nullable=True)
+    image = Column(String(150), nullable=True)
     artists = relationship("Artist", secondary="album_artist", back_populates="album")
     songs = relationship("Song",cascade="all,delete", back_populates="album")
     date_created = Column(DateTime(timezone=True), server_default=func.now())
