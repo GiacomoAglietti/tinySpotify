@@ -1,3 +1,5 @@
+https://programtalk.com/python-examples/sqlalchemy.event.listens_for/
+
 1)
 With .query(), parameter substitution is handled on the client, 
 including objects which let data = req.body is in the above examples.

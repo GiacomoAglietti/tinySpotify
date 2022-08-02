@@ -1,0 +1,90 @@
+{% extends "base.html" %} 
+
+{% block title %}Home
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="container">
+        <div class="row">
+            <div class="col left">
+                <img src="https://bit.ly/3PiIDrx" alt="nomePlaylist">
+            </div>
+            <div class="col right">
+                <h6>PLAYLIST</h6>
+                <h1>NomePlaylist</h1>
+                <h4>Artista1, Artista2...</h4>
+                <h5>(num) brani</h5>
+            </div>
+        </div>
+    </div>
+    <div class="button-container">
+        <div class="row">
+            <div class="col">
+                <i class="bi bi-play-circle-fill"></i>
+            </div>
+            <div class="col heart">
+                <i class="bi bi-heart" onclick="changeHearticon(this)"></i>
+            </div>
+            <div class="col share">
+                <i class="bi bi-share-fill"></i>
+            </div>
+        </div>
+    </div>
+    <table class="content-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>TITOLO</th>
+            <th>ALBUM</th>
+            <th></th>
+            <th><i class="bi bi-clock"></i></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Domenic</td>
+            <td>88,110</td>
+            <td class="fav-col"><i class="bi bi-heart" onclick="changeHearticon(this)"></i></td>
+            <td>0:00</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Sally</td>
+            <td>72,400</td>
+            <td class="fav-col"><i class="bi bi-heart" onclick="changeHearticon(this)"></i></td>
+            <td>0:00</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Nick</td>
+            <td>52,300</td>
+            <td class="fav-col"><i class="bi bi-heart" onclick="changeHearticon(this)"></i></td>
+            <td>0:00</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>Nick</td>
+            <td>52,300</td>
+            <td class="fav-col"><i class="bi bi-heart" onclick="changeHearticon(this)"></i></td>
+            <td>0:00</td>
+          </tr>
+        </tbody>
+      </table>
+    <script>
+        function changeHearticon(icon){
+            if (icon.classList.contains('bi-heart')) {
+                icon.classList.remove("bi-heart");
+                icon.classList.add("bi-heart-fill");
+            } else {
+                icon.classList.add("bi-heart");
+                icon.classList.remove("bi-heart-fill");
+            }
+        }
+    </script>
+</main>
+
+{% endblock %}
+

@@ -2,16 +2,22 @@ from flask import Flask
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import relationship, backref, sessionmaker
+from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_migrate import Migrate
 import os
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-connection_string = "sqlite:///"+os.path.join(BASE_DIR,"tinySpotify.db")
+connection_string = 'postgresql://postgres:admin@localhost/tinySpotify'
 
 Base = declarative_base()
-engine = create_engine(connection_string, connect_args={'check_same_thread': False}, echo=True)
+
+migrate = Migrate()
+engine = create_engine(connection_string, echo=True)
 Session = sessionmaker(bind=engine)
+
+
     
 
 def create_app():
@@ -21,9 +27,12 @@ def create_app():
 
     from .views import views
     from .auth import auth
+    
+    db = SQLAlchemy(app)
+    db.init_app(app)
+    migrate = Migrate(app, db)
 
     Base.metadata.create_all(engine, checkfirst=True)
-    
     session = Session()
 
     from webapp.models.User import User
@@ -41,14 +50,14 @@ def create_app():
         user = session.execute(stmt).scalars().first()
         return user
 
-    """
+    """   
     # Test it
     with Session(bind=engine) as session:
 
         
         user = User(
-            name_surname="user01",
-            email="user01@gmail.com",
+            name_surname="user02",
+            email="user02@gmail.com",
             password="user"
             )
         session.add(user)

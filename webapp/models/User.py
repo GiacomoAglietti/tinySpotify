@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
 from flask_login import UserMixin
-from . import Playlist
+from .Playlist import Playlist
 
 #da mettere in un trigger
 #time_updated = Column(DateTime(timezone=True), onupdate=func.now())
@@ -28,5 +28,23 @@ def add_favourite_songs_playlist(session, instance):
     )
     session.add(favSongsPlaylist)
     session.commit()
+
+    playlist_table = Playlist.__table__
+    connection.execute(
+        playlist_table.update().
+        where(playlist_table.c.id==thread.id).
+        values(word_count=sum(c.word_count for c in thread.comments))
+    )
 """
+
+@event.listens_for(User, "after_insert")
+def after_insert(mapper, connection, target):
+    
+
+    newPlaylist = Playlist(
+                id_user = target.id, 
+                name = "Preferiti")
+    target.playlist.append(newPlaylist)
+
+    print ("after insert user -> new favourite song")
 

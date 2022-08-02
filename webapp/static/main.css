@@ -16,27 +16,164 @@
     height: 100%;
 }
 
-.row .left{
-    width: 25%;
-    background-color: #111727;
-    height: 100%;
-}
-
-.row .right{
-    width: 75%; 
-    background-color: brown;
-    height: 100%;
-}
-
 header{
     width: 100%;
     height: 100%;
+    z-index: 2;
+}
+
+.dashboard-content{
+    background-color: rgb(66, 63, 64);
+    height: 100%;
+}
+
+/* home style*/
+header h1{
+    color: #fff;
+    margin-left: 15px;
+}
+
+.card-container{
+    margin-left: 15px;
+    width: 90%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card{
+    width: 200px;
+    
+    position: relative;
+}
+
+.card img{
+    padding: 10px;
+    width: 200px;
+    height: 200px;
+    align-self: center;
+}
+
+.col{
+    padding-top: 15px;
+}
+
+.card-body h3{
+    font-size: 20px;
+    color: #fff;
+}
+
+/* playlist style */
+.container{
+    border-bottom: 1px solid #fff;
+    margin-left: 15px;
+    margin-bottom: 30px;
+}
+
+.container .row .col img{
+    width: 200px;
+    height: 200px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+.container .row .right h1, h4, h5, h6{
+    color: #fff;
+    margin-left: -230px;
+}
+
+.container .row .right h1{
+    font-size: 55px;
+    font-weight: bold;
+}
+
+.container .row .right h4{
+    margin-top: 28px;
+    font-size: 22px;
+}
+
+.container .row .right h5{
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.button-container{
+    height: auto;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+    margin-bottom: 20px;
+    /* border: 1px solid #fff; */
+}
+
+.button-container .row .col i{
+    color: rgb(0, 255, 76);
+    font-size: 30px;
+}
+
+.button-container .row .col .bi-play-circle-fill{
+    font-size: 50px;
+}
+
+.button-container .row .col .bi-play-circle-fill:hover{
+    font-size: 51px;
+}
+
+.button-container .row .heart{
+    margin-left: 10px;
+    align-self: center;   
 }
 
 
-/* Clear floats after the columns */
-.row:after {
-    content: "";
-    display: table;
-    clear: both;
+.button-container .row .share{
+    margin-left: 8px;
+    align-self: center;  
 }
+
+.content-table {
+    border-collapse: collapse;
+    font-size: 0.9em;
+    width: 95%;
+    margin-left: 15px;
+    border-radius: 5px 5px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.content-table thead tr {
+    color: #ffffff;
+    text-align: left;
+    font-weight: bold;
+    border-bottom: 1px solid #fff
+}
+
+.content-table th, .content-table td {
+    padding: 12px 15px;
+}
+
+.content-table tbody tr:hover {
+    background-color: rgb(129, 123, 125);
+}
+
+.content-table tbody td {
+    color: #fff;
+}
+.content-table tbody tr .fav-col {
+    text-align: right;
+}
+
+.content-table tbody tr .fav-col .bi-heart{
+    text-align: right;
+    color: #fff;
+}
+
+.content-table tbody tr .fav-col .bi-heart-fill{
+    text-align: right;
+    color: rgb(0, 255, 76);
+}
+
+
+
+

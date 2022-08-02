@@ -24,36 +24,18 @@ def home():
     return render_template("home.html")
 
 #url_for('get-playlist', id='A')
-@views.route('/')
+@views.route('/home')
+#@login_required
+def home2():
+        stmt = select(Playlist)#.where(Playlist.id_user == id)
+        playlist1 = local_session.execute(stmt).scalars()
+        return render_template("home.html" , playlist1=playlist1)
+
+@views.route('/playlist')
 #@login_required
 def playlist():
-        #stmt = select(Playlist).order_by(Playlist.date_created)
-        playlist1 = local_session.query(Playlist).first().name
-        #local_session.execute(stmt).scalars().first()
+        return render_template("playlist.html")
 
-        
-
-        """
-        stmt = (select(Playlist).
-                where(Playlist.id_user == id).
-                order_by(Playlist.date_created))
-        playlist_list = local_session.execute(stmt).scalars().all()
-        
-        playlist1 = Playlist(
-                id_user = 1, 
-                name = "Rap")
-        playlist2 = Playlist(
-                id_user = 2, 
-                name = "Rock")
-        playlist3 = Playlist(
-                id_user = 3, 
-                name = "Pop")
-
-        playlist_list=[playlist1, playlist2, playlist3]
-        local_session.add(playlist1)
-        local_session.commit()
-        """
-        return render_template("home.html" , playlist1=playlist1)
 
 @views.route('/playlist/<playlist_selected>')
 #@login_required

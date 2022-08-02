@@ -10,6 +10,7 @@ class Song(Base):
     id  = Column(Integer, primary_key=True)
     title = Column(String(150))
     year = Column(Integer)
+    length = Column(DateTime(timezone=True)) #TODO: calcolare la durata
     playlist = relationship("Playlist", secondary="playlist_song", back_populates="songs")
     genres = relationship("Genre", secondary="genre_song", back_populates="songs")
     artists = relationship("Artist", secondary="song_artist", back_populates="songs")
