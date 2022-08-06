@@ -14,6 +14,9 @@ class Artist(Base, UserMixin):
     #TODO da aggiungere trigger che controlla anche le mail degli users
     email  = Column(String(150), unique=True)
     password  = Column(String(150))
-    songs = relationship("Song", secondary="song_artist", back_populates="artists")
-    album = relationship("Album", secondary="album_artist", back_populates="artists")
+    songs = relationship("SongArtist", back_populates="artist")
+
+    album = relationship("AlbumArtist", back_populates="artist")
     date_created = Column(DateTime(timezone=True), server_default=func.now())
+
+

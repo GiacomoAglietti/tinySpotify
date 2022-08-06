@@ -1,0 +1,181 @@
+User(id*, name_surname, email, password)
+Playlist(id*, name, id_user)
+PlaylistSong(id_playlist*, id_song*, num_order)
+Song(id*, title, year, id_album, length, num_order)
+SongArtist(id_song*, id_artist*)
+Artist(id*,alias, name_surname,email,password)
+GenreSong(id_genre*, id_song*)
+Genre(id*, name)
+AlbumArtist(id_artist*, id_album*)
+Album(id*, name, year, image)
+
+select Playlist.name
+from Playlist
+where Playlist.id == id_playlist_selected
+
+song_list_query=select Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_order
+from songs s join playlist_song p on (Song.id=PlaylistSong.id_song)
+where PlaylistSong.id_playlist=2
+order by num_order
+
+select Artist.alias
+from Artist
+where Artist.id in (select SongArtist.id_artist
+                    from SongArtist
+                    where SongArtist.id_song in (select Song.id
+                                                 from song_list_query))
+
+stmt_artists=(
+        select(Artist.alias).
+        where(Artist.id.in_(
+                        select(SongArtist.id_artist).
+                        where(SongArtist.id_song.in_(song_list_query.id)))))
+artists_list = local_session.execute(stmt_artists).scalars()
+
+
+stmt = (select(Song, Playlist).
+        join(PlaylistSong, Song.id == PlaylistSong.id_song).
+        join(Playlist, Playlist.id == PlaylistSong.id_playlist).
+        where(Playlist.id_user == 1).
+        where(Playlist.id == id_playlist_selected).
+        order_by(PlaylistSong.num_order))
+
+
+
+Generi Musicali
+genre1 = Genre(name="Acoustic")
+        genre2 = Genre(name="Musica Classica")
+        genre3 = Genre(name="Blues")
+        genre4 = Genre(name="Country")
+        genre5 = Genre(name="Drones")
+        genre6 = Genre(name="Dubstep")
+        genre7 = Genre(name="Dance/Elettronica")
+        genre8 = Genre(name="Pop")
+        genre9 = Genre(name="Electro Pop")
+        genre10 = Genre(name="Hip Hop")
+        genre11 = Genre(name="Folk")
+        genre12 = Genre(name="Funk")
+        genre13 = Genre(name="House")
+        genre14 = Genre(name="Indie/Alternative Rock")
+        genre15 = Genre(name="Jazz")
+        genre16 = Genre(name="kitsch")
+        genre17 = Genre(name="Latina")
+        genre18 = Genre(name="Marcia")
+        genre19 = Genre(name="Metal")
+        genre20 = Genre(name="Opera Lirica")
+        genre21 = Genre(name="Rock")
+        genre22 = Genre(name="Soul")
+        genre23 = Genre(name="Urban/R&B")
+
+        session.add_all([
+            genre1,
+            genre2,
+            genre3,
+            genre4,
+            genre5,
+            genre6,
+            genre7,
+            genre8,
+            genre9,
+            genre10,
+            genre11,
+            genre12,
+            genre13,
+            genre14,
+            genre15,
+            genre16,
+            genre17,
+            genre18,
+            genre19,
+            genre20,
+            genre21,
+            genre22,
+            genre23])
+
+        session.commit()
+
+artist1 = Artist(
+            alias="Avicii", 
+            name_surname="Tim Bergling", 
+            email="avicii@gmail.com", 
+            password="avicii")
+
+        album= Album(name="True", year=2013, image="")
+
+        
+        song1= Song(title="Wake Me Up", year="2013", length=245, num_order=1, id_album=1)
+        song2= Song(title="You Make Me", year="2013", length=231, num_order=2, id_album=1)
+        song3= Song(title="Hey Brother", year="2013", length=251, num_order=3, id_album=1)
+        song4= Song(title="Addicted to You", year="2013", length=146, num_order=4, id_album=1)
+        song5= Song(title="Dear Boy", year="2013", length=479, num_order=5, id_album=1)
+        song6= Song(title="Liar Liar", year="2013", length=236, num_order=6, id_album=1)
+        song7= Song(title="Shame On Me", year="2013", length=251, num_order=7, id_album=1)
+        song8= Song(title="Lay Me Down", year="2013", length=298, num_order=8, id_album=1)
+        song9= Song(title="Hope There's Someone", year="2013", length=381, num_order=9, id_album=1)
+        song10= Song(title="Heart Upon My Sleeve", year="2013", length=281, num_order=10, id_album=1)
+
+        #[song1, song2,song3,song4,song5,song6,song7,song8,song9,song10]
+
+        al_ar=AlbumArtist(id_album=1, id_artist=1)
+        session.add(al_ar)
+
+        counter = 1
+        while counter < 11:
+            gs1=GenreSong(id_genre=4, id_song=counter)
+            gs2=GenreSong(id_genre=7, id_song=counter)
+            gs3=GenreSong(id_genre=11, id_song=counter)
+            gs4=GenreSong(id_genre=13, id_song=counter)
+            session.add_all([gs1,gs2,gs3,gs4])
+            counter+=1
+
+        counter = 1
+        while counter < 11:
+            sa=SongArtist(id_artist=1, id_song=counter)
+            session.add(sa)
+            counter+=1
+
+    artist1 = Artist(
+            alias="Linkin Park", 
+            name_surname="Chester Bennington", 
+            email="linkinpark@gmail.com", 
+            password="linkinpark")
+
+        session.add(artist1)
+        session.commit()
+
+        album= Album(name="Minutes To Midnight", year=2007, image="")
+        session.add(album)
+        session.commit()
+        
+        song1= Song(title="Wake", year="2007", length=100, num_order=1, id_album=2)
+        song2= Song(title="Given Up", year="2008", length=189, num_order=2, id_album=2)
+        song3= Song(title="Leave Out All the Rest", year="2008", length=209, num_order=3, id_album=2)
+        song4= Song(title="Bleed It Out", year="2007", length=164, num_order=4, id_album=2)
+        song5= Song(title="Shadow of the Day", year="2007", length=289, num_order=5, id_album=2)
+        song6= Song(title="What I've Done", year="2007", length=205, num_order=6, id_album=2)
+        song7= Song(title="Hands Held High", year="2007", length=233, num_order=7, id_album=2)
+        song8= Song(title="No More Sorrow", year="2007", length=221, num_order=8, id_album=2)
+        song9= Song(title="Valentine's Day", year="2007", length=196, num_order=9, id_album=2)
+        song10= Song(title="In Between", year="2007", length=196, num_order=10, id_album=2)
+        song11= Song(title="In Pieces", year="2007", length=218, num_order=11, id_album=2)
+        song12= Song(title="The Little Things Give You Away", year="2007", length=383, num_order=12, id_album=2)
+
+        session.add_all([song1, song2,song3,song4,song5,song6,song7,song8,song9,song10,song11,song12])
+        session.commit()
+        al_ar=AlbumArtist(id_album=2, id_artist=2)
+        session.add(al_ar)
+        session.commit()
+
+        counter = 11
+        while counter < 23:
+            gs1=GenreSong(id_genre=14, id_song=counter)
+            session.add(gs1)
+            counter+=1
+
+        counter = 11
+        while counter < 23:
+            sa=SongArtist(id_artist=2, id_song=counter)
+            session.add(sa)
+            counter+=1
+
+        session.commit()

@@ -7,4 +7,21 @@ including objects which let data = req.body is in the above examples.
 With .execute() prepared statement parameters are sent from the client as 
 a serialized string and handled by the server. Since let data = req.body is an object, that's not going to work.
 
-2)
+2)ALTER SEQUENCE songs_id_seq RESTART WITH 1 //songs nome della tabella
+
+
+3)
+TODO:
+-id artisti e id user sono uguali
+-da sistemare password artisti
+
+
+
+
+CREATE TRIGGER insert_one AFTER INSERT ON prova
+FOR EACH ROW execute Procedure increment_one();
+
+CREATE or REPLACE FUNCTION increment_one() RETURNS trigger as $$
+BEGIN
+     
+END

@@ -27,7 +27,7 @@ header{
     height: 100%;
 }
 
-/* home style*/
+/* home, albums style*/
 header h1{
     color: #fff;
     margin-left: 15px;
@@ -44,7 +44,6 @@ header h1{
 
 .card{
     width: 200px;
-    
     position: relative;
 }
 
@@ -55,56 +54,72 @@ header h1{
     align-self: center;
 }
 
+.card .img-artist{
+    border-radius: 50%;
+}
+
+
+
 .col{
     padding-top: 15px;
+    position: relative;
 }
 
 .card-body h3{
-    font-size: 20px;
+    width: 170px;
+    position: relative;
+    font-size: 18px;
     color: #fff;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
 }
 
-/* playlist style */
-.container{
+/* playlist-select style */
+.playlist-select-container{
     border-bottom: 1px solid #fff;
     margin-left: 15px;
     margin-bottom: 30px;
 }
 
-.container .row .col img{
+.playlist-select-container .row .col img{
     width: 200px;
     height: 200px;
     padding-bottom: 10px;
     padding-top: 10px;
+    position: relative;
 }
 
-.container .row .right h1, h4, h5, h6{
+.playlist-select-container .row .right{
+    text-align: left;
     color: #fff;
     margin-left: -230px;
+    position: relative;
 }
 
-.container .row .right h1{
+.playlist-select-container .row .right h1{
     font-size: 55px;
     font-weight: bold;
 }
 
-.container .row .right h4{
+.playlist-select-container .row .right h4{
     margin-top: 28px;
     font-size: 22px;
 }
 
-.container .row .right h5{
+.playlist-select-container .row .right h5{
     margin-top: 10px;
     font-size: 20px;
 }
 
 .button-container{
     height: auto;
-    width: fit-content;
+    width: 90%;
     display: flex;
     align-items: center;
     margin-left: 15px;
     margin-bottom: 20px;
+    position: relative;
     /* border: 1px solid #fff; */
 }
 
@@ -173,6 +188,102 @@ header h1{
     text-align: right;
     color: rgb(0, 255, 76);
 }
+
+/* sign up */
+.center-form{
+    margin: 0;
+    padding: 0;
+    outline: none;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    position:fixed;
+    z-index:999;
+    width:100vw;
+    height:100vh;
+    background-color: black;
+    background-color:rgba(0,0,0,.75)  
+  }
+ 
+  .form-container{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+ 
+  .form-container{
+    background: #fff;
+    width: 410px;
+    padding: 30px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+ 
+ .form-container h1{
+    font-size: 35px;
+    font-weight: 600;
+    text-align: center;
+  }
+ 
+ .form-container form{
+    margin-top: -30px;
+  }
+ 
+  .form-container form .data{
+    height: 40px;
+    width: 100%;
+    margin: 40px 0;
+  }
+ 
+  form .data label{
+    font-size: 18px;
+  }
+ 
+ form .data input, select{
+    height: 100%;
+    width: 100%;
+    padding-left: 10px;
+    font-size: 17px;
+    border: 1px solid silver;
+  }
+ 
+  form .data input:focus{
+    border-color: #3498db;
+    border-bottom-width: 2px;
+  }
+ 
+  form .btn{
+    margin: 30px 0;
+    height: 45px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background: black;
+  }
+ 
+  form .btn button{
+    height: 100%;
+    width: 100%;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+ 
+  form .login-link{
+    text-align: center;
+  }
+ 
+  form .login-link a{
+    color: #3498db;
+    text-decoration: none;
+  }
+  form .login-link a:hover{
+    text-decoration: underline;
+  }
 
 
 

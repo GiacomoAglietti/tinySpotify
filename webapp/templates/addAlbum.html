@@ -1,0 +1,106 @@
+{% extends "base.html" %} {% block title %}SignUp{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+    <h3 align-self="center">Artista</h3>
+    <div class="form-group">
+        <label for="alias">Alias Artista</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="alias" 
+            name="alias" 
+        />    
+    </div>
+    <div class="form-group">
+        <label for="NomeCognome">Nome e Cognome Artista</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="NomeCognome" 
+            name="NomeCognome"
+        />    
+    </div>
+    <div class="form-group">
+        <label for="email">Email Artista</label>
+        <input 
+            type="email" 
+            class="form-control" 
+            id="email" 
+            name="email" 
+            placeholder="Enter email"
+        />    
+    </div>
+    <div class="form-group">
+        <label for="password1">Password Artista</label>
+        <input 
+            type="password" 
+            class="form-control" 
+            id="password1" 
+            name="password1" 
+        />    
+    </div>
+    <br/>
+    <h3 align-self="center">Album</h3>
+    <div class="form-group">
+        <label for="nomeAlbum">Nome Album</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="nomeAlbum" 
+            name="nomeAlbum" 
+        />    
+    </div>
+    <div class="form-group">
+        <label for="annoAlbum">Anno album</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="annoAlbum" 
+            name="annoAlbum"
+        />    
+    </div>
+    <div class="form-group">
+        <label for="immagine">Immagine album(lasciare vuoto)</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="immagine" 
+            name="immagine" 
+        />    
+    </div>
+    <br/>
+    <h3 align-self="center">Canzoni</h3>
+    <div class="form-group">
+        <label for="nomeCanzone">Nome Canzone</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="nomeCanzone" 
+            name="nomeCanzone" 
+        />    
+    </div>
+    <div class="form-group">
+        <label for="annoCanzone">Anno canzone</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="annoCanzone" 
+            name="annoCanzone"
+        />    
+    </div>
+    <div class="form-group">
+        <label for="durata">Durata</label>
+        <input 
+            type="text" 
+            class="form-control" 
+            id="durata" 
+            name="durata" 
+        />    
+    </div>
+    <br/>
+    <button type="submit" class="btn btn-primary">Salva</button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %} 
+
+{% block title %}Home
+{% endblock %}
+
+{% block content %}
+
+
+<main>
+    <<div class="card-container">
+      <div class="row">
+        {%- for artist in artist_list -%}
+          <div class="col">
+            <div class="card bg-dark">
+                <img class="img-artist" src="https://bit.ly/3PiIDrx">
+                <div class="card-body">
+                  <h3>{{ artist.alias }}</h3>
+                </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+  </div>
+    <script>
+        function changeHearticon(icon){
+            if (icon.classList.contains('bi-heart')) {
+                icon.classList.remove("bi-heart");
+                icon.classList.add("bi-heart-fill");
+            } else {
+                icon.classList.add("bi-heart");
+                icon.classList.remove("bi-heart-fill");
+            }
+        }
+    </script>
+</main>
+
+{% endblock %}
+

@@ -7,5 +7,7 @@ from sqlalchemy.sql import func
 class SongArtist(Base):
     __tablename__ = "song_artist"
 
-    id_artist = Column(Integer, ForeignKey('artists.id'), primary_key=True)
-    id_song = Column(Integer, ForeignKey('songs.id'), primary_key=True)
+    id_artist = Column(Integer, ForeignKey('artists.id', ondelete="CASCADE"), primary_key=True)
+    id_song = Column(Integer, ForeignKey('songs.id', ondelete="CASCADE"), primary_key=True)
+    artist = relationship("Artist", back_populates="songs")
+    song = relationship("Song", back_populates="artists")

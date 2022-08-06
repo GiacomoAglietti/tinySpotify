@@ -1,5 +1,5 @@
 from webapp import Base
-from sqlalchemy import Column, Integer, String, DateTime, event
+from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
@@ -17,7 +17,7 @@ class User(Base, UserMixin):
     email  = Column(String(150), unique=True)
     password  = Column(String(150))
     date_created = Column(DateTime(timezone=True), server_default=func.now())
-    playlist = relationship("Playlist",cascade="all,delete", back_populates="user")
+    playlist = relationship("Playlist",cascade="all, delete", passive_deletes=True,)
 
 """
 @event.listens_for(User, 'after_attach')

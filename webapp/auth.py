@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from webapp import Session
 from webapp.models.User import User
+from webapp.models.Artist import Artist
 from webapp.models.Playlist import Playlist
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import select
@@ -42,24 +43,34 @@ def signUp():
 
     if request.method == 'POST':
         email = request.form.get('email')
-        firstSecondName = request.form.get('firstSecondName')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
+        firstSecondName = request.form.get('nomeCognome')
+        password = request.form.get('password')
+        passwordc = request.form.get('passwordc')
+        selectResult = request.form.get('typeUser')
 
         if len(email) < 4:
             flash('Email deve essere di almeno 4 caratteri', category='error')
         elif len(firstSecondName) < 2:
             flash('Nome e Cognome deve essere di almeno 2 caratteri', category='error')
-        elif len(password1)<1:
+        elif len(password)<1:
             flash('Devi inserire una password', category='error')
-        elif password1 != password2:
+        elif password != passwordc:
             flash('Le password non corrispondono', category='error')
         else:
-            newUser = User(
+            newUser = None
+            if (selectResult == 'No'):
+                newUser = User(
+                    name_surname=firstSecondName, 
+                    email=email, 
+                    password=generate_password_hash(password, method='sha256')
+                    )
+            if (selectResult == 'Si'):
+                newUser = Artist(
                 name_surname=firstSecondName, 
                 email=email, 
-                password=generate_password_hash(password1, method='sha256')
+                password=generate_password_hash(password, method='sha256')
                 )
+
 
             local_session.add(newUser)
             local_session.commit()
