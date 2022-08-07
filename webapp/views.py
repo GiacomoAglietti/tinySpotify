@@ -1,7 +1,7 @@
 from threading import local
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy import select, subquery
+from sqlalchemy import insert, select, subquery, update, delete
 from webapp import Session
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
@@ -42,6 +42,15 @@ def playlists():
 @views.route('/playlists/<int:id_playlist_selected>')
 #@login_required
 def get_playlist_selected(id_playlist_selected):
+        if request.method == 'POST':
+                nomePlaylist = request.form.get('nomePlaylist')
+                stmt = (
+                        update(Playlist).
+                        where(Playlist.id == id_playlist_selected).
+                        values(name=nomePlaylist)
+                        )
+                local_session.execute(stmt)
+                local_session.commit()
         
         stmt_playlist = (
                 select(Playlist.name).
