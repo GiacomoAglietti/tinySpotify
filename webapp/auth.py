@@ -47,6 +47,7 @@ def signUp():
         password = request.form.get('password')
         passwordc = request.form.get('passwordc')
         selectResult = request.form.get('typeUser')
+        alias = request.form.get('alias')
 
         if len(email) < 4:
             flash('Email deve essere di almeno 4 caratteri', category='error')
@@ -57,7 +58,12 @@ def signUp():
         elif password != passwordc:
             flash('Le password non corrispondono', category='error')
         else:
-            newUser = None
+            newUser = User(
+                    name_surname=firstSecondName, 
+                    email=email, 
+                    password=generate_password_hash(password, method='sha256')
+                    )
+            """
             if (selectResult == 'No'):
                 newUser = User(
                     name_surname=firstSecondName, 
@@ -66,11 +72,11 @@ def signUp():
                     )
             if (selectResult == 'Si'):
                 newUser = Artist(
-                name_surname=firstSecondName, 
-                email=email, 
-                password=generate_password_hash(password, method='sha256')
-                )
-
+                    alias = alias,
+                    name_surname=firstSecondName, 
+                    email=email, 
+                    password=generate_password_hash(password, method='sha256'))
+            """
 
             local_session.add(newUser)
             local_session.commit()

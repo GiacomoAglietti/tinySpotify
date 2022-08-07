@@ -41,9 +41,8 @@ stmt = (select(Song, Playlist).
         order_by(PlaylistSong.num_order))
 
 
-
-Generi Musicali
-genre1 = Genre(name="Acoustic")
+    with Session(bind=engine) as session:
+        genre1 = Genre(name="Acoustic")
         genre2 = Genre(name="Musica Classica")
         genre3 = Genre(name="Blues")
         genre4 = Genre(name="Country")
@@ -94,30 +93,37 @@ genre1 = Genre(name="Acoustic")
 
         session.commit()
 
-artist1 = Artist(
+        artist2 = Artist(
             alias="Avicii", 
             name_surname="Tim Bergling", 
             email="avicii@gmail.com", 
             password="avicii")
 
-        album= Album(name="True", year=2013, image="")
+        session.add(artist2)
+        session.commit()
 
+        album1= Album(name="True", year=2013, image="")
+
+        session.add(album1)
+        session.commit()
         
-        song1= Song(title="Wake Me Up", year="2013", length=245, num_order=1, id_album=1)
-        song2= Song(title="You Make Me", year="2013", length=231, num_order=2, id_album=1)
-        song3= Song(title="Hey Brother", year="2013", length=251, num_order=3, id_album=1)
-        song4= Song(title="Addicted to You", year="2013", length=146, num_order=4, id_album=1)
-        song5= Song(title="Dear Boy", year="2013", length=479, num_order=5, id_album=1)
-        song6= Song(title="Liar Liar", year="2013", length=236, num_order=6, id_album=1)
-        song7= Song(title="Shame On Me", year="2013", length=251, num_order=7, id_album=1)
-        song8= Song(title="Lay Me Down", year="2013", length=298, num_order=8, id_album=1)
-        song9= Song(title="Hope There's Someone", year="2013", length=381, num_order=9, id_album=1)
-        song10= Song(title="Heart Upon My Sleeve", year="2013", length=281, num_order=10, id_album=1)
+        song11= Song(title="Wake Me Up", year="2013", length=247, num_order=1, id_album=1)
+        song21= Song(title="You Make Me", year="2013", length=231, num_order=2, id_album=1)
+        song31= Song(title="Hey Brother", year="2013", length=251, num_order=3, id_album=1)
+        song41= Song(title="Addicted to You", year="2013", length=146, num_order=4, id_album=1)
+        song51= Song(title="Dear Boy", year="2013", length=479, num_order=5, id_album=1)
+        song61= Song(title="Liar Liar", year="2013", length=236, num_order=6, id_album=1)
+        song71= Song(title="Shame On Me", year="2013", length=251, num_order=7, id_album=1)
+        song81= Song(title="Lay Me Down", year="2013", length=298, num_order=8, id_album=1)
+        song91= Song(title="Hope There's Someone", year="2013", length=381, num_order=9, id_album=1)
+        song101= Song(title="Heart Upon My Sleeve", year="2013", length=281, num_order=10, id_album=1)
 
-        #[song1, song2,song3,song4,song5,song6,song7,song8,song9,song10]
+        session.add_all([song11, song21,song31,song41,song51,song61,song71,song81,song91,song101])
+        session.commit()
 
         al_ar=AlbumArtist(id_album=1, id_artist=1)
         session.add(al_ar)
+        session.commit()
 
         counter = 1
         while counter < 11:
@@ -133,8 +139,9 @@ artist1 = Artist(
             sa=SongArtist(id_artist=1, id_song=counter)
             session.add(sa)
             counter+=1
-
-    artist1 = Artist(
+        session.commit()
+        
+        artist1 = Artist(
             alias="Linkin Park", 
             name_surname="Chester Bennington", 
             email="linkinpark@gmail.com", 
@@ -178,4 +185,21 @@ artist1 = Artist(
             session.add(sa)
             counter+=1
 
+        session.commit()
+
+        playlist = Playlist(
+            name="playlist01",
+            id_user=1
+        )
+        session.add(playlist)
+        session.commit()
+
+        ps1= PlaylistSong(id_playlist=2, id_song=1)
+        ps2= PlaylistSong(id_playlist=2, id_song=5)
+        ps3= PlaylistSong(id_playlist=2, id_song=7)
+        ps4= PlaylistSong(id_playlist=2, id_song=10)
+        ps5= PlaylistSong(id_playlist=2, id_song=13)
+        ps6= PlaylistSong(id_playlist=2, id_song=21)
+
+        session.add_all([ps1,ps2,ps3,ps4,ps5,ps6])
         session.commit()

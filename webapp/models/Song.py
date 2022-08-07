@@ -1,3 +1,4 @@
+from email.policy import default
 from webapp import Base
 from sqlalchemy import *
 from sqlalchemy.orm import relationship
@@ -12,6 +13,7 @@ class Song(Base):
     year = Column(Integer)
     length = Column(Integer)  #calcolare la durata -> Sec + Min * 60 + Hour * 3600
     num_order = Column(Integer)
+    favourite = Column(Boolean, default=False)
     playlist = relationship("PlaylistSong", back_populates="song")
     genres = relationship("GenreSong", back_populates="song")
     artists = relationship("SongArtist", back_populates="song")

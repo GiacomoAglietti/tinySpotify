@@ -43,26 +43,32 @@ def playlists():
 #@login_required
 def get_playlist_selected(id_playlist_selected):
         
-        stmt_playlist = (select(Playlist.name).
+        stmt_playlist = (
+                select(Playlist.name).
                 where(Playlist.id == id_playlist_selected))
 
-        song_list=(
-                select(Song).
-                #select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_order.label('p_num_order')).
+        stmt_song=(
+                select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_order, Album.name).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
+                join(Album, Song.id_album == Album.id).
                 where(PlaylistSong.id_playlist == id_playlist_selected).
-                order_by(PlaylistSong.num_order))       
+                order_by(PlaylistSong.num_order))      
 
 
         playlist_name = local_session.execute(stmt_playlist).scalar()
         if (playlist_name==None):
                 playlist_name="Playlist not found"
 
-        songs_list = local_session.execute(song_list).scalars()
+        songs_list = local_session.execute(stmt_song).all()
 
+        num_songs = 0
+        tot_length = 0
 
-        #playlist_name = songs_list.first()[0].name
-        return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name)
+        for song in songs_list:
+                num_songs += 1
+                tot_length += song.length
+
+        return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length)
 
 @views.route('/albums')
 #@login_required

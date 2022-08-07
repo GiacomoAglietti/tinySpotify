@@ -14,7 +14,7 @@
             <div class="col right">
                 <h6>PLAYLIST</h6>
                 <h1>{{playlist_name}}</h1>
-                <h5>(num) brani</h5>
+                <h5>{{num_songs}} brani, {{tot_length// 3600 }} ore {{tot_length// 60 }} minuti  </h5>
             </div>
         </div>
     </div>
@@ -24,7 +24,9 @@
                 <i class="bi bi-play-circle-fill"></i>
             </div>
             <div class="col heart">
-                <i class="bi bi-heart" onclick="changeHearticon(this)"></i>
+                <form action="" method="post" name="addPlaylistToFav">
+                    <i class="bi bi-heart" onclick="changeHearticon(this)"></i>
+                </form>
             </div>
             <div class="col share">
                 <i class="bi bi-share-fill"></i>
@@ -44,28 +46,34 @@
         <tbody>
           {%- for song in songs_list -%}
             <tr>
-              <td>{{ song.p_num_order }}</td>
+              <td>{{ song.num_order }}</td>
               <td>{{ song.title }}</td>
-              <td>{{ song.id_album }}</td>
+              <td>{{ song.name }}</td>
               <td class="fav-col"><i class="bi bi-heart" onclick="changeHearticon(this)"></i></td>
-              <td>{{ song.length }}:{{ song.length }}</td>
+              <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
             </tr>
           {%- endfor -%}
         </tbody>
       </table>
     <script>
         function changeHearticon(icon){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/playlists/<int:id_playlist_selected>", true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            let typeIcon = null
+        
             if (icon.classList.contains('bi-heart')) {
+                typeIcon="addOnFav"
                 icon.classList.remove("bi-heart");
                 icon.classList.add("bi-heart-fill");
             } else {
+                typeIcon="removeFromFav"
                 icon.classList.add("bi-heart");
                 icon.classList.remove("bi-heart-fill");
             }
-        }
-        function intToHour(length){
-          Min  = int(length % 3600 / 60)
-          Sec  = length % 3600 % 1800
+            xhr.send(JSON.stringify({
+                value: typeIcon
+            }));
         }
     </script>
 </main>
