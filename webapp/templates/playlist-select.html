@@ -31,7 +31,7 @@
                                 <input type="text" id="nomePlaylist" name="nomePlaylist">
                             </div>
                             <div class="modal-footer">
-                            <button type="button" class="btn btn-primary">Salva</button>
+                            <button type="submit" class="btn btn-primary" name="change-name-playlist">Salva</button>
                             </div>
                         </div>
                         </div>
@@ -45,14 +45,6 @@
         <div class="row">
             <div class="col">
                 <i class="bi bi-play-circle-fill"></i>
-            </div>
-            <div class="col heart">
-                <form action="" method="post" name="addPlaylistToFav">
-                    <i class="bi bi-heart" onclick="changeHearticon(this)"></i>
-                </form>
-            </div>
-            <div class="col share">
-                <i class="bi bi-share-fill"></i>
             </div>
         </div>
     </div>
@@ -72,21 +64,25 @@
               <td>{{ song.num_order }}</td>
               <td>{{ song.title }}</td>
               <td>{{ song.name }}</td>
-              <td class="fav-col"><i class="bi bi-heart" onclick="changeHearticon(this)"></i></td>
+              <td class="fav-col">
+                <body class="s" onrea onload="loadIcon('{{ song.favourite }}','{{ song.id }}')">
+                    <i class="bi bi-heart" id="icona{{ song.id }}" onclick="changeHearticon(this, '{{song.id}}','{{actual_playlist}}')" ></i>
+                </body>                
+              </td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
             </tr>
           {%- endfor -%}
         </tbody>
       </table>
     <script>
-        function changeHearticon(icon){
+        function changeHearticon(icon, songId, id_playlist){
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/playlists/<int:id_playlist_selected>", true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.open("POST", "/playlists/"+id_playlist, true);
+            
             let typeIcon = null
         
             if (icon.classList.contains('bi-heart')) {
-                typeIcon="addOnFav"
+                typeIcon="addToFav"
                 icon.classList.remove("bi-heart");
                 icon.classList.add("bi-heart-fill");
             } else {
@@ -94,9 +90,16 @@
                 icon.classList.add("bi-heart");
                 icon.classList.remove("bi-heart-fill");
             }
-            xhr.send(JSON.stringify({
-                value: typeIcon
-            }));
+            xhr.setRequestHeader('Content-Type', typeIcon);
+            xhr.send(songId);
+        }
+
+        function loadIcon(isOnFav,songId){
+            
+            if (isOnFav){
+                document.getElementById("icona"+songId).classList.remove('bi-heart');
+                document.getElementById("icona"+songId).classList.add('bi-heart-fill');
+            }
         }
     </script>
 </main>

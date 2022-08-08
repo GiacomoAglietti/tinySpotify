@@ -39,25 +39,57 @@ def playlists():
         return render_template("playlists.html", playlists = playlists)
 
 
-@views.route('/playlists/<int:id_playlist_selected>')
+@views.route('/playlists/<int:id_playlist_selected>', methods=['GET', 'POST'])
 #@login_required
 def get_playlist_selected(id_playlist_selected):
         if request.method == 'POST':
-                nomePlaylist = request.form.get('nomePlaylist')
-                stmt = (
-                        update(Playlist).
-                        where(Playlist.id == id_playlist_selected).
-                        values(name=nomePlaylist)
-                        )
-                local_session.execute(stmt)
-                local_session.commit()
+
+                if(request.headers.get('Content-Type')=='addToFav'):
+                        idSong=int(request.data.decode("utf-8"))
+                        ps1= PlaylistSong(id_playlist=1, id_song=idSong)
+                        local_session.add(ps1)
+                        update_song = (
+                                update(Song).
+                                where(Song.id == idSong).
+                                values(favourite=True)
+                                )
+                        local_session.execute(update_song)
+                        local_session.commit()
+                if(request.headers.get('Content-Type')=='removeFromFav'):
+                        idSong=int(request.data.decode("utf-8"))
+                        delete_song= (
+                                delete(PlaylistSong).
+                                where(PlaylistSong.id_playlist==1).
+                                where(PlaylistSong.id_song==idSong)
+                                )
+                        local_session.add(delete_song)
+                        update_song = (
+                                update(Song).
+                                where(Song.id == idSong).
+                                values(favourite=False)
+                                )
+                        local_session.execute(update_song)
+                        local_session.commit()                    
+
+                elif 'change-name-playlist' in request.form:
+                        nomePlaylist = request.form.get('nomePlaylist')
+                        stmt = (
+                                update(Playlist).
+                                where(Playlist.id == id_playlist_selected).
+                                values(name=nomePlaylist)
+                                )
+                        local_session.execute(stmt)
+                        local_session.commit()
+                        #local_session.flush()
+        
+        
         
         stmt_playlist = (
                 select(Playlist.name).
                 where(Playlist.id == id_playlist_selected))
 
         stmt_song=(
-                select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_order, Album.name).
+                select(Song.id, Song.title, Song.id_album, Song.length, Song.favourite, PlaylistSong.num_order, Album.name).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
                 where(PlaylistSong.id_playlist == id_playlist_selected).
@@ -77,7 +109,7 @@ def get_playlist_selected(id_playlist_selected):
                 num_songs += 1
                 tot_length += song.length
 
-        return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length)
+        return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected)
 
 @views.route('/albums')
 #@login_required
