@@ -18,10 +18,3 @@ TODO:
 
 
 
-CREATE TRIGGER insert_one AFTER INSERT ON prova
-FOR EACH ROW execute Procedure increment_one();
-
-CREATE or REPLACE FUNCTION increment_one() RETURNS trigger as $$
-BEGIN
-     
-END

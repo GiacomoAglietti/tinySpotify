@@ -11,6 +11,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 connection_string = 'postgresql://postgres:admin@localhost/SpotiFake'
+#connection_string = 'postgres://eytjofnu:nSmD1KQOXfBDVNLkhHZl2P6oNyHtTX5y@hattie.db.elephantsql.com/eytjofnu'
 
 Base = declarative_base()
 
@@ -65,13 +66,7 @@ def create_app():
    
     # Test it
     #with Session(bind=engine) as session: 
-    
-    
-
         
-
-        
-    
 
     #with Session(bind=engine) as session:
 

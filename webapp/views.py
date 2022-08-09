@@ -62,7 +62,7 @@ def get_playlist_selected(id_playlist_selected):
                                 where(PlaylistSong.id_playlist==1).
                                 where(PlaylistSong.id_song==idSong)
                                 )
-                        local_session.add(delete_song)
+                        local_session.execute(delete_song)
                         update_song = (
                                 update(Song).
                                 where(Song.id == idSong).

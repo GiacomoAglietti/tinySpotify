@@ -1,6 +1,6 @@
 from enum import unique
 from webapp import Base
-from sqlalchemy import *
+from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, DDL
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
@@ -13,5 +13,7 @@ class PlaylistSong(Base):
     playlist = relationship("Playlist", back_populates="songs")
     song = relationship("Song", back_populates="playlist")
     num_order = Column(Integer)
+
+
     
     

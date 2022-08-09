@@ -35,7 +35,7 @@ def add_favourite_songs_playlist(session, instance):
         where(playlist_table.c.id==thread.id).
         values(word_count=sum(c.word_count for c in thread.comments))
     )
-"""
+
 
 @event.listens_for(User, "after_insert")
 def after_insert(mapper, connection, target):
@@ -47,4 +47,4 @@ def after_insert(mapper, connection, target):
     target.playlist.append(newPlaylist)
 
     print ("after insert user -> new favourite song")
-
+"""
