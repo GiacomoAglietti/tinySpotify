@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from webapp import Session
 from webapp.models.User import User
-from webapp.models.Artist import Artist
 from webapp.models.Playlist import Playlist
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import select
@@ -59,7 +58,7 @@ def signUp():
             flash('Le password non corrispondono', category='error')
         else:
             newUser = User(
-                    name_surname=firstSecondName, 
+                    name=firstSecondName, 
                     email=email, 
                     password=generate_password_hash(password, method='sha256')
                     )

@@ -35,7 +35,6 @@ def create_app():
     from webapp.models.Song import Song
     from webapp.models.Album import Album
     from webapp.models.AlbumArtist import AlbumArtist
-    from webapp.models.Artist import Artist
     from webapp.models.Genre import Genre
     from webapp.models.GenreSong import GenreSong
     from webapp.models.PlaylistSong import PlaylistSong
@@ -65,7 +64,11 @@ def create_app():
    
    
     # Test it
-    #with Session(bind=engine) as session: 
+    #with Session(bind=engine) as session:
+ 
+
+
+
         
 
     #with Session(bind=engine) as session:

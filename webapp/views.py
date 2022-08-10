@@ -10,7 +10,6 @@ from webapp.models.PlaylistSong import PlaylistSong
 from webapp.models.Playlist import Playlist
 from webapp.models.GenreSong import GenreSong
 from webapp.models.Genre import Genre
-from webapp.models.Artist import Artist
 from webapp.models.AlbumArtist import AlbumArtist
 from webapp.models.Album import Album
 

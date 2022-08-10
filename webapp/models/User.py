@@ -1,5 +1,6 @@
+from email.policy import default
 from webapp import Base
-from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
@@ -10,14 +11,17 @@ from .Playlist import Playlist
 #time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
 
+
 class User(Base, UserMixin):   
     __tablename__ = "users"
     id  = Column(Integer, primary_key=True)
-    name_surname  = Column(String(150))
+    name  = Column(String(150), unique=True)
     email  = Column(String(150), unique=True)
     password  = Column(String(150))
-    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    isArtist = Column(Boolean, default=False)
     playlist = relationship("Playlist",cascade="all, delete", passive_deletes=True,)
+    songs = relationship("SongArtist", back_populates="artist")
+    album = relationship("AlbumArtist", back_populates="artist")
 
 """
 @event.listens_for(User, 'after_attach')
@@ -35,8 +39,8 @@ def add_favourite_songs_playlist(session, instance):
         where(playlist_table.c.id==thread.id).
         values(word_count=sum(c.word_count for c in thread.comments))
     )
-
-
+"""
+"""
 @event.listens_for(User, "after_insert")
 def after_insert(mapper, connection, target):
     

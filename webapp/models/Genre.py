@@ -10,4 +10,3 @@ class Genre(Base):
     id  = Column(Integer, primary_key=True)
     name = Column(String(150))
     songs = relationship("GenreSong", back_populates="genre")
-    date_created = Column(DateTime(timezone=True), server_default=func.now())

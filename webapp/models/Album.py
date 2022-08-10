@@ -11,6 +11,4 @@ class Album(Base):
     year = Column(Integer)
     image = Column(String(150), nullable=True)
     artists = relationship("AlbumArtist", back_populates="album")
-    
     songs = relationship("Song",cascade="all,delete", back_populates="album")
-    date_created = Column(DateTime(timezone=True), server_default=func.now())

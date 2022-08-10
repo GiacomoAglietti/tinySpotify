@@ -9,21 +9,25 @@ Genre(id*, name)
 AlbumArtist(id_artist*, id_album*)
 Album(id*, name, year, image)
 
-select Playlist.name
-from Playlist
-where Playlist.id == id_playlist_selected
+#trigger
+create_fav_playlist
+integer x;
+BEGIN
+    if exists(...) then
+        x=(select max(num_order)
+        from playlist_song
+        where id_playlist=id_pl_Selected)
+        new.num_order=x+1;
+    else
+        new.num_order=1;
+END
 
-song_list_query=select Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_order
-from songs s join playlist_song p on (Song.id=PlaylistSong.id_song)
-where PlaylistSong.id_playlist=2
-order by num_order
-
-select Artist.alias
-from Artist
-where Artist.id in (select SongArtist.id_artist
-                    from SongArtist
-                    where SongArtist.id_song in (select Song.id
-                                                 from song_list_query))
+create_fav_playlist
+BEGIN
+     insert into playlist(name, id_user)
+     values ('Preferiti', new.id);
+     RETURN NEW;
+END
 
 stmt_artists=(
         select(Artist.alias).
@@ -40,8 +44,7 @@ stmt = (select(Song, Playlist).
         where(Playlist.id == id_playlist_selected).
         order_by(PlaylistSong.num_order))
 
-
-    with Session(bind=engine) as session:
+with Session(bind=engine) as session:
         genre1 = Genre(name="Acoustic")
         genre2 = Genre(name="Musica Classica")
         genre3 = Genre(name="Blues")
@@ -93,11 +96,11 @@ stmt = (select(Song, Playlist).
 
         session.commit()
 
-        artist2 = Artist(
-            alias="Avicii", 
-            name_surname="Tim Bergling", 
+        artist2 = User(
+            name="Avicii", 
             email="avicii@gmail.com", 
-            password="avicii")
+            password="avicii",
+            isArtist=True)
 
         session.add(artist2)
         session.commit()
@@ -107,16 +110,16 @@ stmt = (select(Song, Playlist).
         session.add(album1)
         session.commit()
         
-        song11= Song(title="Wake Me Up", year="2013", length=247, num_order=1, id_album=1)
-        song21= Song(title="You Make Me", year="2013", length=231, num_order=2, id_album=1)
-        song31= Song(title="Hey Brother", year="2013", length=251, num_order=3, id_album=1)
-        song41= Song(title="Addicted to You", year="2013", length=146, num_order=4, id_album=1)
-        song51= Song(title="Dear Boy", year="2013", length=479, num_order=5, id_album=1)
-        song61= Song(title="Liar Liar", year="2013", length=236, num_order=6, id_album=1)
-        song71= Song(title="Shame On Me", year="2013", length=251, num_order=7, id_album=1)
-        song81= Song(title="Lay Me Down", year="2013", length=298, num_order=8, id_album=1)
-        song91= Song(title="Hope There's Someone", year="2013", length=381, num_order=9, id_album=1)
-        song101= Song(title="Heart Upon My Sleeve", year="2013", length=281, num_order=10, id_album=1)
+        song11= Song(title="Wake Me Up", year="2013", length=247, num_in_album=1, id_album=1)
+        song21= Song(title="You Make Me", year="2013", length=231, num_in_album=2, id_album=1)
+        song31= Song(title="Hey Brother", year="2013", length=251, num_in_album=3, id_album=1)
+        song41= Song(title="Addicted to You", year="2013", length=146, num_in_album=4, id_album=1)
+        song51= Song(title="Dear Boy", year="2013", length=479, num_in_album=5, id_album=1)
+        song61= Song(title="Liar Liar", year="2013", length=236, num_in_album=6, id_album=1)
+        song71= Song(title="Shame On Me", year="2013", length=251, num_in_album=7, id_album=1)
+        song81= Song(title="Lay Me Down", year="2013", length=298, num_in_album=8, id_album=1)
+        song91= Song(title="Hope There's Someone", year="2013", length=381, num_in_album=9, id_album=1)
+        song101= Song(title="Heart Upon My Sleeve", year="2013", length=281, num_in_album=10, id_album=1)
 
         session.add_all([song11, song21,song31,song41,song51,song61,song71,song81,song91,song101])
         session.commit()
@@ -141,11 +144,11 @@ stmt = (select(Song, Playlist).
             counter+=1
         session.commit()
         
-        artist1 = Artist(
-            alias="Linkin Park", 
-            name_surname="Chester Bennington", 
+        artist1 = User(
+            name="Linkin Park", 
             email="linkinpark@gmail.com", 
-            password="linkinpark")
+            password="linkinpark",
+            isArtist=True)
 
         session.add(artist1)
         session.commit()
@@ -154,26 +157,23 @@ stmt = (select(Song, Playlist).
         session.add(album)
         session.commit()
         
-        song1= Song(title="Wake", year="2007", length=100, num_order=1, id_album=2)
-        song2= Song(title="Given Up", year="2008", length=189, num_order=2, id_album=2)
-        song3= Song(title="Leave Out All the Rest", year="2008", length=209, num_order=3, id_album=2)
-        song4= Song(title="Bleed It Out", year="2007", length=164, num_order=4, id_album=2)
-        song5= Song(title="Shadow of the Day", year="2007", length=289, num_order=5, id_album=2)
-        song6= Song(title="What I've Done", year="2007", length=205, num_order=6, id_album=2)
-        song7= Song(title="Hands Held High", year="2007", length=233, num_order=7, id_album=2)
-        song8= Song(title="No More Sorrow", year="2007", length=221, num_order=8, id_album=2)
-        song9= Song(title="Valentine's Day", year="2007", length=196, num_order=9, id_album=2)
-        song10= Song(title="In Between", year="2007", length=196, num_order=10, id_album=2)
-        song11= Song(title="In Pieces", year="2007", length=218, num_order=11, id_album=2)
-        song12= Song(title="The Little Things Give You Away", year="2007", length=383, num_order=12, id_album=2)
+        song1= Song(title="Wake", year="2007", length=100, num_in_album=1, id_album=2)
+        song2= Song(title="Given Up", year="2008", length=189, num_in_album=2, id_album=2)
+        song3= Song(title="Leave Out All the Rest", year="2008", length=209, num_in_album=3, id_album=2)
+        song4= Song(title="Bleed It Out", year="2007", length=164, num_in_album=4, id_album=2)
+        song5= Song(title="Shadow of the Day", year="2007", length=289, num_in_album=5, id_album=2)
+        song6= Song(title="What I've Done", year="2007", length=205, num_in_album=6, id_album=2)
+        song7= Song(title="Hands Held High", year="2007", length=233, num_in_album=7, id_album=2)
+        song8= Song(title="No More Sorrow", year="2007", length=221, num_in_album=8, id_album=2)
+        song9= Song(title="Valentine's Day", year="2007", length=196, num_in_album=9, id_album=2)
+        song10= Song(title="In Between", year="2007", length=196, num_in_album=10, id_album=2)
+        song11= Song(title="In Pieces", year="2007", length=218, num_in_album=11, id_album=2)
+        song12= Song(title="The Little Things Give You Away", year="2007", length=383, num_in_album=12, id_album=2)
 
         session.add_all([song1, song2,song3,song4,song5,song6,song7,song8,song9,song10,song11,song12])
         session.commit()
-        al_ar=AlbumArtist(id_album=2, id_artist=2)
-        session.add(al_ar)
-        session.commit()
 
-        counter = 11
+                counter = 11
         while counter < 23:
             gs1=GenreSong(id_genre=14, id_song=counter)
             session.add(gs1)
@@ -194,12 +194,12 @@ stmt = (select(Song, Playlist).
         session.add(playlist)
         session.commit()
 
-        ps1= PlaylistSong(id_playlist=2, id_song=1)
-        ps2= PlaylistSong(id_playlist=2, id_song=5)
-        ps3= PlaylistSong(id_playlist=2, id_song=7)
-        ps4= PlaylistSong(id_playlist=2, id_song=10)
-        ps5= PlaylistSong(id_playlist=2, id_song=13)
-        ps6= PlaylistSong(id_playlist=2, id_song=21)
+        ps1= PlaylistSong(id_playlist=2, id_song=1, num_in_playlist=1)
+        ps2= PlaylistSong(id_playlist=2, id_song=5, num_in_playlist=2)
+        ps3= PlaylistSong(id_playlist=2, id_song=7, num_in_playlist=3)
+        ps4= PlaylistSong(id_playlist=2, id_song=10, num_in_playlist=4)
+        ps5= PlaylistSong(id_playlist=2, id_song=13, num_in_playlist=5)
+        ps6= PlaylistSong(id_playlist=2, id_song=21, num_in_playlist=6)
 
         session.add_all([ps1,ps2,ps3,ps4,ps5,ps6])
         session.commit()

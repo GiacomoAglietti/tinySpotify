@@ -4,23 +4,24 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
-from . import Playlist, Genre, Artist, Album, PlaylistSong, GenreSong, SongArtist
+from . import Playlist, Genre, Album, PlaylistSong, GenreSong, SongArtist
+
+
 
 class Song(Base):
     __tablename__ = "songs"
     id  = Column(Integer, primary_key=True)
     title = Column(String(150))
     year = Column(Integer)
-    length = Column(Integer)  #calcolare la durata -> Sec + Min * 60 + Hour * 3600
-    num_order = Column(Integer)
-    favourite = Column(Boolean, default=False)
+    length = Column(Integer)
+    num_in_album = Column(Integer)
+    id_album = Column(Integer, ForeignKey("album.id", ondelete="CASCADE"))
+    album = relationship("Album", back_populates="songs")
     playlist = relationship("PlaylistSong", back_populates="song")
     genres = relationship("GenreSong", back_populates="song")
     artists = relationship("SongArtist", back_populates="song")
-
-    id_album = Column(Integer, ForeignKey("album.id", ondelete="CASCADE"))
-    album = relationship("Album", back_populates="songs")
-    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    
+    
 
     """
     from integer to hour
