@@ -61,14 +61,14 @@
         <tbody>
           {%- for song in songs_list -%}
             <tr>
-              <td>{{ song.num_order }}</td>
+              <td>{{ song.num_in_playlist }}</td>
               <td>{{ song.title }}</td>
               <td>{{ song.name }}</td>
               <td class="fav-col">
                 <i class="bi bi-heart" id="icona{{ song.id }}" onclick="changeHearticon(this, '{{song.id}}','{{actual_playlist}}')" ></i>
                 <script type="text/javascript">
                     (function() {
-                        var fav = JSON.parse('{{ song.favourite | tojson }}');
+                        var fav = JSON.parse('{{ song.isFav | tojson }}');
                         var id = JSON.parse('{{ song.id | tojson }}');
                         if (fav){
                             document.getElementById("icona"+id).classList.remove('bi-heart');

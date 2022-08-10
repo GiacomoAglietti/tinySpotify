@@ -1,7 +1,7 @@
 from threading import local
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy import insert, select, subquery, update, delete
+from sqlalchemy import insert, select, subquery, update, delete, func
 from webapp import Session
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
@@ -87,19 +87,34 @@ def get_playlist_selected(id_playlist_selected):
                 select(Playlist.name).
                 where(Playlist.id == id_playlist_selected))
 
+
         stmt_song=(
-                select(Song.id, Song.title, Song.id_album, Song.length, Song.favourite, PlaylistSong.num_order, Album.name).
+                select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_in_playlist, Album.name).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
                 where(PlaylistSong.id_playlist == id_playlist_selected).
-                order_by(PlaylistSong.num_order))      
+                order_by(PlaylistSong.num_in_playlist)) 
 
+        select_favourite= (
+                select((func.count(PlaylistSong.id_song)).label('isFav')).
+                where(PlaylistSong.id_song == stmt_song.id).
+                where(PlaylistSong.id_playlist == 1))
+
+
+    
+
+        """
+        Select*, (select count (*) 
+                  from playlistsong ps 
+                  where ps.idcanzone = s.idcanzone And ps.idplaylist = id_playlist_selected)
+        From Song as s
+        """
 
         playlist_name = local_session.execute(stmt_playlist).scalar()
         if (playlist_name==None):
                 playlist_name="Playlist not found"
 
-        songs_list = local_session.execute(stmt_song).all()
+        songs_list = local_session.execute(stmt_song,select_favourite).all()
 
         num_songs = 0
         tot_length = 0
