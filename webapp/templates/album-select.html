@@ -32,8 +32,8 @@
             <th>#</th>
             <th>TITOLO</th>
             <th>ALBUM</th>
-            <th></th>
             <th><i class="bi bi-clock"></i></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -42,11 +42,10 @@
               <td>{{ song.num_in_album }}</td>
               <td>{{ song.title }}</td>
               <td>{{ song.name }}</td>
-              <td class="fav-col">
-                <i class="bi bi-heart" id="icona{{ song.id }}" onclick="changeHearticon(this, '{{song.id}}','{{actual_playlist}}')" ></i>
-
-              </td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+              <td class="fav-col">
+                <i class="bi bi-three-dots"></i>
+              </td>
             </tr>
           {%- endfor -%}
         </tbody>

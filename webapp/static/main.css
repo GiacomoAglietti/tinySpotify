@@ -136,11 +136,6 @@ header h1{
     font-size: 51px;
 }
 
-.button-container .row .heart{
-    margin-left: 10px;
-    align-self: center;   
-}
-
 
 .button-container .row .share{
     margin-left: 8px;
@@ -177,16 +172,6 @@ header h1{
 }
 .content-table tbody tr .fav-col {
     text-align: right;
-}
-
-.content-table tbody tr .fav-col .bi-heart{
-    text-align: right;
-    color: #fff;
-}
-
-.content-table tbody tr .fav-col .bi-heart-fill{
-    text-align: right;
-    color: rgb(0, 255, 76);
 }
 
 /* sign up */

@@ -1,8 +1,9 @@
 from threading import local
-from flask import Blueprint, render_template, request, flash, redirect, session, url_for
+from flask import Blueprint, render_template, request, flash, redirect, session, url_for, session
 from flask_login import login_required, current_user
 from sqlalchemy import insert, select, subquery, update, delete, func
-from webapp import Session
+from sqlalchemy.orm import aliased
+from webapp import db_session, engine
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
@@ -13,27 +14,38 @@ from webapp.models.Genre import Genre
 from webapp.models.AlbumArtist import AlbumArtist
 from webapp.models.Album import Album
 
-local_session = Session()
+local_session = db_session()
 
 views = Blueprint('views', __name__)
 
-@views.route('/')
+@views.route('/', methods=['GET', 'POST'])
 #@login_required
 def home():
-    return render_template("home.html")
+        
+        if session.get('userid'):
+                return redirect("/home")
+        
+        return redirect("/login")
 
 #url_for('get-playlist', id='A')
 @views.route('/home')
 #@login_required
-def home2():
+def home_auth():
+        username="user not found"
+        if session.get('username'):
+                username =  session['username']
         stmt = select(Playlist)#.where(Playlist.id_user == id)
         playlist1 = local_session.execute(stmt).scalars()
-        return render_template("home.html" , playlist1=playlist1)
+
+        return render_template("home.html" , playlist1=playlist1, username=username)
 
 @views.route('/playlists')
 #@login_required
 def playlists():
-        stmt = select(Playlist).where(Playlist.id_user == 1)
+        userid = 0
+        if session.get('userid'):
+                userid =  session['userid']
+        stmt = select(Playlist).where(Playlist.id_user == userid)
         playlists = local_session.execute(stmt).scalars()
         return render_template("playlists.html", playlists = playlists)
 
@@ -80,7 +92,7 @@ def get_playlist_selected(id_playlist_selected):
                         local_session.execute(stmt)
                         local_session.commit()
                         #local_session.flush()
-        
+
         
         
         stmt_playlist = (
@@ -93,15 +105,8 @@ def get_playlist_selected(id_playlist_selected):
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
                 where(PlaylistSong.id_playlist == id_playlist_selected).
-                order_by(PlaylistSong.num_in_playlist)) 
-
-        """select_favourite= (
-                select((func.count(PlaylistSong.id_song)).label('isFav')).
-                where(PlaylistSong.id_song == stmt_song.id).
-                where(PlaylistSong.id_playlist == 1))
-        """
-
-    
+                order_by(PlaylistSong.num_in_playlist))
+  
 
         """
         Select*, (select count (*) 
@@ -113,6 +118,7 @@ def get_playlist_selected(id_playlist_selected):
         playlist_name = local_session.execute(stmt_playlist).scalar()
         if (playlist_name==None):
                 playlist_name="Playlist not found"
+
         
         songs_list = local_session.execute(stmt_song).all()
         
@@ -128,7 +134,7 @@ def get_playlist_selected(id_playlist_selected):
 @views.route('/albums')
 #@login_required
 def albums():
-        stmt = select(Album)#.where(Playlist.id_user == id)
+        stmt = select(Album)
         album_list = local_session.execute(stmt).scalars()
         return render_template("albums.html", album_list = album_list)
 
