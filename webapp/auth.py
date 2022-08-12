@@ -1,12 +1,12 @@
-from flask import Blueprint, render_template, request, flash, redirect, url_for
+from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from webapp import Session
+from webapp import db_session
 from webapp.models.User import User
 from webapp.models.Playlist import Playlist
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import select
 
-local_session = Session()
+local_session = db_session()
 
 auth = Blueprint('auth', __name__)
 
@@ -19,12 +19,19 @@ def login():
 
         stmt = select(User).where(User.email == email)
         user = local_session.execute(stmt).scalars().first()
+
+        #for u in user:
+            #print(u.email)        
+
         if user:
             if check_password_hash(user.password, password):
                 flash('Login effettuato con successo', category='success')
+                print('Login effettuato con successo')
                 login_user(user, remember=True)
-                return redirect(url_for('views.home'))
-            else:
+                session['userid'] = user.id
+                session['username'] = user.name
+                return redirect("/home")
+            else:                
                 flash('Credenziali sbagliate, riprovare.', category='error')
         else:
             flash('Credenziali sbagliate, riprovare.', category='error')
@@ -34,6 +41,8 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
+    session["username"] = None
+    session["userid"] = None
     logout_user()
     return redirect(url_for('auth.login'))
 
@@ -42,40 +51,36 @@ def signUp():
 
     if request.method == 'POST':
         email = request.form.get('email')
-        firstSecondName = request.form.get('nomeCognome')
+        nomeUtente = request.form.get('nomeUtente')
         password = request.form.get('password')
         passwordc = request.form.get('passwordc')
-        selectResult = request.form.get('typeUser')
-        alias = request.form.get('alias')
+        selectResult = request.form['typeUser']
 
         if len(email) < 4:
             flash('Email deve essere di almeno 4 caratteri', category='error')
-        elif len(firstSecondName) < 2:
+        elif len(nomeUtente) < 2:
             flash('Nome e Cognome deve essere di almeno 2 caratteri', category='error')
         elif len(password)<1:
             flash('Devi inserire una password', category='error')
         elif password != passwordc:
             flash('Le password non corrispondono', category='error')
         else:
-            newUser = User(
-                    name=firstSecondName, 
-                    email=email, 
-                    password=generate_password_hash(password, method='sha256')
-                    )
-            """
+            newUser = None
+            
             if (selectResult == 'No'):
                 newUser = User(
-                    name_surname=firstSecondName, 
+                    name=nomeUtente, 
                     email=email, 
                     password=generate_password_hash(password, method='sha256')
                     )
             if (selectResult == 'Si'):
-                newUser = Artist(
-                    alias = alias,
-                    name_surname=firstSecondName, 
+                 newUser = User(
+                    name=nomeUtente, 
                     email=email, 
-                    password=generate_password_hash(password, method='sha256'))
-            """
+                    password=generate_password_hash(password, method='sha256'),
+                    isArtist = True
+                    )
+            
 
             local_session.add(newUser)
             local_session.commit()

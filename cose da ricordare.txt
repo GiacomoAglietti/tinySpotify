@@ -11,6 +11,19 @@ a serialized string and handled by the server. Since let data = req.body is an o
 
 
 3)
+<i class="bi bi-heart" id="icona{{ song.id }}" onclick="changeHearticon(this, '{{song.id}}','{{actual_playlist}}')" ></i>
+<script type="text/javascript">
+    (function() {
+        var fav = JSON.parse('{{ song.isFav | tojson }}');
+        var id = JSON.parse('{{ song.id | tojson }}');
+        if (fav){
+            document.getElementById("icona"+id).classList.remove('bi-heart');
+            document.getElementById("icona"+id).classList.add('bi-heart-fill');
+        }
+    })(); 
+</script> 
+
+
 TODO:
 -id artisti e id user sono uguali
 -da sistemare password artisti

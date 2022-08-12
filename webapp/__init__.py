@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship, backref, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_migrate import Migrate
+from flask_session import Session
 import os
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -14,12 +15,9 @@ connection_string = 'postgresql://postgres:admin@localhost/SpotiFake'
 #connection_string = 'postgres://eytjofnu:nSmD1KQOXfBDVNLkhHZl2P6oNyHtTX5y@hattie.db.elephantsql.com/eytjofnu'
 
 Base = declarative_base()
-
 engine = create_engine(connection_string, echo=True)
-Session = sessionmaker(bind=engine)
+db_session = sessionmaker(bind=engine)
 migrate = Migrate()
-
-
 
 def create_app():
 
@@ -28,7 +26,12 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = connection_string
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
     app.config['SECRET_KEY'] = 'FakeNews'
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_TYPE"] = "filesystem"
+    Session(app)
+
     db = SQLAlchemy(app)
+
 
     from webapp.models.User import User
     from webapp.models.Playlist import Playlist
@@ -48,18 +51,16 @@ def create_app():
     from .auth import auth
 
     Base.metadata.create_all(engine, checkfirst=True)
-    session = Session()
-
 
 
     login_manager = LoginManager()
-    login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
 
     @login_manager.user_loader
     def load_user(id):
         stmt = select(User).where(User.id == id)
-        user = session.execute(stmt).scalars().first()
+        user = db_session().execute(stmt).scalars().first()
         return user
    
    
