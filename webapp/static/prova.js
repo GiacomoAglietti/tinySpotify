@@ -1,0 +1,21 @@
+let suggestions = [
+    "Aiuto",
+    "Babbuino",
+    "Cane",
+    "Domenica",
+    "Elicottero",
+    "Famiglia",
+    "Gianni",
+    "Io",
+    "Lavoro",
+    "Maiale",
+    "Nicotina",
+    "Ora",
+    "Panino",
+    "Rabbia",
+    "Sandro",
+    "Tavolo",
+    "Uva",
+    "Vaniglia",
+    "Zeta"
+];

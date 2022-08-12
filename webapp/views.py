@@ -168,6 +168,11 @@ def get_album_selected(id_album_selected):
 
         return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
 
+@views.route('/search')
+#login_required
+def search():
+    return render_template("search.html")
+
 
 @views.route('/create-new-playlist')
 #@login_required
