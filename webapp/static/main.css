@@ -1,8 +1,3 @@
-:roo {
-    --dark: #374151;
-
-}
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -23,8 +18,8 @@ header{
 }
 
 .dashboard-content{
-    background-color: rgb(66, 63, 64);
-    height: 94%;
+  background: linear-gradient(to top, rgb(15, 32, 39), rgb(32, 58, 67), rgb(44, 83, 100));
+  height: 94%;
 }
 
 /* home, albums style*/
@@ -148,7 +143,8 @@ header h1{
     width: 95%;
     margin-left: 15px;
     border-radius: 5px 5px 0 0;
-    overflow: hidden;
+    /*overflow: hidden;*/
+    overflow: inherit;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -164,7 +160,7 @@ header h1{
 }
 
 .content-table tbody tr:hover {
-    background-color: rgb(129, 123, 125);
+    background-color: #587683;
 }
 
 .content-table tbody td {
@@ -173,6 +169,97 @@ header h1{
 .content-table tbody tr .fav-col {
     text-align: right;
 }
+
+.content-table tbody tr .fav-col {
+  text-align: left;
+}
+
+/* three-dots menu*/
+.content-table tbody tr .fav-col .dropend .btn{
+  text-align: left;
+  background-color:transparent ;
+  border: transparent;
+}
+
+.content-table tbody tr .fav-col .dropend .btn:focus{
+  box-shadow: none !important;
+}
+
+.content-table tbody tr .fav-col .dropend .dropdown-menu{
+    position:relative;
+    float:none;
+    min-width:210px;
+    background-color: rgb(51, 50, 50);
+    padding: 2px 2px 2px 2px;
+    overflow: inherit;
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+    border: 1px solid rgb(20, 20, 20);
+}
+
+.content-table tbody tr .fav-col .dropend .dropdown-menu .dropdown-item{
+  color: #fff;
+  padding-bottom: 3px;
+}
+
+.content-table tbody tr .fav-col .dropend .dropdown-menu .dropdown-item i{
+  padding-left: 20px;
+}
+
+.content-table tbody tr .fav-col .dropend .dropdown-menu .dropdown-item:hover, .submenu:hover{
+  background-color: rgb(129, 123, 125);
+
+}
+
+    /* dropmenu interno */
+.content-table tbody tr .fav-col .submenu{
+  color: white;
+  border: none;
+}
+
+.content-table tbody tr .fav-col .submenu .playlist{
+  display: none;
+  list-style: none;
+  position: absolute;
+  background-color: rgb(51, 50, 50);
+  float:none;
+  height: 200px;
+  max-width:200px;
+  min-width:210px;
+  padding: 2px 2px 2px 2px;
+  overflow: inherit;
+  overflow-y:scroll;
+  top: -1px;
+  margin-top: -1px;
+  border: 1px solid rgb(20, 20, 20);
+}
+
+.content-table tbody tr .fav-col .submenu .playlist .dropdown-item-playlist{
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding-bottom: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.content-table tbody tr .fav-col .submenu .playlist .dropdown-item-playlist i{
+  padding-left: 20px;
+
+}
+
+.content-table tbody tr .fav-col .submenu .playlist .dropdown-item-playlist:hover{
+  background-color: rgb(129, 123, 125);
+
+}
+
+.content-table tbody tr .fav-col .submenu:hover .playlist{
+  display: block;
+  right: 191px;
+  top:0;
+}
+
 
 /* sign up */
 .center-form{

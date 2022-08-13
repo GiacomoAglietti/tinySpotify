@@ -13,7 +13,7 @@
             </div>
             <div class="col right">
                 <h6>PLAYLIST</h6>
-                 <!-- Button trigger modal -->
+
                  <button type="button" class="link" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                     {{playlist_name}}
                 </button>
@@ -65,8 +65,36 @@
               <td>{{ song.title }}</td>
               <td>{{ song.name }}</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
-              <td class="fav-col">
-                <i class="bi bi-three-dots"></i>
+              <td class="fav-col">                
+                <div class="btn-group dropend">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="submenu">
+                        <div class="btn-group dropstart btn-group-playlist">
+                            <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                Aggiungi alla playlist
+                                <i class="bi bi-caret-right-fill"></i>
+                            </button>
+                            <ul class="dropstart-menu playlist">
+                              <li><a class="dropdown-item-playlist" href="#">Vai 1</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 2</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 3</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 4</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 5</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
+                            </ul>
+                        </div>
+                      </li>
+                      <li><a class="dropdown-item" href="#">Vai all'artista</a></li>
+                      <li><a class="dropdown-item" href="#">Vai all'album</a></li>
+                    </ul>
+                </div>
               </td>
               
             </tr>
@@ -74,7 +102,8 @@
         </tbody>
       </table>
     <script>
-        function changeHearticon(icon, songId, id_playlist){
+        function changeHearticon(icon, songId, id_playlist)
+        {
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/playlists/"+id_playlist, true);
             
@@ -92,6 +121,24 @@
             xhr.setRequestHeader('Content-Type', typeIcon);
             xhr.send(songId);
         }
+
+        function showDropdown() {
+            document.getElementById("myDropdown").classList.toggle("show");
+        }
+          
+        // Close the dropdown if the user clicks outside of it
+        window.onclick = function(event) {
+        if (!event.target.matches(".bi-three-dots")) {
+            var dropdowns = document.getElementsByClassName("dropdown-content");
+            var i;
+            for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+                openDropdown.classList.remove("show");
+            }
+            }
+        }
+        };
     </script>
 </main>
 

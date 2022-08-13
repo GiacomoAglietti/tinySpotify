@@ -25,8 +25,24 @@ a serialized string and handled by the server. Since let data = req.body is an o
 
 
 TODO:
--id artisti e id user sono uguali
+-mettere lista playlist nella barra laterale
+-pagina per lista album di un artista
+-fare i vari collegamenti tra le pagine
+-fare il cerca delle canzoni.. /artisti/album?
+-mettere tasto crea playlist
+-mettere tasto per eliminare playlist
 -da sistemare password artisti
+-aggiungere tasto per il logout
+-fare in modo che il nome della playlist Preferiti non si possa modificare
+-fare trigger per inserimento canzone già presente nella playlist?
+-sezione per artisti preferiti?
+-sezione per album preferiti?
+ -----parte artista------
+-mettere tasto per aggiungere/togliere album
+-da fare statistiche artisti
+-fare trigger per annullare inserimento doppio album
+-fare trigger per annullare inserimento doppia canzone in un album
+
 
 
 
