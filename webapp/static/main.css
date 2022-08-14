@@ -435,5 +435,13 @@ header h1{
     background: #efefef;
   }
 
+  /* CreatePlaylist button */
+  button.link2 {
+    background:none;
+    border:none;
+    color: white;
+    font-size: 16px;
+  }
+
 
 

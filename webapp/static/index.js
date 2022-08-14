@@ -27,7 +27,7 @@ inputBox.onkeyup = function prova(e, listDb) {
     let userData = e.target.value;
     let itemList = [];
     if (userData) {
-        itemList = suggestions.filter((data) => {
+        itemList = listDb.filter((data) => {
             return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
         });
         itemList = itemList.map((data) => {
@@ -43,7 +43,7 @@ inputBox.onkeyup = function prova(e, listDb) {
     else {
         searchWrapper.classList.remove("active");
     }
-};
+}
 
 function select(element) {
     let selectUserData = element.textContent;
