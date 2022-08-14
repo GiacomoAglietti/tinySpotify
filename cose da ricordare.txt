@@ -23,6 +23,25 @@ a serialized string and handled by the server. Since let data = req.body is an o
     })(); 
 </script> 
 
+function changeHearticon(icon, songId, id_playlist){
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "/playlists/"+id_playlist, true);
+            
+            let typeIcon = null
+        
+            if (icon.classList.contains('bi-heart')) {
+                typeIcon="addToFav"
+                icon.classList.remove("bi-heart");
+                icon.classList.add("bi-heart-fill");
+            } else {
+                typeIcon="removeFromFav"
+                icon.classList.add("bi-heart");
+                icon.classList.remove("bi-heart-fill");
+            }
+            xhr.setRequestHeader('Content-Type', typeIcon);
+            xhr.send(songId);
+        }
+
 
 TODO:
 -mettere lista playlist nella barra laterale

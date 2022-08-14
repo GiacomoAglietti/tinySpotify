@@ -2,18 +2,39 @@ var searchWrapper = document.querySelector(".search-input");
 var inputBox = searchWrapper.querySelector("input");
 var suggBox = searchWrapper.querySelector(".autocom-box");
 
-inputBox.onkeyup = (e) => {
+var suggestions = [
+    "Aiuto",
+    "Babbuino",
+    "Cane",
+    "Domenica",
+    "Elicottero",
+    "Famiglia",
+    "Gianni",
+    "Io",
+    "Lavoro",
+    "Maiale",
+    "Nicotina",
+    "Ora",
+    "Panino",
+    "Rabbia",
+    "Sandro",
+    "Tavolo",
+    "Uva",
+    "Vaniglia",
+    "Zeta"
+];
+inputBox.onkeyup = function prova(e, listDb) {
     let userData = e.target.value;
-    let emptyArray = [];
+    let itemList = [];
     if (userData) {
-        emptyArray = suggestions.filter((data) => {
+        itemList = suggestions.filter((data) => {
             return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
         });
-        emptyArray = emptyArray.map((data) => {
+        itemList = itemList.map((data) => {
             return data = '<li>' + data + '</li>';
         });
         searchWrapper.classList.add("active");
-        showSuggestions(emptyArray);
+        showSuggestions(itemList);
         let allList = suggBox.querySelectorAll("li");
         for (let i = 0; i < allList.length; i++) {
             allList[i].setAttribute("onclick", "select(this)");
@@ -22,7 +43,7 @@ inputBox.onkeyup = (e) => {
     else {
         searchWrapper.classList.remove("active");
     }
-}
+};
 
 function select(element) {
     let selectUserData = element.textContent;

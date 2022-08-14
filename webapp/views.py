@@ -174,10 +174,47 @@ def get_album_selected(id_album_selected):
 
         return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
 
-@views.route('/search')
+@views.route('/search', methods=['GET', 'POST'])
 #login_required
 def search():
-    return render_template("search.html")
+        list_art= (
+                select(User.name).
+                where(User.isArtist==True))
+
+        list_alb= (select(Album.name))
+
+        list_song= (select(Song.title))
+
+
+
+        #list_art_db = local_session.execute(list_art).all()
+        #list_alb_db = local_session.execute(list_alb).all()
+        #list_song_db = local_session.execute(list_song).all()
+
+        #list_art_db.extend(list_alb_db.extend(list_song_db))
+
+
+        listItem =["Aiuto",
+                "Babbuino",
+                "Cane",
+                "Domenica",
+                "Elicottero",
+                "Famiglia",
+                "Gianni",
+                "Io",
+                "Lavoro",
+                "Maiale",
+                "Nicotina",
+                "Ora",
+                "Panino",
+                "Rabbia",
+                "Sandro",
+                "Tavolo",
+                "Uva",
+                "Vaniglia",
+                "Zeta"]
+
+        return render_template("search.html", listItem = listItem)
 
 
 @views.route('/create-new-playlist')

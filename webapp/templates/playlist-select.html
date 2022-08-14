@@ -86,8 +86,7 @@
                               <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
                               <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
                               <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 9</a></li>
                             </ul>
                         </div>
                       </li>
@@ -102,25 +101,7 @@
         </tbody>
       </table>
     <script>
-        function changeHearticon(icon, songId, id_playlist)
-        {
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/playlists/"+id_playlist, true);
-            
-            let typeIcon = null
-        
-            if (icon.classList.contains('bi-heart')) {
-                typeIcon="addToFav"
-                icon.classList.remove("bi-heart");
-                icon.classList.add("bi-heart-fill");
-            } else {
-                typeIcon="removeFromFav"
-                icon.classList.add("bi-heart");
-                icon.classList.remove("bi-heart-fill");
-            }
-            xhr.setRequestHeader('Content-Type', typeIcon);
-            xhr.send(songId);
-        }
+
 
         function showDropdown() {
             document.getElementById("myDropdown").classList.toggle("show");
