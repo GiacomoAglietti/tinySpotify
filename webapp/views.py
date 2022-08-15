@@ -13,6 +13,8 @@ from webapp.models.GenreSong import GenreSong
 from webapp.models.Genre import Genre
 from webapp.models.AlbumArtist import AlbumArtist
 from webapp.models.Album import Album
+from itertools import chain
+import json
 
 local_session = db_session()
 
@@ -185,36 +187,14 @@ def search():
 
         list_song= (select(Song.title))
 
+        stmt_list = list_art.union(list_alb,list_song)
+
+        dblist = local_session.execute(stmt_list).all()
+
+        itemlist = [r[0] for r in dblist]
 
 
-        #list_art_db = local_session.execute(list_art).all()
-        #list_alb_db = local_session.execute(list_alb).all()
-        #list_song_db = local_session.execute(list_song).all()
-
-        #list_art_db.extend(list_alb_db.extend(list_song_db))
-
-
-        listItem =["Aiuto",
-                "Babbuino",
-                "Cane",
-                "Domenica",
-                "Elicottero",
-                "Famiglia",
-                "Gianni",
-                "Io",
-                "Lavoro",
-                "Maiale",
-                "Nicotina",
-                "Ora",
-                "Panino",
-                "Rabbia",
-                "Sandro",
-                "Tavolo",
-                "Uva",
-                "Vaniglia",
-                "Zeta"]
-
-        return render_template("search.html", listItem = listItem)
+        return render_template("search.html", list_item=itemlist)
 
 
 @views.route('/create-new-playlist')

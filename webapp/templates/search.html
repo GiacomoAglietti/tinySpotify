@@ -8,15 +8,62 @@
 <main>
     <div class="wrapper">
         <div class="search-input">
-            <input type="text" onkeyup="prova(this), '{{listItem|safe}}'" placeholder="Artisti, canzoni o album">
+            <input id="input_id" type="text" onkeyup="prova()" placeholder="Artisti, canzoni o album" >
 
             <div class="autocom-box"></div>
             <div class="icon"><i class="bi bi-search"></i></div>
         </div>
     </div> 
+
+    <script type="text/javascript">
+
+        let searchWrapper = document.querySelector(".search-input") 
+        let inputBox = searchWrapper.querySelector("input")
+        let suggBox = searchWrapper.querySelector(".autocom-box")
+
+        function prova() {
+            let userData = document.getElementById("input_id").value;
+            const listdb = JSON.parse('{{ list_item | tojson }}')
+            let itemList = [];
+
+            if (userData) {
+                itemList = listdb.filter((data) => {
+                    return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
+                });
+                itemList = itemList.map((data) => {
+                    return data = '<li>' + data + '</li>';
+                });
+                searchWrapper.classList.add("active");
+                showSuggestions(itemList);
+                let allList = suggBox.querySelectorAll("li");
+                for (let i = 0; i < allList.length; i++) {
+                    allList[i].setAttribute("onclick", "select(this)");
+                }
+            }
+            else {
+                searchWrapper.classList.remove("active");
+            }
+        }
+        
+        function select(element) {
+            let selectUserData = element.textContent;
+            inputBox.value = selectUserData;
+            searchWrapper.classList.remove("active");
+        }
+        
+        function showSuggestions(list){
+            let listData;
+            if(!list.length) {
+                userValue = inputBox.value;
+                listData = '<li>' + userValue + '</li>';
+            }
+            else {
+                listData = list.join('');
+            }
+            suggBox.innerHTML = listData;
+        }
+    </script>
+
 </main>
-
-
-
 
 {% endblock %}
