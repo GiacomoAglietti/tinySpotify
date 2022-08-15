@@ -30,7 +30,7 @@ def home():
         return redirect("/login")
 
 #url_for('get-playlist', id='A')
-@views.route('/home')
+@views.route('/home', methods=['GET', 'POST'])
 #@login_required
 def home_auth():
         username="user not found"
@@ -38,6 +38,18 @@ def home_auth():
                 username =  session['username']
         stmt = select(Playlist)#.where(Playlist.id_user == id)
         playlist1 = local_session.execute(stmt).scalars()
+
+        if request.method == 'POST':
+                if 'create_playlist' in request.form:
+                        nomePlaylist = request.form.get('nomePlaylist')
+                        stmt = (
+                                insert(Playlist).
+                                values(name=nomePlaylist).
+                                values(id_user=session.get('userid'))
+                                )
+                        local_session.execute(stmt)
+                        local_session.commit()
+                        #local_session.flush()  
 
         return render_template("home.html" , playlist1=playlist1, username=username)
 
@@ -196,17 +208,6 @@ def search():
 
         return render_template("search.html", list_item=itemlist)
 
-
-@views.route('/create-new-playlist')
-#@login_required
-def create_new_playlist(id, name):
-        newPlaylist = Playlist(
-                id_user = id, 
-                name = name)
-        local_session.add(newPlaylist)
-        local_session.commit()
-        flash('Playlist creata!', category='success')
-        return redirect(url_for('views.home'))
 
 #da sistemare
 @views.route('/addAlbum', methods=['GET', 'POST'])
