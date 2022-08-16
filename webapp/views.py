@@ -1,5 +1,5 @@
 from threading import local
-from flask import Blueprint, render_template, request, flash, redirect, session, url_for, session
+from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import insert, select, subquery, update, delete, func
 from sqlalchemy.orm import aliased
@@ -155,9 +155,48 @@ def albums():
 @views.route('/artists')
 #@login_required
 def artists():
-        stmt = select(User)#.where(Playlist.id_user == id)
-        artist_list = local_session.execute(stmt).scalars()
+        stmt = select(User.name).where(User.isArtist == True)
+        artist_list = local_session.execute(stmt).all()
         return render_template("artists.html", artist_list = artist_list)
+
+@views.route('/artists/<int:id_artist_selected>')
+#@login_required
+def get_artist_selected(id_artist_selected):
+        stmt_album = (
+                select(Album.name, Album.year).
+                join(AlbumArtist, Album.id == AlbumArtist.id_artist).
+                where(Album.id == id_artist_selected).
+                order_by(Album.year))
+
+        stmt_song=(
+                select(Song.id, Song.title, Song.length).
+                join(SongArtist, SongArtist.id_song == Song.id).
+                where(SongArtist.id_artist == id_artist_selected).
+                order_by(Song.num_in_album)).limit(5)                   #da sistemare -> ordinare in base al numero di ascolti
+
+        stmt_artist = (
+                select(User.name).
+                where(User.id == id_artist_selected).
+                where(User.isArtist == True)) 
+
+        artist_name = local_session.execute(stmt_artist).scalar()
+
+        album_list = None
+        songs_list = None
+
+        if (artist_name==None):
+                artist_name="Playlist not found"
+        else:
+                album_list = local_session.execute(stmt_album).all()
+                songs_list = local_session.execute(stmt_song).all()
+
+        num_songs = 0
+        tot_length = 0
+
+        for song in songs_list:
+                tot_length += song.length
+
+        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list, tot_length=tot_length, artist_name=artist_name)
 
 
 @views.route('/albums/<int:id_album_selected>')
@@ -212,32 +251,6 @@ def search():
 #da sistemare
 @views.route('/addAlbum', methods=['GET', 'POST'])
 def addAlbum():
-
-    if request.method == 'POST':
-        email = request.form.get('email')
-        firstSecondName = request.form.get('firstSecondName')
-        password1 = request.form.get('password1')
-        password2 = request.form.get('password2')
-
-        if len(email) < 4:
-            flash('Email deve essere di almeno 4 caratteri', category='error')
-        elif len(firstSecondName) < 2:
-            flash('Nome e Cognome deve essere di almeno 2 caratteri', category='error')
-        elif len(password1)<1:
-            flash('Devi inserire una password', category='error')
-        elif password1 != password2:
-            flash('Le password non corrispondono', category='error')
-        else:
-            newUser = User(
-                name_surname=firstSecondName, 
-                email=email, 
-                password="")
-                
-
-            local_session.add(newUser)
-            local_session.commit()
-            flash('Account creato!', category='success')
-            return redirect(url_for('views.home'))
 
     return render_template("signUp.html")
 

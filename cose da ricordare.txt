@@ -47,8 +47,7 @@ TODO:
 -mettere lista playlist nella barra laterale
 -pagina per lista album di un artista
 -fare i vari collegamenti tra le pagine
--fare il cerca delle canzoni.. /artisti/album?
--mettere tasto crea playlist
+-mostrare i risultati del cerca
 -mettere tasto per eliminare playlist
 -da sistemare password artisti
 -aggiungere tasto per il logout

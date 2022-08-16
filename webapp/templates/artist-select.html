@@ -12,10 +12,8 @@
                 <img src="https://bit.ly/3PiIDrx" alt="nomeAlbum">
             </div>
             <div class="col right">
-                <h6>ALBUM</h6>
-                <!-- Button trigger modal -->
-                <h5>{{album_name}}</h5>
-                <h5>{{num_songs}} brani, {{tot_length// 3600 }} ore {{tot_length// 60 }} minuti  </h5>
+                <h6>ARTISTA</h6>
+                <h4>{{artist_name}}</h4>        
             </div>
         </div>
     </div>
@@ -26,6 +24,7 @@
             </div>
         </div>
     </div>
+    <h4>Popolari</h4>
     <table class="content-table">
         <thead>
           <tr>
@@ -39,9 +38,9 @@
         <tbody>
           {%- for song in songs_list -%}
             <tr>
-              <td>{{ song.num_in_album }}</td>
+              <td>{{ loop.index }}</td>
               <td>{{ song.title }}</td>
-              <td>{{ song.name }}</td>
+              <td>{{10000 - (loop.index *15) }} </td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
@@ -77,6 +76,21 @@
           {%- endfor -%}
         </tbody>
       </table>
+      <div class="card-container">
+        <div class="row">
+          {%- for album in album_list -%}
+            <div class="col">
+              <div class="card bg-dark">
+                  <img src="https://bit.ly/3PiIDrx">
+                  <div class="card-body">
+                    <h3>{{ album.name }}</h3>
+                    <h5>{{ album.year }}</h5>
+                  </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+    </div>
     <script>
         function changeHearticon(icon, songId, id_playlist){
             var xhr = new XMLHttpRequest();
