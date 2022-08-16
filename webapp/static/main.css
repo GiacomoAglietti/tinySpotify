@@ -59,17 +59,21 @@ header h1{
     position: relative;
 }
 
-.card-body h3{
-    width: 170px;
-    position: relative;
-    font-size: 18px;
+.card-body .bi-trash-fill{
     color: #fff;
-    white-space: nowrap;
-    overflow:hidden;
-    text-overflow: ellipsis;
 }
 
-/* playlist-select style */
+.card-body h3{
+  width: 170px;
+  position: relative;
+  font-size: 18px;
+  color: #fff;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+/* playlist-select, album-select, artists-select style */
 .playlist-select-container{
     border-bottom: 1px solid #fff;
     margin-left: 15px;
@@ -444,14 +448,22 @@ header h1{
 
 
   /* artist-select style*/
+.h4-popolari, .h4-album{
+  margin-left: 15px;
+  margin-bottom: 10px;
+  color: #fff;
+}
 
+.h4-album{
+  margin-top: 20px;
+}
 
 .card-container{
   margin-left: 15px;
   width: 90%;
   height: 100%;
   display: flex;
-  /* align-items: center; */
+  align-items: center; 
   justify-content: space-between;
   
 }
@@ -477,13 +489,13 @@ header h1{
   position: relative;
 }
 
-.card-body h3{
+.card-body h3, h5{
   width: 170px;
   position: relative;
   font-size: 18px;
   color: #fff;
   white-space: nowrap;
-  overflow:hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 

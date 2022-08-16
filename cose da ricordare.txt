@@ -45,7 +45,6 @@ function changeHearticon(icon, songId, id_playlist){
 
 TODO:
 -mettere lista playlist nella barra laterale
--pagina per lista album di un artista
 -fare i vari collegamenti tra le pagine
 -mostrare i risultati del cerca
 -mettere tasto per eliminare playlist

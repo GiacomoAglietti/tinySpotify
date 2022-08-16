@@ -7,31 +7,29 @@
 
 
 <main>
-    <<div class="card-container">
+    <div class="card-container">
       <div class="row">
         {%- for playlist in playlists -%}
           <div class="col">
             <div class="card bg-dark">
                 <img src="https://bit.ly/3PiIDrx">
                 <div class="card-body">
-                  <h3>{{ playlist.name }}</h3>
+                  <h3>{{ playlist.name }} 
+                    <form method="post">
+                      <button type="submit" class="btn" name="delete-playlist">
+                        <i class="bi bi-trash-fill"></i>
+                      </button>
+                      
+                    </form>
+                    
+                  </h3>
+                  
                 </div>
             </div>
           </div>
         {%- endfor -%}
       </div>
   </div>
-    <script>
-        function changeHearticon(icon){
-            if (icon.classList.contains('bi-heart')) {
-                icon.classList.remove("bi-heart");
-                icon.classList.add("bi-heart-fill");
-            } else {
-                icon.classList.add("bi-heart");
-                icon.classList.remove("bi-heart-fill");
-            }
-        }
-    </script>
 </main>
 
 {% endblock %}

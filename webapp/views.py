@@ -59,9 +59,11 @@ def playlists():
         userid = 0
         if session.get('userid'):
                 userid =  session['userid']
+
         stmt = select(Playlist).where(Playlist.id_user == userid)
         playlists = local_session.execute(stmt).scalars()
         return render_template("playlists.html", playlists = playlists)
+
 
 
 @views.route('/playlists/<int:id_playlist_selected>', methods=['GET', 'POST'])
