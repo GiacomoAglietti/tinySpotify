@@ -19,8 +19,9 @@ header{
 
 .dashboard-content{
   background: linear-gradient(to top, rgb(15, 32, 39), rgb(32, 58, 67), rgb(44, 83, 100));
-  height: 95%;
+  height: 100%;
   margin-left: 250px;
+  margin-top: 5vh;
 }
 
 /* home, albums style*/
@@ -32,7 +33,7 @@ header h1{
 .card-container{
     margin-left: 15px;
     width: 90%;
-    height: 100%;
+    height: 90%;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -445,59 +446,3 @@ header h1{
     color: white;
     font-size: 16px;
   }
-
-
-  /* artist-select style*/
-.h4-popolari, .h4-album{
-  margin-left: 15px;
-  margin-bottom: 10px;
-  color: #fff;
-}
-
-.h4-album{
-  margin-top: 20px;
-}
-
-.card-container{
-  margin-left: 15px;
-  width: 90%;
-  height: 100%;
-  display: flex;
-  align-items: center; 
-  justify-content: space-between;
-  
-}
-
-.card{
-  width: 200px;
-  position: relative;
-}
-
-.card img{
-  padding: 10px;
-  width: 200px;
-  height: 200px;
-  align-self: center;
-}
-
-.card .img-artist{
-  border-radius: 50%;
-}
-
-.col{
-  padding-top: 15px;
-  position: relative;
-}
-
-.card-body h3, h5{
-  width: 170px;
-  position: relative;
-  font-size: 18px;
-  color: #fff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-

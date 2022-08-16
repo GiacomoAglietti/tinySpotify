@@ -38,37 +38,17 @@
             </button>
           </div>
           <ul class="list-unstyled px-2">
-            <li class=""><a href="#" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-house-door-fill px-2"></i>Home</a></li>
+            <li class="active"><a href="#" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-house-door-fill px-2"></i>Home</a></li>
             <li class=""><a href="#" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-search px-2"></i>Cerca</a></li>
             <li class=""><a href="#" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-vinyl-fill px-2"></i>La mia libreria</a></li>
             <button type="button" class="link2 px-3 py-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-plus-circle-fill px-2"></i>Crea playlist</button>
-            <form action="" method="POST">
-              <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog centered">
-                  <div class="modal-content">
-                      <div class="modal-header">
-                      <h5 class="modal-title" id="staticBackdropLabel" style="color: black;">Nome playlist</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                          <label style="color: black;">Nome playlist </label>
-                          <input type="text" id="nomePlaylist" name="nomePlaylist">
-                      </div>
-                      <div class="modal-footer">
-                      <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
-                      </div>
-                  </div>
-                  </div>
-              </div>
-            </form>
           </ul>
           <hr class="h-color mx-2">
           <ul class="list-unstyled px-2">
-            
           </ul>
         </div>     
       <div class="content">
-        <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <nav class="navbar navbar-expand-md navbar-light bg-light mx-auto" id="nav_bar">
           <div class="container-fluid">
             <div class="d-flex justify-content-between d-md-none d-block">
               <button class="btn px-1 py-0 open-btn me-2"><i class="fal fa-stream"></i></button>
@@ -84,11 +64,7 @@
                 </li>
                 <li class="nav-item">
                   <a class="nav-link active" aria-current="page" href="signUp.html">Sign Up</a>
-
-                  
                 </li>
-                
-
               </ul>
             </div>
           </div>
@@ -129,6 +105,26 @@
       </div>
     </div>
     
+    <form action="" method="POST">
+      <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog centered">
+          <div class="modal-content">
+              <div class="modal-header">
+              <h5 class="modal-title" id="staticBackdropLabel" style="color: black;">Nome playlist</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <label style="color: black;">Nome playlist </label>
+                  <input type="text" id="nomePlaylist" name="nomePlaylist">
+              </div>
+              <div class="modal-footer">
+              <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
+              </div>
+          </div>
+          </div>
+      </div>
+    </form>
+
     <script
       type="text/javascript"
       src="{{ url_for('static', filename='index.js') }}"

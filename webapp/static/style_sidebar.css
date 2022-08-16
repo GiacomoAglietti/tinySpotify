@@ -12,9 +12,18 @@ body{
     z-index: 10;
 }
 .content{
-    min-height: 100vh;
+    min-height: 95vh;
     width: 100%;
 }
+
+#nav_bar{
+    top: 0;
+    position: fixed;
+    margin-left: 250px;
+    width: 100%;
+    z-index: 9;
+}
+
 hr.h-color{
     background: #eee;
 }
