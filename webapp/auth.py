@@ -17,19 +17,26 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        stmt = select(User).where(User.email == email)
+        stmt = (select(User).where(User.email == email))
         user = local_session.execute(stmt).scalars().first()
-
-        #for u in user:
-            #print(u.email)        
 
         if user:
             if check_password_hash(user.password, password):
                 flash('Login effettuato con successo', category='success')
                 print('Login effettuato con successo')
                 login_user(user, remember=True)
+
+                stmt = (
+                    select(Playlist.id).
+                    where(Playlist.id_user == user.id).
+                    where(Playlist.name == "Preferiti"))
+
+                id_fav_playlist= local_session.execute(stmt).scalar()
+
+                print(id_fav_playlist)
                 session['userid'] = user.id
                 session['username'] = user.name
+                session['id_fav_playlist'] = id_fav_playlist
                 return redirect("/home")
             else:                
                 flash('Credenziali sbagliate, riprovare.', category='error')

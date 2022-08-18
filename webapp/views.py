@@ -29,42 +29,65 @@ def home():
         
         return redirect("/login")
 
-#url_for('get-playlist', id='A')
+
 @views.route('/home', methods=['GET', 'POST'])
 #@login_required
-def home_auth():
+def home_authenticated():
         username="user not found"
         if session.get('username'):
                 username =  session['username']
-        stmt = select(Playlist)#.where(Playlist.id_user == id)
-        playlist1 = local_session.execute(stmt).scalars()
+                #flash('Login effettuato con successo', category='success')
 
-        if request.method == 'POST':
-                if 'create_playlist' in request.form:
-                        nomePlaylist = request.form.get('nomePlaylist')
-                        stmt = (
-                                insert(Playlist).
-                                values(name=nomePlaylist).
-                                values(id_user=session.get('userid'))
-                                )
-                        local_session.execute(stmt)
-                        local_session.commit()
-                        #local_session.flush()  
+        stmt = select(Playlist).where(Playlist.id_user == session['userid'])
+        playlist1 = local_session.execute(stmt).scalars()
 
         return render_template("home.html" , playlist1=playlist1, username=username)
 
-@views.route('/playlists')
+@views.route('/create-playlist', methods=['GET', 'POST'])
+@login_required
+def create_playlist():
+
+        if request.method == 'POST':
+                nomePlaylist = request.form.get('nomePlaylist')
+                stmt = (
+                        insert(Playlist).
+                        values(name=nomePlaylist).
+                        values(id_user=session.get('userid'))
+                        )
+                local_session.execute(stmt)
+                local_session.commit()
+
+        stmt = select(Playlist).where(Playlist.id_user == session['userid'])
+        playlists = local_session.execute(stmt).scalars()
+
+        return render_template("playlists.html", playlists = playlists)
+
+@views.route('/playlists', methods=['GET', 'POST'])
 #@login_required
 def playlists():
         userid = 0
         if session.get('userid'):
-                userid =  session['userid']
+                userid =  session['userid'] 
 
         stmt = select(Playlist).where(Playlist.id_user == userid)
         playlists = local_session.execute(stmt).scalars()
         return render_template("playlists.html", playlists = playlists)
 
+@views.route('/playlists/delete/<int:id>', methods=['GET', 'POST'])
+#@login_required
+def delete_playlist(id):
+        if request.method == 'POST':               
+                delete_playlist = (
+                        delete(Playlist).
+                        where(Playlist.id == id)
+                        )
+                local_session.execute(delete_playlist)
+                local_session.commit()
+ 
 
+        stmt = select(Playlist).where(Playlist.id_user == session['userid'])
+        playlists = local_session.execute(stmt).scalars()
+        return render_template("playlists.html", playlists = playlists)
 
 @views.route('/playlists/<int:id_playlist_selected>', methods=['GET', 'POST'])
 #@login_required
@@ -147,7 +170,30 @@ def get_playlist_selected(id_playlist_selected):
 
         return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected)
 
-@views.route('/albums')
+@views.route('/preferiti', methods=['GET', 'POST'])
+#@login_required
+def get_favourite():        
+
+        stmt_song=(
+                select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_in_playlist, Album.name).
+                join(PlaylistSong, Song.id == PlaylistSong.id_song).
+                join(Album, Song.id_album == Album.id).
+                where(PlaylistSong.id_playlist == session['id_fav_playlist']).
+                order_by(PlaylistSong.date_created))  
+
+        
+        songs_list = local_session.execute(stmt_song).all()
+        
+        num_songs = 0
+        tot_length = 0
+
+        for song in songs_list:
+                num_songs += 1
+                tot_length += song.length
+
+        return render_template("favourite-playlist.html", songs_list = songs_list, num_songs=num_songs, tot_length=tot_length)
+
+@views.route('/albums', methods=['GET', 'POST'])
 #@login_required
 def albums():
         stmt = select(Album)
@@ -161,7 +207,7 @@ def artists():
         artist_list = local_session.execute(stmt).all()
         return render_template("artists.html", artist_list = artist_list)
 
-@views.route('/artists/<int:id_artist_selected>')
+@views.route('/artists/<int:id_artist_selected>', methods=['GET', 'POST'])
 #@login_required
 def get_artist_selected(id_artist_selected):
         stmt_album = (
@@ -201,7 +247,7 @@ def get_artist_selected(id_artist_selected):
         return render_template("artist-select.html", songs_list = songs_list, album_list = album_list, tot_length=tot_length, artist_name=artist_name)
 
 
-@views.route('/albums/<int:id_album_selected>')
+@views.route('/albums/<int:id_album_selected>', methods=['GET', 'POST'])
 #@login_required
 def get_album_selected(id_album_selected):
         stmt_album = (

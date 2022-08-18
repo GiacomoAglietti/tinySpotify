@@ -43,14 +43,20 @@ function changeHearticon(icon, songId, id_playlist){
         }
 
 
+5)
+-numero album artista
+-numero canzoni artista
+-canzoni con più ascolti
+-album con più ascolti
+-genere con più ascolti
+
 TODO:
--mettere lista playlist nella barra laterale
+-togliere Preferiti nella lista delle playlist
 -fare i vari collegamenti tra le pagine
 -mostrare i risultati del cerca
--mettere tasto per eliminare playlist
--da sistemare password artisti
+-mettere tasto per accedere playlist
 -aggiungere tasto per il logout
--fare in modo che il nome della playlist Preferiti non si possa modificare
+-aggiungere Preferiti nella barra laterale
 -fare trigger per inserimento canzone già presente nella playlist?
 -sezione per artisti preferiti?
 -sezione per album preferiti?

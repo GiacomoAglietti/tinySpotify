@@ -33,12 +33,23 @@ hr.h-color{
     border-radius: 8px;
 }
 
-.sidebar li.active a, .sidebar li.active a:hover{
+.sidebar li.active a, .sidebar li.active a:hover {
     color: #000;
 }
+
 .sidebar li a{
     color: #fff;
 }
+
+/* CreatePlaylist button */
+button.link2 {
+    background:none;
+    border:none;
+    color: white;
+    font-size: 16px;
+}
+
+
 
 @media(max-width: 767px){
     #side_nav{
