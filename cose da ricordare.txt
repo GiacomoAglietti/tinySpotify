@@ -51,6 +51,11 @@ function changeHearticon(icon, songId, id_playlist){
 -genere con più ascolti
 
 TODO:
+-da sistemare icona nel cerca
+-aggiungere flash message dove necessario
+-gestire ogni commit al database con un try-catch: vedere -> https://stackoverflow.com/questions/2193670/catching-sqlalchemy-exceptions
+-fare views per lista delle playlist
+-mettere i @login_required e togliere i "if session.get('userid'):" dove non servono
 -togliere Preferiti nella lista delle playlist
 -fare i vari collegamenti tra le pagine
 -mostrare i risultati del cerca

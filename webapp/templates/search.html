@@ -10,23 +10,126 @@
 <main>
     <div class="wrapper">
         <div class="search-input">
-            <input id="input_id" type="text" onkeyup="prova()" placeholder="Artisti, canzoni o album" >
-
-            <div class="autocom-box"></div>
-            <div class="icon"><i class="bi bi-search"></i></div>
+            <form method="POST" action="{{url_for('views.search_result')}}">
+                <input id="input_id" name="search" type="text" onkeyup="searchElem()" placeholder="Artisti, canzoni o album">
+                <div class="autocom-box"></div>
+                <div class="icon">
+                    <i class="bi bi-search"></i>
+                    <input type="submit" value="Cerca" class="input-field">
+                </div>
+            </form>
         </div>
-    </div> 
-
+    </div>
+    {% if lookingFor %}
+        {% if song_result %}
+        <h4 class="h4-popolari" style="color: #fff;">Canzoni</h4>
+        <table class="content-table">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>TITOLO</th>
+                <th>ALBUM</th>
+                <th><i class="bi bi-clock"></i></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+                {%- for song in song_result -%}
+                <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
+                <td><a class="text-link" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">{{ song.name_album }}</a></td>
+                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td class="fav-col">                
+                    <div class="btn-group dropend">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                        <li class="submenu">
+                            <div class="btn-group dropstart btn-group-playlist">
+                                <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                    Aggiungi alla playlist
+                                    <i class="bi bi-caret-right-fill"></i>
+                                </button>
+                                <ul class="dropstart-menu playlist">
+                                    {%- for playlist in playlist_list -%}                                
+                                        <li><a class="dropdown-item-playlist" href="{{url_for('views.search_add_song',result=lookingFor, playlistId=playlist.id, songId=song.id)}}">{{ playlist.name }}</a></li>
+                                    {%- endfor -%}
+                                </ul>
+                            </div>
+                        </li>
+                        <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
+                        </ul>
+                    </div>
+                </td>
+                
+                </tr>
+            {%- endfor -%}
+                
+            </tbody>
+        </table>
+        {% else %}
+            <h4 class="h4-popolari" style="color: #fff;">Nessuna canzone trovata</h4>   
+        {% endif %}
+        <hr style="color: black;">
+        {% if album_result %}
+            <h4 class="h4-album" style="color: #fff;">Album</h4>
+            <div class="card-container">
+                <div class="row">
+                {%- for album in album_result -%}
+                    <div class="col">
+                        <a class="text-link" href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
+                            <div class="card bg-dark">
+                                <img src="https://bit.ly/3PiIDrx">
+                                <div class="card-body">
+                                    <h5>{{ album.name }}</h5>
+                                    <h3>{{ album.year }}</h3>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {%- endfor -%}
+                </div>
+            </div>
+        {% else %}
+            <h4 class="h4-album" style="color: #fff;">Nessun album trovato</h4>   
+        {% endif %}
+        <hr style="color: black;">
+        {% if user_result %}
+            <h4 class="h4-artist" style="color: #fff;">Artisti</h4>
+            <div class="card-container">
+                <div class="row">
+                {%- for user in user_result -%}
+                    <div class="col">
+                        <a href="{{url_for('views.get_artist_selected',id_artist_selected=user.id)}}">
+                            <div class="card bg-dark">
+                                <img src="https://bit.ly/3PiIDrx">
+                                <div class="card-body">
+                                    <h3><a class="text-link" href="{{url_for('views.get_artist_selected',id_artist_selected=user.id)}}">{{user.name}}</a></h3>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {%- endfor -%}
+                </div>
+            </div>
+        {% else %}
+            <h4 class="h4-artist" style="color: #fff;">Nessun artista trovato</h4>   
+        {% endif %}
+        <hr style="color: black;">
+    {% endif %}       
     <script type="text/javascript">
 
         let searchWrapper = document.querySelector(".search-input") 
         let inputBox = searchWrapper.querySelector("input")
         let suggBox = searchWrapper.querySelector(".autocom-box")
 
-        function prova() {
+        function searchElem() {
             let userData = document.getElementById("input_id").value;
             const listdb = JSON.parse('{{ list_item | tojson }}')
-            let itemList = [];
+            let itemList = null;
 
             if (userData) {
                 itemList = listdb.filter((data) => {

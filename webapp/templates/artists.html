@@ -11,12 +11,14 @@
       <div class="row">
         {%- for artist in artist_list -%}
           <div class="col">
-            <div class="card bg-dark">
-                <img class="img-artist" src="https://bit.ly/3PiIDrx">
-                <div class="card-body">
-                  <h3>{{ artist.name }}</h3>
-                </div>
-            </div>
+            <a href="{{url_for('views.get_artist_selected',id_artist_selected=artist.id)}}">
+              <div class="card bg-dark">
+                  <img class="img-artist" src="https://bit.ly/3PiIDrx">
+                  <div class="card-body">
+                    <h3>{{ artist.name }}</h3>
+                  </div>
+              </div>
+            </a>
           </div>
         {%- endfor -%}
       </div>

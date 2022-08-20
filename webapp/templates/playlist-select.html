@@ -61,7 +61,7 @@
         <tbody>
           {%- for song in songs_list -%}
             <tr>
-              <td>{{ song.num_in_playlist }}</td>
+              <td>{{ loop.index }}</td>
               <td>{{ song.title }}</td>
               <td>{{ song.name }}</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
@@ -90,6 +90,7 @@
                             </ul>
                         </div>
                       </li>
+                      <li><a class="dropdown-item" href="#">Elimina dalla playlist</a></li>
                       <li><a class="dropdown-item" href="#">Vai all'artista</a></li>
                       <li><a class="dropdown-item" href="#">Vai all'album</a></li>
                     </ul>
