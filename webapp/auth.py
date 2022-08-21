@@ -23,7 +23,6 @@ def login():
         if user:
             if check_password_hash(user.password, password):
                 flash('Login effettuato con successo', category='success')
-                print('Login effettuato con successo')
                 login_user(user, remember=True)
 
                 stmt = (

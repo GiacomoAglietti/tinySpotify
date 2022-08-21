@@ -11,27 +11,18 @@
       <div class="row">
         {%- for album in album_list -%}
           <div class="col">
-            <div class="card bg-dark">
-                <img src="https://bit.ly/3PiIDrx">
-                <div class="card-body">
-                  <h3>{{ album.name }}</h3>
-                </div>
-            </div>
+            <a href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
+              <div class="card bg-dark">
+                  <img src="https://bit.ly/3PiIDrx">
+                  <div class="card-body">
+                    <h3>{{ album.name }}</h3>
+                  </div>
+              </div>
+            </a>
           </div>
         {%- endfor -%}
       </div>
   </div>
-    <script>
-        function changeHearticon(icon){
-            if (icon.classList.contains('bi-heart')) {
-                icon.classList.remove("bi-heart");
-                icon.classList.add("bi-heart-fill");
-            } else {
-                icon.classList.add("bi-heart");
-                icon.classList.remove("bi-heart-fill");
-            }
-        }
-    </script>
 </main>
 
 {% endblock %}

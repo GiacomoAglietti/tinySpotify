@@ -1,3 +1,4 @@
+import re
 from threading import local
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
@@ -69,8 +70,13 @@ def playlists():
         if session.get('userid'):
                 userid =  session['userid'] 
 
-        stmt = select(Playlist).where(Playlist.id_user == userid)
-        playlists = local_session.execute(stmt).scalars()
+        stmt = (
+                select(Playlist.id, Playlist.name).
+                where(Playlist.id_user == userid).
+                where(Playlist.name != "Preferiti"))
+
+        playlists = local_session.execute(stmt).all()
+
         return render_template("playlists.html", playlists = playlists)
 
 @views.route('/playlists/delete/<int:id>', methods=['GET', 'POST'])
@@ -140,11 +146,11 @@ def get_playlist_selected(id_playlist_selected):
 
 
         stmt_song=(
-                select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_in_playlist, Album.name).
+                select(Song.id, Song.title, Song.id_album, Song.length, Album.name).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
                 where(PlaylistSong.id_playlist == id_playlist_selected).
-                order_by(PlaylistSong.num_in_playlist))
+                order_by(PlaylistSong.date_created))
   
 
         """
@@ -170,7 +176,7 @@ def get_playlist_selected(id_playlist_selected):
 
         return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected)
 
-@views.route('/preferiti', methods=['GET', 'POST'])
+@views.route('/favourites', methods=['GET', 'POST'])
 #@login_required
 def get_favourite():        
 
@@ -196,56 +202,9 @@ def get_favourite():
 @views.route('/albums', methods=['GET', 'POST'])
 #@login_required
 def albums():
-        stmt = select(Album)
-        album_list = local_session.execute(stmt).scalars()
+        stmt = select(Album.name, Album.id)
+        album_list = local_session.execute(stmt).all()
         return render_template("albums.html", album_list = album_list)
-
-@views.route('/artists')
-#@login_required
-def artists():
-        stmt = select(User.name).where(User.isArtist == True)
-        artist_list = local_session.execute(stmt).all()
-        return render_template("artists.html", artist_list = artist_list)
-
-@views.route('/artists/<int:id_artist_selected>', methods=['GET', 'POST'])
-#@login_required
-def get_artist_selected(id_artist_selected):
-        stmt_album = (
-                select(Album.name, Album.year).
-                join(AlbumArtist, Album.id == AlbumArtist.id_artist).
-                where(Album.id == id_artist_selected).
-                order_by(Album.year))
-
-        stmt_song=(
-                select(Song.id, Song.title, Song.length).
-                join(SongArtist, SongArtist.id_song == Song.id).
-                where(SongArtist.id_artist == id_artist_selected).
-                order_by(Song.num_in_album)).limit(5)                   #da sistemare -> ordinare in base al numero di ascolti
-
-        stmt_artist = (
-                select(User.name).
-                where(User.id == id_artist_selected).
-                where(User.isArtist == True)) 
-
-        artist_name = local_session.execute(stmt_artist).scalar()
-
-        album_list = None
-        songs_list = None
-
-        if (artist_name==None):
-                artist_name="Playlist not found"
-        else:
-                album_list = local_session.execute(stmt_album).all()
-                songs_list = local_session.execute(stmt_song).all()
-
-        num_songs = 0
-        tot_length = 0
-
-        for song in songs_list:
-                tot_length += song.length
-
-        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list, tot_length=tot_length, artist_name=artist_name)
-
 
 @views.route('/albums/<int:id_album_selected>', methods=['GET', 'POST'])
 #@login_required
@@ -297,9 +256,73 @@ def get_album_selected(id_album_selected):
                 return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
 
 
+@views.route('/artists')
+#@login_required
+def artists():
+        stmt = select(User.name, User.id).where(User.isArtist == True)
+        artist_list = local_session.execute(stmt).all()
+        return render_template("artists.html", artist_list = artist_list)
+
+@views.route('/artists/<int:id_artist_selected>', methods=['GET', 'POST'])
+#@login_required
+def get_artist_selected(id_artist_selected):
+        stmt_album = (
+                select(Album.name, Album.year).
+                join(AlbumArtist, Album.id == AlbumArtist.id_artist).
+                where(Album.id == id_artist_selected).
+                order_by(Album.year))
+
+        stmt_song=(
+                select(Song.id, Song.title, Song.length).
+                join(SongArtist, SongArtist.id_song == Song.id).
+                where(SongArtist.id_artist == id_artist_selected).
+                order_by(Song.num_in_album)).limit(5)                   #TODO da sistemare -> ordinare in base al numero di ascolti
+
+        stmt_artist = (
+                select(User.name).
+                where(User.id == id_artist_selected).
+                where(User.isArtist == True)) 
+
+        artist_name = local_session.execute(stmt_artist).scalar()
+
+        album_list = None
+        songs_list = None
+
+        if (artist_name==None):
+                artist_name="Playlist not found"
+        else:
+                album_list = local_session.execute(stmt_album).all()
+                songs_list = local_session.execute(stmt_song).all()
+
+        num_songs = 0
+        tot_length = 0
+
+        for song in songs_list:
+                tot_length += song.length
+
+        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list, tot_length=tot_length, artist_name=artist_name)
+
+
+
+
 @views.route('/search', methods=['GET', 'POST'])
 #login_required
 def search():
+
+        album_found = None
+        artist_found = None
+        song_found = None
+        song_result = None
+        album_result = None
+        user_result = None
+        playlist_list = None
+
+        lookingFor = None
+
+        if request.method == 'POST':
+                lookingFor = "Avicii"
+
+
         list_art= (
                 select(User.name).
                 where(User.isArtist==True))
@@ -311,18 +334,90 @@ def search():
         stmt_list = list_art.union(list_alb,list_song)
 
         dblist = local_session.execute(stmt_list).all()
-
+        
         itemlist = [r[0] for r in dblist]
 
+        return render_template("search.html", list_item=itemlist, song_result=song_result, album_result=album_result,user_result=user_result, playlist_list=playlist_list, lookingFor=lookingFor)
 
-        return render_template("search.html", list_item=itemlist)
+@views.route('/search/', methods=['GET', 'POST'])
+@views.route('/search/<result>', methods=['GET', 'POST'])
+#login_required
+def search_result(result=None):
+
+        album_found = None
+        artist_found = None
+        song_found = None     
+
+        lookingFor = result  
+
+        if request.method == 'POST':
+                lookingFor = request.form['search']
 
 
-#da sistemare
-@views.route('/addAlbum', methods=['GET', 'POST'])
-def addAlbum():
+        list_art= (
+                select(User.name).
+                where(User.isArtist==True))
 
-    return render_template("signUp.html")
+        list_alb= (select(Album.name))
+
+        list_song= (select(Song.title))
+
+        stmt_list = list_art.union(list_alb,list_song)
+
+        dblist = local_session.execute(stmt_list).all()
+        
+        itemlist = [r[0] for r in dblist]
+
+        playlist_stmt = (
+                select(Playlist.id, Playlist.name).
+                join(User, User.id == Playlist.id_user).
+                where(User.id == session['userid'])                
+        )
+
+        playlist_list = local_session.execute(playlist_stmt).all()
+
+        searchInSong= (
+                select(Song.id, Song.title, Song.id_album, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
+                where((Song.title).like('%' + lookingFor + '%')).
+                order_by(Song.title, Song.year, Song.length)
+        )
+
+        searchInAlbum= (
+                select(Album.name, Album.year, Album.id).
+                where((Album.name).like('%' + lookingFor + '%')).
+                order_by(Album.name,Album.year)
+        )
+
+        searchInUser= (
+                select(User.name, User.id).
+                where(User.isArtist == True).
+                where((User.name).like('%' + lookingFor + '%')).
+                order_by(User.name)
+        )
+
+        song_result = local_session.execute(searchInSong).all()
+        album_result = local_session.execute(searchInAlbum).all()
+        user_result = local_session.execute(searchInUser).all()
+
+        return render_template("search.html", list_item=itemlist, song_result=song_result, album_result=album_result,user_result=user_result, playlist_list=playlist_list,lookingFor=lookingFor)
+
+@views.route('/search/<result>/<int:playlistId>/<int:songId>', methods=['GET', 'POST'])
+#login_required
+def search_add_song(result, playlistId, songId):
+
+        stmt = (
+                insert(PlaylistSong).
+                values(id_playlist=playlistId).
+                values(id_song=songId)
+                )
+        local_session.execute(stmt)
+        local_session.commit()
+        flash('Canzone aggiunta con successo', category='success')
+
+        return search_result(result)
 
 @views.route('/profile')
 def profile():
@@ -365,3 +460,4 @@ def create_album():
         album_list = local_session.execute(stmt).scalars()
         
         return render_template("albums.html", album_list = album_list)
+

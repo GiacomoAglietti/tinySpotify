@@ -24,7 +24,7 @@ header{
   margin-top: 5vh;
 }
 
-/* home, albums style*/
+/* home, albums, playlist style*/
 header h1{
     color: #fff;
     margin-left: 15px;
@@ -36,12 +36,14 @@ header h1{
     height: 90%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between;     
 }
 
 .card{
-    width: 200px;
-    position: relative;
+    width: 200px !important;
+    position: relative !important; 
+    background: rgb(51, 49, 49) !important;
+    cursor: pointer;  
 }
 
 .card img{
@@ -57,11 +59,15 @@ header h1{
 
 .col{
     padding-top: 15px;
-    position: relative;
+    position: relative;    
+}
+
+.col a{
+  text-decoration: none;    
 }
 
 .card-body .bi-trash-fill{
-    color: #fff;
+    color: #fff;    
 }
 
 .card-body h3{
@@ -278,42 +284,42 @@ header h1{
     height:100vh;
     background-color: black;
     background-color:rgba(0,0,0,.75)  
-  }
+}
  
-  .form-container{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+.form-container{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
  
-  .form-container{
-    background: #fff;
-    width: 410px;
-    padding: 30px;
-    box-shadow: 0 0 8px rgba(0,0,0,0.1);
-  }
+.form-container{
+  background: #fff;
+  width: 410px;
+  padding: 30px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
  
- .form-container h1{
-    font-size: 35px;
-    font-weight: 600;
-    text-align: center;
-  }
+.form-container h1{
+  font-size: 35px;
+  font-weight: 600;
+  text-align: center;
+}
  
- .form-container form{
-    margin-top: -30px;
-  }
+.form-container form{
+  margin-top: -30px;
+}
  
-  .form-container form .data{
-    height: 40px;
-    width: 100%;
-    margin: 40px 0;
-  }
+.form-container form .data{
+  height: 40px;
+  width: 100%;
+  margin: 40px 0;
+}
  
-  form .data label{
-    font-size: 18px;
-  }
- 
+form .data label{
+  font-size: 18px;
+}
+
  form .data input, select{
     height: 100%;
     width: 100%;
@@ -396,8 +402,8 @@ header h1{
   }
 
   .search-input .icon{
-    height: 55px;
-    width: 55px;
+    height: 60px;
+    width: 80px;/*55px;*/
     line-height: 55px;
     position: absolute;
     top: 0;
@@ -405,8 +411,18 @@ header h1{
     text-align: center;
     font-size: 20px;
     color: gray;
-    cursor: pointer;
   }
+
+  .search-input .icon i {
+    position: absolute;
+  }
+        
+  
+  .search-input .icon .input-field {
+    width: 100%;
+    text-align: center;
+    height: 90%;
+}
 
   .search-input .autocom-box{
     padding: 0px;
@@ -605,7 +621,7 @@ h3{
 .modal-header{
   text-align: center;
   color: #222;
-  margin: 10px 0px px;
+  margin: 10px 0px;
   font-size: 25px;
 }
 
@@ -628,5 +644,25 @@ h3{
   border-radius: 5px;
 }
 
+  /* a element link style */
+  .text-link{
+    color: #fff;
+    text-decoration: none;
+  }
 
+  .text-link:hover{
+    color: #fff;
+    text-decoration: underline;
+    text-decoration-color: #fff;
+  }
+  
+  .text-artist-link{
+    color: rgb(189, 188, 188);
+    text-decoration: none;
+  }
 
+  .text-artist-link:hover{
+    color: rgb(189, 188, 188);
+    text-decoration: underline;
+    text-decoration-color: rgb(189, 188, 188);
+  } 

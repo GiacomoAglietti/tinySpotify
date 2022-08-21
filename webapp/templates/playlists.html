@@ -13,17 +13,19 @@
       <div class="row">
         {%- for playlist in playlists -%}
           <div class="col">
-            <div class="card bg-dark">
+            <a href="{{url_for('views.get_playlist_selected',id_playlist_selected=playlist.id)}}">
+              <div class="card">
                 <img src="https://bit.ly/3PiIDrx">
                 <div class="card-body">
-                  <h3>{{ playlist.name }} </h3>
-                  <form action="{{url_for('views.delete_playlist',id=playlist.id)}}" method="POST">
-                    <button type="submit"  class="btn" name="delete-playlist">
-                      <i class="bi bi-trash-fill" ></i>
-                    </button>  
-                  </form>                 
-                </div>
-            </div>
+                    <h3>{{ playlist.name }} </h3>
+                    <form action="{{url_for('views.delete_playlist',id=playlist.id)}}" method="POST">
+                      <button type="submit"  class="btn" name="delete-playlist">
+                        <i class="bi bi-trash-fill" ></i>
+                      </button>  
+                    </form>                 
+                  </div>
+              </div>
+            </a>
           </div>
         {%- endfor -%}
       </div>
