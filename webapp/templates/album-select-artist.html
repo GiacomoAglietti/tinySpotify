@@ -1,0 +1,135 @@
+{% extends "base.html" %} 
+
+{% block title %}Home
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="playlist-select-container">
+        <div class="row">
+            <div class="col left">
+                <img src="https://bit.ly/3PiIDrx" alt="nomeAlbum">
+            </div>
+            <div class="col right">
+                <h6>ALBUM</h6>
+                <!-- Button trigger modal -->
+                <h5>{{album_name}}</h5>
+                <h5>{{num_songs}} brani, {{tot_length// 3600 }} ore {{tot_length// 60 }} minuti  </h5>
+            </div>
+            <div class="col right">
+                <div class="buttons">
+                  <button type="button" class="btn-album" data-bs-toggle="modal" data-bs-target="#addAlbum">Aggiungi album</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="button-container">
+        <div class="row">
+            <div class="col">
+                <i class="bi bi-play-circle-fill"></i>
+            </div>
+        </div>
+    </div>
+    <table class="content-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>TITOLO</th>
+            <th>ALBUM</th>
+            <th><i class="bi bi-clock"></i></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {%- for song in songs_list -%}
+            <tr>
+              <td>{{ song.num_in_album }}</td>
+              <td>{{ song.title }}</td>
+              <td>{{ song.name }}</td>
+              <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+              <td class="fav-col">                
+                <div class="btn-group dropend">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                      <i class="bi bi-three-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li class="submenu">
+                        <div class="btn-group dropstart btn-group-playlist">
+                            <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                Aggiungi alla playlist
+                                <i class="bi bi-caret-right-fill"></i>
+                            </button>
+                            <ul class="dropstart-menu playlist">
+                              <li><a class="dropdown-item-playlist" href="#">Vai 1</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 2</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 3</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 4</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 5</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
+                              <li><a class="dropdown-item-playlist" href="#">Vai 9</a></li>
+                            </ul>
+                        </div>
+                      </li>
+                      <li><a class="dropdown-item" href="#">Vai all'artista</a></li>
+                      <li><a class="dropdown-item" href="#">Vai all'album</a></li>
+                    </ul>
+                </div>
+              </td>
+            </tr>
+          {%- endfor -%}
+        </tbody>
+      </table>
+
+      <form action="{{url_for('views.create_playlist')}}" method="POST">
+        <div class="modal fade" id="addAlbum" tabindex="-1" aria-labelledby="addAlbumLabel" aria-hidden="true">
+            <div class="modal-dialog centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addAlbumLabel" style="color: black;">Aggiungi album</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-group">
+                    <label style="color: black;">Nome album</label>
+                    <input type="text" id="nomePlaylist" name="nomePlaylist">
+                  </div>
+                  <div class="form-group">
+                    <label style="color: black;">Anno pubblicazione</label>
+                    <input type="number" id="yearAlbum" name="yearAlbum" min="1900" max="2100" step="1" value="2022">
+                  </div>
+                  <div class="form-group">
+                    <label style="color: black;">Quante canzoni contiene l'album?</label>
+                    <input type="number" id="numSongs" name="numSongs" min="1" max="50">
+                  </div>
+                  <div class="form-group">
+                    <label style="color: black;">Titolo canzone</label>
+                    <input type="text" id="titleSong" name="tileSongs">
+                  </div>
+                  <div class="form-group">
+                    <label style="color: black;">Anno</label>
+                    <input type="number" id="yearSong" name="yearSong" min="1900" max="2100" step="1" value="2022">
+                  </div>
+                  <div class="form-group">
+                    <label style="color: black;">Durata min e sec</label>
+                    <input type="number" id="minSong" name="minSong" min="0" max="59" value="0">
+                    <input type="number" id="secSong" name="secSong" min="1" max="59" value="0">
+                  </div>
+                  <div class="form-group">
+                    <label style="color: black;">Numero ordine canzone</label>
+                    <input type="number" id="numSongs" name="numSongs" min="1" max="numSongs" value="">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
+                </div>
+            </div>
+            </div>
+        </div>
+      </form>
+</main>
+
+{% endblock %}
+
