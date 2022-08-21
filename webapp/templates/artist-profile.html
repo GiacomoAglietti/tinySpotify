@@ -1,0 +1,115 @@
+{% extends "base.html" %} 
+
+{% block title %}Home
+{% endblock %}
+
+{% block content %}
+
+<main>
+    <div class="playlist-select-container">
+        <div class="row">
+            <div class="col left">
+                <img src="https://bit.ly/3PiIDrx" alt="nomeAlbum">
+            </div>
+            <div class="col right">
+                <h6>PROFILO ARTISTA</h6>
+                <h4>{{name}}</h4>        
+            </div>
+            <div class="col right">
+              <div class="buttons">
+                <button type="button" class="btn-album" data-bs-toggle="modal" data-bs-target="#addAlbum">Aggiungi album</button>
+              </div>
+            </div>
+        </div>
+    </div>
+    <table width="100%">
+      <thead>
+        <tr>
+          <th>
+            <h3 color="#fff">Canzoni con più ascolti</h3>
+            <table class="artist-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>TITOLO</th>
+                  <th>NUMERO ASCOLTI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for song in songs_list -%}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ song.title }}</td>
+                    <td>{{10000 - (loop.index *15) }} </td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+            <h3 color="#fff">Album con più ascolti</h3>
+            <table class="artist-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>TITOLO</th>
+                  <th>NUMERO ASCOLTI</th>
+                </tr>
+              </thead>
+              <tbody>
+                {%- for song in songs_list -%}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ song.title }}</td>
+                    <td>{{10000 - (loop.index *15) }} </td>
+                  </tr>
+                {%- endfor -%}
+              </tbody>
+            </table>
+          </th>
+          <th>
+            <div class="h1ap">Statistiche</div>
+            <div class="container-ap">
+              <div class="col">
+                <div class="row-ap">
+                  Numero totale canzoni: 15
+                </div>
+                <div class="row-ap">
+                  Numero totale album: 2
+                </div>
+                <div class="row-ap">
+                  Genere più ascoltato: Pop
+                </div>
+              </div>
+            </div>
+          </th>
+        </tr>
+      </thead>
+    </table>
+</main>
+
+<form action="{{url_for('views.create_album')}}" method="POST">
+  <div class="modal fade" id="addAlbum" tabindex="-1" aria-labelledby="addAlbumLabel" aria-hidden="true">
+      <div class="modal-dialog centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addAlbumLabel" style="color: black;">Aggiungi album</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label style="color: black;">Nome album</label>
+            <input type="text" id="nameAlbum" name="nameAlbum">
+          </div>
+          <div class="form-group">
+            <label style="color: black;">Anno pubblicazione</label>
+            <input type="number" id="yearAlbum" name="yearAlbum" min="1900" max="2100" step="1" value="2022">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
+        </div>
+      </div>
+      </div>
+  </div>
+</form>
+
+{% endblock %}

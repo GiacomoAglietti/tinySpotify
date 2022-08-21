@@ -282,6 +282,11 @@ def albums():
 @views.route('/albums/<int:id_album_selected>', methods=['GET', 'POST'])
 #@login_required
 def get_album_selected(id_album_selected):
+        userid = 0
+        if session.get('userid'):
+                userid =  session['userid']
+
+
         stmt_album = (
                 select(Album.name).
                 where(Album.id == id_album_selected))
@@ -324,7 +329,23 @@ def get_album_selected(id_album_selected):
                 num_songs += 1
                 tot_length += song.length
 
-        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, playlist_list=playlist_list)
+        subquery = (
+                select(AlbumArtist.id_album).
+                where(AlbumArtist.id_artist == session['userid']).
+                where(AlbumArtist.id_album == id_album_selected)
+        )
+
+        stmt_album_artist = (
+                select(Album.name).
+                filter(Album.id.in_(subquery))
+        )
+
+        album_artist = local_session.execute(stmt_album_artist).scalar()
+
+        if (session['isArtist'] and album_artist):
+                return render_template("album-select-artist.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
+        else:
+                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
 
 @views.route('/albums/<int:id_album_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 #@login_required
@@ -534,8 +555,45 @@ def search_add_song(result, playlistId, songId):
 
         return search_result(result)
 
+@views.route('/profile')
+def profile():
+        userid = 0
+        if session.get('userid'):
+                userid =  session['userid']
 
-#da sistemare
-@views.route('/addAlbum', methods=['GET', 'POST'])
-def addAlbum():
-        return render_template("signUp.html")
+        stmt_playlist = (
+                select(Playlist).
+                where(Playlist.id_user == userid))
+
+        stmt_song=(
+                select(Song.id, Song.title, Song.length).
+                order_by(Song.num_in_album)).limit(5)
+
+        playlists = local_session.execute(stmt_playlist).scalars()
+        songs_list = local_session.execute(stmt_song).all()
+
+        if (session['isArtist']):
+                return render_template("artist-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'])
+        else:
+                return render_template("user-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'])
+
+@views.route('/album_added', methods=['GET', 'POST'])
+@login_required
+def create_album():
+
+        if request.method == 'POST':
+                nameAlbum = request.form.get('nameAlbum')
+                yearAlbum = request.form.get('yearAlbum')
+                stmt = (
+                        insert(Album).
+                        values(name=nameAlbum).
+                        values(year=yearAlbum)
+                        )
+                local_session.execute(stmt)
+                local_session.commit()
+
+        stmt = select(Album)
+        album_list = local_session.execute(stmt).scalars()
+        
+        return render_template("albums.html", album_list = album_list)
+

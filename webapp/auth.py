@@ -36,6 +36,7 @@ def login():
                 session['userid'] = user.id
                 session['username'] = user.name
                 session['id_fav_playlist'] = id_fav_playlist
+                session['isArtist'] = user.isArtist
                 return redirect("/home")
             else:                
                 flash('Credenziali sbagliate, riprovare.', category='error')

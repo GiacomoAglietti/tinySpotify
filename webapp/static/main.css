@@ -106,9 +106,9 @@ header h1{
 }
 
 .playlist-select-container .row .right{
-    text-align: left;
+    text-align: left center;
     color: #fff;
-    margin-left: -230px;
+    margin-left: -20px;
     position: relative;
 }
 
@@ -465,6 +465,195 @@ form .data label{
     background: #efefef;
   }
 
+ /* artist-select style*/
+
+
+.card-container{
+  margin-left: 15px;
+  width: 90%;
+  height: 100%;
+  display: flex;
+  /* align-items: center; */
+  justify-content: space-between;
+  
+}
+
+.card{
+  width: 200px;
+  position: relative;
+}
+
+.card img{
+  padding: 10px;
+  width: 200px;
+  height: 200px;
+  align-self: center;
+}
+
+.card .img-artist{
+  border-radius: 50%;
+}
+
+.col{
+  padding-top: 15px;
+  position: relative;
+}
+
+.card-body h3{
+  width: 170px;
+  position: relative;
+  font-size: 18px;
+  color: #fff;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+h3{
+  color: #fff;
+  font-size: 30px;
+  margin-left: 15px;
+  padding-top: 20px;
+  font-weight: bold;
+}
+
+/*artist-profile tables*/
+
+.artist-table {
+  table-layout: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  width: 98%;
+  height:fit-content;
+  margin-left: 15px;
+  border-radius: 5px 5px 0 0;
+  /*overflow: hidden;*/
+  overflow: inherit;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.artist-table thead tr {
+  color: #fff;
+  text-align: center;
+  font-weight: bold;
+  border-bottom: 1px solid #fff;
+}
+
+.artist-table th, .artist-table td {
+  padding: 12px 15px;
+  text-align: center;
+}
+
+.artist-table tbody tr:hover {
+  background-color: #587683;
+}
+
+.artist-table tbody td {
+  color: #fff;
+}
+
+.row-ap{
+  font-size: 30px;
+  text-align: center;
+  padding: 50px 0 50px 0;
+  color: #fff;
+}
+
+.container-ap{
+  text-align: center;
+  table-layout: auto;
+  border-collapse: collapse;
+  font-size: 0.9em;
+  width: 98%;
+  height:fit-content;
+  margin-left: 15px;
+  border-radius: 5px 5px 0 0;
+  /*overflow: hidden;*/
+  overflow: inherit;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.h1ap{
+  text-align: center;
+  font-size: 45px;
+  color: #fff;
+}
+
+.buttons{
+  display: flex;
+}
+
+.btn-album{
+  text-decoration: none;
+  padding: 20px 50px;
+  font-size: 1.25rem;
+  position: relative;
+  background: #fff;
+  color: #000;
+  border-radius: 15px;
+}
+
+.row-top{
+  display: flex;
+  width: 200px;
+  height: 200px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  position: relative;
+}
+
+/*modal addalbum*/
+
+.modal{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  padding: 20px 30px;
+  box-shadow: 2px 2px 5px 5px rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+}
+
+.modal .btn-close{
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 15px;
+  height: 15px;
+  background: #000;
+  color: #fff;
+  text-align: center;
+  line-height: 15px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+.modal-header{
+  text-align: center;
+  color: #222;
+  margin: 10px 0px;
+  font-size: 25px;
+}
+
+.modal-body .form-group{
+  margin: 10px 0px;
+}
+
+.modal-body .form-group label{
+  font-size: 14px;
+  color: #222;
+}
+
+.modal-body .form-group input[type="text"], .modal-body .form-group input[type="number"]{
+  margin-top: 5px;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  outline: none;
+  border: 1px solid #aaa;
+  border-radius: 5px;
+}
+
   /* a element link style */
   .text-link{
     color: #fff;
@@ -487,4 +676,3 @@ form .data label{
     text-decoration: underline;
     text-decoration-color: rgb(189, 188, 188);
   } 
-
