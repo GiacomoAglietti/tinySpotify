@@ -138,31 +138,29 @@ def get_playlist_selected(id_playlist_selected):
                         local_session.commit()
                         #local_session.flush()
 
-        
-        
-        stmt_playlist = (
-                select(Playlist.name).
-                where(Playlist.id == id_playlist_selected))
-
-
-        stmt_song=(
-                select(Song.id, Song.title, Song.id_album, Song.length, Album.name).
+        stmt_song= (
+                select(Song.id, Song.title, Song.id_album, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
                 where(PlaylistSong.id_playlist == id_playlist_selected).
-                order_by(PlaylistSong.date_created))
-  
+                order_by(PlaylistSong.date_created)
+        )
 
-        """
-        Select*, (select count (*) 
-                  from playlistsong ps 
-                  where ps.idcanzone = s.idcanzone And ps.idplaylist = id_playlist_selected)
-        From Song as s
-        """
+        playlist_stmt = (
+                select(Playlist.id, Playlist.name).
+                join(User, User.id == Playlist.id_user).
+                where(User.id == session['userid'])                
+        )
 
-        playlist_name = local_session.execute(stmt_playlist).scalar()
-        if (playlist_name==None):
-                playlist_name="Playlist not found"
+        playlist_list = local_session.execute(playlist_stmt).all()
+
+        playlist_name=None
+
+        for playlist in playlist_list:
+                if(id_playlist_selected == playlist.id):
+                        playlist_name=playlist.name
 
         
         songs_list = local_session.execute(stmt_song).all()
@@ -174,18 +172,61 @@ def get_playlist_selected(id_playlist_selected):
                 num_songs += 1
                 tot_length += song.length
 
-        return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected)
+        return render_template("playlist-select.html", songs_list = songs_list, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list)
+
+@views.route('/playlists/<int:id_playlist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
+#@login_required
+def playlist_add_song(id_playlist_selected,idPlaylist_ToAddSong, id_song):
+
+        stmt = (
+                insert(PlaylistSong).
+                values(id_playlist=idPlaylist_ToAddSong).
+                values(id_song=id_song)
+        )
+
+        local_session.execute(stmt)
+        local_session.commit()
+        flash('Canzone aggiunta con successo', category='success')
+
+        return get_playlist_selected(id_playlist_selected)
+
+@views.route('/playlists/<int:id_playlist_selected>/<int:id_song>', methods=['GET', 'POST'])
+#@login_required
+def playlist_remove_song(id_playlist_selected, id_song):
+
+        delete_playlist = (
+                        delete(PlaylistSong).
+                        where(PlaylistSong.id_playlist==id_playlist_selected).
+                        where(PlaylistSong.id_song==id_song)
+                        )
+        local_session.execute(delete_playlist)
+        local_session.commit()
+
+        flash('Canzone eliminata con successo', category='success')
+
+        return get_playlist_selected(id_playlist_selected)
 
 @views.route('/favourites', methods=['GET', 'POST'])
 #@login_required
 def get_favourite():        
 
-        stmt_song=(
-                select(Song.id, Song.title, Song.id_album, Song.length, PlaylistSong.num_in_playlist, Album.name).
+        stmt_song= (
+                select(Song.id, Song.title, Song.id_album, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
                 where(PlaylistSong.id_playlist == session['id_fav_playlist']).
-                order_by(PlaylistSong.date_created))  
+                order_by(PlaylistSong.date_created.desc())
+        )
+
+        playlist_stmt = (
+                select(Playlist.id, Playlist.name).
+                join(User, User.id == Playlist.id_user).
+                where(User.id == session['userid'])                
+        )
+
+        playlist_list = local_session.execute(playlist_stmt).all()
 
         
         songs_list = local_session.execute(stmt_song).all()
@@ -197,7 +238,39 @@ def get_favourite():
                 num_songs += 1
                 tot_length += song.length
 
-        return render_template("favourite-playlist.html", songs_list = songs_list, num_songs=num_songs, tot_length=tot_length)
+        return render_template("favourite-playlist.html", songs_list = songs_list, num_songs=num_songs, tot_length=tot_length,playlist_list=playlist_list)
+
+@views.route('/favourites/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
+#@login_required
+def favourite_add_song(idPlaylist_ToAddSong,id_song):        
+
+        stmt = (
+                insert(PlaylistSong).
+                values(id_playlist=idPlaylist_ToAddSong).
+                values(id_song=id_song)
+        )
+
+        local_session.execute(stmt)
+        local_session.commit()
+        flash('Canzone aggiunta con successo', category='success')               
+
+        return get_favourite()
+
+@views.route('/favourites/<int:id_song>', methods=['GET', 'POST'])
+#@login_required
+def favourite_remove_song(id_song):
+
+        delete_playlist = (
+                        delete(PlaylistSong).
+                        where(PlaylistSong.id_playlist==session['id_fav_playlist']).
+                        where(PlaylistSong.id_song==id_song)
+                        )
+        local_session.execute(delete_playlist)
+        local_session.commit()
+
+        flash('Canzone eliminata con successo', category='success')
+
+        return get_favourite()
 
 @views.route('/albums', methods=['GET', 'POST'])
 #@login_required
@@ -213,17 +286,36 @@ def get_album_selected(id_album_selected):
                 select(Album.name).
                 where(Album.id == id_album_selected))
 
+        """
         stmt_song=(
                 select(Song.id, Song.title, Song.id_album, Song.length, Song.num_in_album, Album.name).
                 join(Album, Song.id_album == Album.id).
                 where(Album.id == id_album_selected).
                 order_by(Song.num_in_album)) 
+        """
+        stmt_song= (
+                select(Song.id, Song.title, Song.num_in_album, Song.length, User.name.label("name_artist"), User.id.label("id_artist")).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
+                where(Song.id_album==id_album_selected).
+                order_by(Song.num_in_album)
+        )
+
+        
 
         album_name = local_session.execute(stmt_album).scalar()
-        if (album_name==None):
-                album_name="Album not found"
+        #if (album_name==None):
+        #       TODO: aggiungere controllo sull'utente che visita la pagina
 
         songs_list = local_session.execute(stmt_song).all()
+
+        playlist_stmt = (
+                select(Playlist.id, Playlist.name).
+                join(User, User.id == Playlist.id_user).
+                where(User.id == session['userid'])                
+        )
+
+        playlist_list = local_session.execute(playlist_stmt).all()
 
         num_songs = 0
         tot_length = 0
@@ -232,7 +324,23 @@ def get_album_selected(id_album_selected):
                 num_songs += 1
                 tot_length += song.length
 
-        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
+        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, playlist_list=playlist_list)
+
+@views.route('/albums/<int:id_album_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
+#@login_required
+def album_add_song(id_album_selected,idPlaylist_ToAddSong,id_song):
+        
+        stmt = (
+                insert(PlaylistSong).
+                values(id_playlist=idPlaylist_ToAddSong).
+                values(id_song=id_song)
+        )
+
+        local_session.execute(stmt)
+        local_session.commit()
+        flash('Canzone aggiunta con successo', category='success') 
+
+        return get_album_selected(id_album_selected)
 
 @views.route('/artists')
 #@login_required
@@ -245,16 +353,28 @@ def artists():
 #@login_required
 def get_artist_selected(id_artist_selected):
         stmt_album = (
-                select(Album.name, Album.year).
-                join(AlbumArtist, Album.id == AlbumArtist.id_artist).
-                where(Album.id == id_artist_selected).
+                select(Album.id, Album.name, Album.year).
+                join(AlbumArtist, Album.id == AlbumArtist.id_album).
+                where(AlbumArtist.id_artist == id_artist_selected).
                 order_by(Album.year))
 
+        """
         stmt_song=(
                 select(Song.id, Song.title, Song.length).
                 join(SongArtist, SongArtist.id_song == Song.id).
                 where(SongArtist.id_artist == id_artist_selected).
                 order_by(Song.num_in_album)).limit(5)                   #TODO da sistemare -> ordinare in base al numero di ascolti
+        """
+
+        stmt_song= (
+                select(Song.id, Song.title, Song.id_album, Song.length, Album.name.label("name_album"), Album.id.label("id_album")).
+                join(PlaylistSong, Song.id == PlaylistSong.id_song).
+                join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
+                where(SongArtist.id_artist == id_artist_selected).
+                order_by(PlaylistSong.date_created)).limit(5) 
+
 
         stmt_artist = (
                 select(User.name).
@@ -263,22 +383,39 @@ def get_artist_selected(id_artist_selected):
 
         artist_name = local_session.execute(stmt_artist).scalar()
 
-        album_list = None
-        songs_list = None
+        playlist_stmt = (
+                select(Playlist.id, Playlist.name).
+                join(User, User.id == Playlist.id_user).
+                where(User.id == session['userid'])                
+        )
 
-        if (artist_name==None):
-                artist_name="Playlist not found"
-        else:
-                album_list = local_session.execute(stmt_album).all()
-                songs_list = local_session.execute(stmt_song).all()
+        playlist_list = local_session.execute(playlist_stmt).all()
 
-        num_songs = 0
+        album_list = local_session.execute(stmt_album).all()
+        songs_list = local_session.execute(stmt_song).all()
+
         tot_length = 0
 
         for song in songs_list:
                 tot_length += song.length
 
-        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list, tot_length=tot_length, artist_name=artist_name)
+        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list,actual_artist=id_artist_selected, tot_length=tot_length, artist_name=artist_name,playlist_list=playlist_list)
+
+@views.route('/artists/<int:id_artist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
+#@login_required
+def artist_add_song(id_artist_selected,idPlaylist_ToAddSong,id_song):
+        
+        stmt = (
+                insert(PlaylistSong).
+                values(id_playlist=idPlaylist_ToAddSong).
+                values(id_song=id_song)
+        )
+
+        local_session.execute(stmt)
+        local_session.commit()
+        flash('Canzone aggiunta con successo', category='success')
+
+        return get_artist_selected(id_artist_selected)
 
 
 

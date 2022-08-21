@@ -13,7 +13,7 @@
             </div>
             <div class="col right">
                 <h6>ALBUM</h6>
-                <!-- Button trigger modal -->
+                <h5>--Da Aggiungere Artista qui--</h5>
                 <h5>{{album_name}}</h5>
                 <h5>{{num_songs}} brani, {{tot_length// 3600 }} ore {{tot_length// 60 }} minuti  </h5>
             </div>
@@ -56,20 +56,14 @@
                                 <i class="bi bi-caret-right-fill"></i>
                             </button>
                             <ul class="dropstart-menu playlist">
-                              <li><a class="dropdown-item-playlist" href="#">Vai 1</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 2</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 3</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 4</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 5</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 9</a></li>
+                              {%- for playlist in playlist_list -%}                                
+                                <li><a class="dropdown-item-playlist" href="{{url_for('views.album_add_song', id_album_selected=actual_album, idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
+                              {%- endfor -%}
                             </ul>
                         </div>
                       </li>
-                      <li><a class="dropdown-item" href="#">Vai all'artista</a></li>
-                      <li><a class="dropdown-item" href="#">Vai all'album</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=actual_album)}}">Vai all'album</a></li>
                     </ul>
                 </div>
               </td>

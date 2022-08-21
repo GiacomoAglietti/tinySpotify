@@ -40,9 +40,9 @@
         <tbody>
           {%- for song in songs_list -%}
             <tr>
-              <td>{{ song.num_in_playlist }}</td>
-              <td>{{ song.title }}</td>
-              <td>{{ song.name }}</td>
+              <td>{{ loop.index }}</td>
+              <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
+              <td>{{ song.name_album }}</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
@@ -57,20 +57,15 @@
                                 <i class="bi bi-caret-right-fill"></i>
                             </button>
                             <ul class="dropstart-menu playlist">
-                              <li><a class="dropdown-item-playlist" href="#">Vai 1</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 2</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 3</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 4</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 5</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 9</a></li>
+                              {%- for playlist in playlist_list -%}                                
+                                <li><a class="dropdown-item-playlist" href="{{url_for('views.favourite_add_song', idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
+                              {%- endfor -%}
                             </ul>
                         </div>
                       </li>
-                      <li><a class="dropdown-item" href="#">Vai all'artista</a></li>
-                      <li><a class="dropdown-item" href="#">Vai all'album</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.favourite_remove_song', id_song=song.id)}}">Rimuovi da questa playlist</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
                     </ul>
                 </div>
               </td>

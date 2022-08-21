@@ -55,20 +55,14 @@
                                 <i class="bi bi-caret-right-fill"></i>
                             </button>
                             <ul class="dropstart-menu playlist">
-                              <li><a class="dropdown-item-playlist" href="#">Vai 1</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 2</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 3</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 4</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 5</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 9</a></li>
+                              {%- for playlist in playlist_list -%}                                
+                                <li><a class="dropdown-item-playlist" href="{{url_for('views.artist_add_song', id_artist_selected=actual_artist, idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
+                              {%- endfor -%}
                             </ul>
                         </div>
                       </li>
-                      <li><a class="dropdown-item" href="#">Vai all'artista</a></li>
-                      <li><a class="dropdown-item" href="#">Vai all'album</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=actual_artist)}}">Vai all'artista</a></li>
+                      <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
                     </ul>
                 </div>
               </td>
@@ -81,77 +75,16 @@
         <div class="row">
           {%- for album in album_list -%}
             <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                    <h5>{{ album.year }}</h5>
-                  </div>
-              </div>
-            </div>
+              <a href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
+                <div class="card bg-dark">
+                    <img src="https://bit.ly/3PiIDrx">
+                    <div class="card-body">
+                      <h3>{{ album.name }}</h3>
+                      <h5>{{ album.year }}</h5>
+                    </div>
+                </div>
+              </a>
+            </div>        
           {%- endfor -%}
         </div>
     </div>

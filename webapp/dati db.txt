@@ -8,6 +8,12 @@ Genre(id*, name)
 AlbumArtist(id_artist*, id_album*)
 Album(id*, name, year, image)
 
+select Album.name
+from Album
+where Album.id IN (select AlbumArtist.id_album
+                   from AlbumArtist
+                   where AlbumArtist.id_artist==session['userid'] and AlbumArtist.id_album=id_album_selected)
+
 #trigger
 create_fav_playlist
 integer x;

@@ -80,6 +80,16 @@ header h1{
   text-overflow: ellipsis;
 }
 
+.card-body h5{
+  width: 170px;
+  position: relative;
+  font-size: 15px;
+  color: rgb(179, 179, 179);
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
 /* playlist-select, album-select, artists-select style */
 .playlist-select-container{
     border-bottom: 1px solid #fff;

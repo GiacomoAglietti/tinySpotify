@@ -56,20 +56,20 @@ TODO:
 -gestire ogni commit al database con un try-catch: vedere -> https://stackoverflow.com/questions/2193670/catching-sqlalchemy-exceptions
 -fare views per lista delle playlist
 -mettere i @login_required e togliere i "if session.get('userid'):" dove non servono
--togliere Preferiti nella lista delle playlist
--fare i vari collegamenti tra le pagine
--mostrare i risultati del cerca
--mettere tasto per accedere playlist
--aggiungere tasto per il logout
--aggiungere Preferiti nella barra laterale
 -fare trigger per inserimento canzone già presente nella playlist?
 -sezione per artisti preferiti?
 -sezione per album preferiti?
  -----parte artista------
 -mettere tasto per aggiungere/togliere album
--da fare statistiche artisti
 -fare trigger per annullare inserimento doppio album
 -fare trigger per annullare inserimento doppia canzone in un album
+
+
+assunzioni:
+-si assume che non si può avere due o più canzoni uguali nella stessa playlist
+-ogni utente ha le sue playlist e non si possono condividere
+-ogni canzone può far parte solo di un album
+
 
 
 
