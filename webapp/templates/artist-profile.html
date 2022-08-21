@@ -103,13 +103,72 @@
             <label style="color: black;">Anno pubblicazione</label>
             <input type="number" id="yearAlbum" name="yearAlbum" min="1900" max="2100" step="1" value="2022">
           </div>
+          <div class="form-group">
+            <label style="color: black;">Ci sono altri artisti?</label>
+            <br/>
+            <input type="radio" name="rad1" onclick="addArtist(1)"> Si
+            <input type="radio" name="rad1" onclick="addArtist(0)" checked> No
+          </div>
+          <div id="new-artist" style="display: none;">
+            <form id="form">
+              <div class="form-group">
+                <label style="color: black;">Numero artisti</label>
+                <input type="number" id="idname" oninput="fun()" value="" min="0"max="20" value="0">
+                <input name="car" list="anrede" />
+                <datalist id="anrede"></datalist>
+                <div id="parent"></div>
+              </div>
+            </form>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
+          <button type="submit" class="btn btn-primary" name="create_album">Salva</button>
         </div>
       </div>
       </div>
   </div>
 </form>
+
+<script>
+  function fun() {
+    /*Getting the number of text fields*/
+    var no = document.getElementById("idname").value;
+
+    var input;
+    var parent = document.getElementById("parent");
+    cleanDiv(parent);
+    /*Generating text fields dynamically in the same form itself*/
+    for(var i=0;i<no;i++) {
+        input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('placeholder',"Inserire nome artista");
+        parent.appendChild(input);
+    }
+  }
+  function cleanDiv(div){
+    if(div!=null)
+      div.innerHTML = '';
+  }
+</script>
+
+<script>
+  function addArtist(x){
+      if(x==1)
+          document.getElementById('new-artist').style.display='block';
+      else
+          document.getElementById('new-artist').style.display='none';
+      return;
+  }
+</script>
+
+<script>
+  const mycars = JSON.parse('{{ listitem | tojson }}');
+  var list = document.getElementById('anrede');
+  for (const item of mycars) {
+    var option = document.createElement('option');
+    option.value = item;
+    list.appendChild(option);
+  };
+</script>
 
 {% endblock %}

@@ -343,9 +343,9 @@ def get_album_selected(id_album_selected):
         album_artist = local_session.execute(stmt_album_artist).scalar()
 
         if (session['isArtist'] and album_artist):
-                return render_template("album-select-artist.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
+                return render_template("album-select-artist.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected)
         else:
-                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_album_selected)
+                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected)
 
 @views.route('/albums/<int:id_album_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 #@login_required
@@ -561,6 +561,10 @@ def profile():
         if session.get('userid'):
                 userid =  session['userid']
 
+        list_art= (
+                select(User.name).
+                where(User.isArtist==True))
+
         stmt_playlist = (
                 select(Playlist).
                 where(Playlist.id_user == userid))
@@ -571,9 +575,12 @@ def profile():
 
         playlists = local_session.execute(stmt_playlist).scalars()
         songs_list = local_session.execute(stmt_song).all()
+        list_art = local_session.execute(list_art).all()
+        
+        itemlist = [r[0] for r in list_art]
 
         if (session['isArtist']):
-                return render_template("artist-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'])
+                return render_template("artist-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'], itemlist = itemlist)
         else:
                 return render_template("user-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'])
 
@@ -582,18 +589,18 @@ def profile():
 def create_album():
 
         if request.method == 'POST':
+
                 nameAlbum = request.form.get('nameAlbum')
                 yearAlbum = request.form.get('yearAlbum')
-                stmt = (
-                        insert(Album).
-                        values(name=nameAlbum).
-                        values(year=yearAlbum)
-                        )
-                local_session.execute(stmt)
+                album = Album(name=nameAlbum, year=yearAlbum)
+                local_session.add(album)
                 local_session.commit()
+                local_session.flush()
+                local_session.refresh(album)
 
-        stmt = select(Album)
-        album_list = local_session.execute(stmt).scalars()
+                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
+                local_session.add(album_artist)
+                local_session.commit()
         
-        return render_template("albums.html", album_list = album_list)
+        return get_album_selected(album.id)
 
