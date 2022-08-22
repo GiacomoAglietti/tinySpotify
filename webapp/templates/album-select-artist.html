@@ -19,7 +19,7 @@
             </div>
             <div class="col right">
                 <div class="buttons">
-                  <button type="button" class="btn-album" data-bs-toggle="modal" data-bs-target="#addAlbum">Aggiungi canzone</button>
+                  <button type="button" class="btn-album" data-bs-toggle="modal" data-bs-target="#addSong">Inserisci una nuova canzone</button>
                 </div>
             </div>
         </div>
@@ -83,30 +83,18 @@
         </tbody>
       </table>
 
-      <form action="{{url_for('views.create_playlist')}}" method="POST">
-        <div class="modal fade" id="addAlbum" tabindex="-1" aria-labelledby="addAlbumLabel" aria-hidden="true">
+      <form action="{{url_for('views.create_song', id_album=album_name)}}" method="POST">
+        <div class="modal fade" id="addSong" tabindex="-1" aria-labelledby="addSongLabel" aria-hidden="true">
             <div class="modal-dialog centered">
             <div class="modal-content">
                 <div class="modal-header">
-                  <h5 class="modal-title" id="addAlbumLabel" style="color: black;">Aggiungi album</h5>
+                  <h5 class="modal-title" id="addSongLabel" style="color: black;">Inserisci nuova canzone</h5>
                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                   <div class="form-group">
-                    <label style="color: black;">Nome album</label>
-                    <input type="text" id="nomePlaylist" name="nomePlaylist">
-                  </div>
-                  <div class="form-group">
-                    <label style="color: black;">Anno pubblicazione</label>
-                    <input type="number" id="yearAlbum" name="yearAlbum" min="1900" max="2100" step="1" value="2022">
-                  </div>
-                  <div class="form-group">
-                    <label style="color: black;">Quante canzoni contiene l'album?</label>
-                    <input type="number" id="numSongs" name="numSongs" min="1" max="50">
-                  </div>
-                  <div class="form-group">
                     <label style="color: black;">Titolo canzone</label>
-                    <input type="text" id="titleSong" name="tileSongs">
+                    <input type="text" id="titleSong" name="titleSong">
                   </div>
                   <div class="form-group">
                     <label style="color: black;">Anno</label>
@@ -117,9 +105,28 @@
                     <input type="number" id="minSong" name="minSong" min="0" max="59" value="0">
                     <input type="number" id="secSong" name="secSong" min="1" max="59" value="0">
                   </div>
+
+
+                  <div class="form-group">                
+                      <label style="color: black;">Seleziona genere della canzone</label>                    
+                      <select id="selectGenre" name="selectGenre"></select>
+                  </div>
+
+
                   <div class="form-group">
-                    <label style="color: black;">Numero ordine canzone</label>
-                    <input type="number" id="numSongs" name="numSongs" min="1" max="numSongs" value="">
+                    <label style="color: black;">Ci sono altri artisti?</label>
+                    <br/>
+                    <input type="radio" name="rad1" onclick="addArtist(1)" value="yes"> Si
+                    <input type="radio" name="rad1" onclick="addArtist(0)" value="no" checked> No
+                  </div>
+                  <div id="new-artist" style="display: none;">
+                    <form id="form">
+                      <div class="form-group">
+                        <label style="color: black;">Inserire numero di artisti</label>
+                        <input type="number" id="idname" oninput="fun()" value="" min="0"max="20" name="numArtist">
+                        <div id="parent"></div>
+                      </div>
+                    </form>
                   </div>
                 </div>
                 <div class="modal-footer">
@@ -130,6 +137,60 @@
         </div>
       </form>
 </main>
+
+<script>
+  function fun() {
+    /*Getting the number of text fields*/
+    var no = document.getElementById("idname").value;
+
+
+    const dbArtist = JSON.parse('{{ itemlist | tojson }}');
+
+    let parent = document.getElementById("parent");
+    cleanDiv(parent);
+    /*Generating text fields dynamically in the same form itself*/
+    for(var i=0;i<no;i++) {      
+      let select = document.createElement('select');
+      select.setAttribute('id', 'selectElementId'+i);
+      select.setAttribute('name', 'nameArtist'+i)
+      parent.appendChild(select);
+      let tmpList = dbArtist      
+      for(var j=0; j<tmpList.length;j++){
+        let option = document.createElement('option');
+        option.value = tmpList[j];
+        option.innerHTML = tmpList[j];
+        select.appendChild(option);
+      }
+    }
+  }
+  function cleanDiv(div){
+    if(div!=null)
+      div.innerHTML = '';
+  }
+
+
+
+  function addArtist(x){
+      if(x==1)
+          document.getElementById('new-artist').style.display='block';
+      else
+          document.getElementById('new-artist').style.display='none';
+      return;
+  }
+
+
+
+  const itemGenrelist = JSON.parse('{{ itemGenrelist | tojson }}');
+  let select = document.getElementById('selectGenre')
+  let tmpList = itemGenrelist;      
+  for(var j=0; j<tmpList.length;j++){
+    let option = document.createElement('option');
+    option.value = tmpList[j];
+    option.innerHTML = tmpList[j];
+    select.appendChild(option);    
+  }
+  
+</script>
 
 {% endblock %}
 

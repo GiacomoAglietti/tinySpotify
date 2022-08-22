@@ -279,6 +279,8 @@ def albums():
         album_list = local_session.execute(stmt).all()
         return render_template("albums.html", album_list = album_list)
 
+        
+
 @views.route('/albums/<int:id_album_selected>', methods=['GET', 'POST'])
 #@login_required
 def get_album_selected(id_album_selected):
@@ -342,10 +344,79 @@ def get_album_selected(id_album_selected):
 
         album_artist = local_session.execute(stmt_album_artist).scalar()
 
+        list_art= (
+                select(User.name).
+                where(User.isArtist==True).
+                where(User.name != session['username']))
+
+        listArtist_db = local_session.execute(list_art).all()
+        
+        itemlist = [r[0] for r in listArtist_db]
+
+        list_genre= (select(Genre.name))
+
+        listGenre_db = local_session.execute(list_genre).all()
+        
+        itemGenrelist = [r[0] for r in listGenre_db]
+
         if (session['isArtist'] and album_artist):
-                return render_template("album-select-artist.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected)
+                return render_template("album-select-artist.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, itemlist=itemlist, itemGenrelist=itemGenrelist)
         else:
                 return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected)
+
+
+@views.route('/album_added/<id_album>', methods=['GET', 'POST'])
+@login_required
+def create_song(id_album):
+
+        if request.method == 'POST':
+        
+                option = request.form['rad1']         
+                titleSong = request.form.get('titleSong')
+                yearSong = request.form.get('yearSong')
+                minSong= request.form.get('minSong')
+                secSong= request.form.get('secSong')
+
+                tot_length = minSong *60 + secSong
+
+                song = Song(title=titleSong, year=yearSong, length=tot_length,id_album=id_album)
+                local_session.add(song)
+                local_session.commit()
+                local_session.flush()
+                local_session.refresh(song)
+
+                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
+                local_session.add(album_artist)
+
+                if (option=="yes"):
+                        list_art= (
+                                select(User.id, User.name).
+                                where(User.isArtist==True).
+                                where(User.name != session['username']))
+
+                        listArtist_db = local_session.execute(list_art).all()
+                        
+                        artist_name_list = [r[1] for r in listArtist_db]
+
+                        artist_id_list = [r[0] for r in listArtist_db]
+
+                        numArtist = request.form['numArtist']
+                        count = 0
+                        setArtist = set()
+                        while(count<int(numArtist)):
+                                nameArtist = request.form.get('nameArtist'+str(count))
+                                count += 1
+                                setArtist.add(nameArtist)                               
+
+                        for artist in setArtist:
+                                if(artist in artist_name_list):
+                                        index = artist_name_list.index(artist)
+                                        album_artist = AlbumArtist(id_album=album.id, id_artist=artist_id_list.__getitem__(index))
+                                        local_session.add(album_artist)
+                      
+                local_session.commit()
+        
+        return get_album_selected(id_album)
 
 @views.route('/albums/<int:id_album_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 #@login_required
