@@ -106,16 +106,14 @@
           <div class="form-group">
             <label style="color: black;">Ci sono altri artisti?</label>
             <br/>
-            <input type="radio" name="rad1" onclick="addArtist(1)"> Si
-            <input type="radio" name="rad1" onclick="addArtist(0)" checked> No
+            <input type="radio" name="rad1" onclick="addArtist(1)" value="yes"> Si
+            <input type="radio" name="rad1" onclick="addArtist(0)" value="no" checked> No
           </div>
           <div id="new-artist" style="display: none;">
             <form id="form">
               <div class="form-group">
-                <label style="color: black;">Numero artisti</label>
-                <input type="number" id="idname" oninput="fun()" value="" min="0"max="20" value="0">
-                <input name="car" list="anrede" />
-                <datalist id="anrede"></datalist>
+                <label style="color: black;">Inserire numero di artisti</label>
+                <input type="number" id="idname" oninput="fun()" value="" min="0"max="20" name="numArtist">
                 <div id="parent"></div>
               </div>
             </form>
@@ -134,24 +132,33 @@
     /*Getting the number of text fields*/
     var no = document.getElementById("idname").value;
 
-    var input;
-    var parent = document.getElementById("parent");
+
+    const dbArtist = JSON.parse('{{ itemlist | tojson }}');
+
+    let parent = document.getElementById("parent");
     cleanDiv(parent);
     /*Generating text fields dynamically in the same form itself*/
-    for(var i=0;i<no;i++) {
-        input = document.createElement('input');
-        input.setAttribute('type', 'text');
-        input.setAttribute('placeholder',"Inserire nome artista");
-        parent.appendChild(input);
+    for(var i=0;i<no;i++) {      
+      let select = document.createElement('select');
+      select.setAttribute('id', 'selectElementId'+i);
+      select.setAttribute('name', 'nameArtist'+i)
+      parent.appendChild(select);
+      let tmpList = dbArtist      
+      for(var j=0; j<tmpList.length;j++){
+        let option = document.createElement('option');
+        option.value = tmpList[j];
+        option.innerHTML = tmpList[j];
+        select.appendChild(option);
+      }
     }
   }
   function cleanDiv(div){
     if(div!=null)
       div.innerHTML = '';
   }
-</script>
 
-<script>
+
+
   function addArtist(x){
       if(x==1)
           document.getElementById('new-artist').style.display='block';
@@ -159,16 +166,17 @@
           document.getElementById('new-artist').style.display='none';
       return;
   }
-</script>
 
-<script>
-  const mycars = JSON.parse('{{ listitem | tojson }}');
-  var list = document.getElementById('anrede');
+
+
+  /*
   for (const item of mycars) {
     var option = document.createElement('option');
     option.value = item;
-    list.appendChild(option);
-  };
+    option.innerHTML = item;
+    select.appendChild(option);
+
+  }; */
 </script>
 
 {% endblock %}

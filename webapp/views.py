@@ -563,7 +563,8 @@ def profile():
 
         list_art= (
                 select(User.name).
-                where(User.isArtist==True))
+                where(User.isArtist==True).
+                where(User.name != session['username']))
 
         stmt_playlist = (
                 select(Playlist).
@@ -575,9 +576,9 @@ def profile():
 
         playlists = local_session.execute(stmt_playlist).scalars()
         songs_list = local_session.execute(stmt_song).all()
-        list_art = local_session.execute(list_art).all()
+        list1 = local_session.execute(list_art).all()
         
-        itemlist = [r[0] for r in list_art]
+        itemlist = [r[0] for r in list1]
 
         if (session['isArtist']):
                 return render_template("artist-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'], itemlist = itemlist)
@@ -590,8 +591,10 @@ def create_album():
 
         if request.method == 'POST':
 
+                option = request.form['rad1']         
                 nameAlbum = request.form.get('nameAlbum')
                 yearAlbum = request.form.get('yearAlbum')
+
                 album = Album(name=nameAlbum, year=yearAlbum)
                 local_session.add(album)
                 local_session.commit()
@@ -600,6 +603,20 @@ def create_album():
 
                 album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
                 local_session.add(album_artist)
+
+                if (option=="yes"):
+                        numArtist = request.form['numArtist']
+                        count = 0
+                        setArtist = {}
+                        while(count<int(numArtist)):
+                                nameArtist = request.form.get('nameArtist'+str(count))
+                                setArtist.add(nameArtist)
+                                count += 1
+
+                        for artist in setArtist:
+                                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
+                                local_session.add(album_artist)
+                      
                 local_session.commit()
         
         return get_album_selected(album.id)

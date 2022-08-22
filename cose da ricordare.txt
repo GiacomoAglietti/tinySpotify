@@ -51,6 +51,7 @@ function changeHearticon(icon, songId, id_playlist){
 -genere con più ascolti
 
 TODO:
+-cambire le insert con le add
 -da sistemare icona nel cerca
 -aggiungere flash message dove necessario
 -gestire ogni commit al database con un try-catch: vedere -> https://stackoverflow.com/questions/2193670/catching-sqlalchemy-exceptions
