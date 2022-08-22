@@ -374,19 +374,23 @@ def create_song(id_album):
                 option = request.form['rad1']         
                 titleSong = request.form.get('titleSong')
                 yearSong = request.form.get('yearSong')
-                minSong= request.form.get('minSong')
-                secSong= request.form.get('secSong')
+                minSong = request.form.get('minSong')
+                secSong = request.form.get('secSong')
 
-                tot_length = minSong *60 + secSong
+                tot_length = int(minSong) * 60 + int(secSong)
 
-                song = Song(title=titleSong, year=yearSong, length=tot_length,id_album=id_album)
+                songs = (
+                        select (Song).
+                        join(Album, Song.id_album == Album.id)
+                )
+
+                count_songs = local_session.execute(select(func.count(Song.id))).scalar_one()
+
+                song = Song(title=titleSong, year=yearSong, length=tot_length, num_in_album = count_songs, id_album=id_album)
                 local_session.add(song)
                 local_session.commit()
                 local_session.flush()
                 local_session.refresh(song)
-
-                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
-                local_session.add(album_artist)
 
                 if (option=="yes"):
                         list_art= (
@@ -411,7 +415,7 @@ def create_song(id_album):
                         for artist in setArtist:
                                 if(artist in artist_name_list):
                                         index = artist_name_list.index(artist)
-                                        album_artist = AlbumArtist(id_album=album.id, id_artist=artist_id_list.__getitem__(index))
+                                        album_artist = AlbumArtist(id_album=id_album, id_artist=artist_id_list.__getitem__(index))
                                         local_session.add(album_artist)
                       
                 local_session.commit()
