@@ -576,9 +576,11 @@ def profile():
 
         playlists = local_session.execute(stmt_playlist).scalars()
         songs_list = local_session.execute(stmt_song).all()
-        list1 = local_session.execute(list_art).all()
+
+        listArtist_db = local_session.execute(list_art).all()
         
-        itemlist = [r[0] for r in list1]
+        itemlist = [r[0] for r in listArtist_db]
+
 
         if (session['isArtist']):
                 return render_template("artist-profile.html", playlists = playlists, songs_list = songs_list, name = session['username'], itemlist = itemlist)
@@ -590,7 +592,7 @@ def profile():
 def create_album():
 
         if request.method == 'POST':
-
+        
                 option = request.form['rad1']         
                 nameAlbum = request.form.get('nameAlbum')
                 yearAlbum = request.form.get('yearAlbum')
@@ -605,17 +607,30 @@ def create_album():
                 local_session.add(album_artist)
 
                 if (option=="yes"):
+                        list_art= (
+                                select(User.id, User.name).
+                                where(User.isArtist==True).
+                                where(User.name != session['username']))
+
+                        listArtist_db = local_session.execute(list_art).all()
+                        
+                        artist_name_list = [r[1] for r in listArtist_db]
+
+                        artist_id_list = [r[0] for r in listArtist_db]
+
                         numArtist = request.form['numArtist']
                         count = 0
-                        setArtist = {}
+                        setArtist = set()
                         while(count<int(numArtist)):
                                 nameArtist = request.form.get('nameArtist'+str(count))
-                                setArtist.add(nameArtist)
                                 count += 1
+                                setArtist.add(nameArtist)                               
 
                         for artist in setArtist:
-                                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
-                                local_session.add(album_artist)
+                                if(artist in artist_name_list):
+                                        index = artist_name_list.index(artist)
+                                        album_artist = AlbumArtist(id_album=album.id, id_artist=artist_id_list.__getitem__(index))
+                                        local_session.add(album_artist)
                       
                 local_session.commit()
         
