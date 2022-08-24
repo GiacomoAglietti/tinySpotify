@@ -372,20 +372,26 @@ def create_song(id_album):
                 option = request.form['rad1']         
                 titleSong = request.form.get('titleSong')
                 yearSong = request.form.get('yearSong')
+
                 minSong= request.form.get('minSong')
                 secSong= request.form.get('secSong')
                 genreSong = request.form.get('selectGenre')
 
-                tot_length = minSong *60 + secSong
+
+                tot_length = int(minSong) * 60 + int(secSong)
+
 
                 song = Song(title=titleSong, year=yearSong, length=tot_length,id_album=id_album, name=genreSong)
+
                 local_session.add(song)
                 local_session.commit()
                 local_session.flush()
                 local_session.refresh(song)
 
+
                 song_artist = SongArtist(id_song=song.id, id_artist=session['userid'])
                 local_session.add(song_artist)
+
 
                 if (option=="yes"):
                         list_art= (
@@ -409,9 +415,10 @@ def create_song(id_album):
 
                         for artist in setArtist:
                                 if(artist in artist_name_list):
-                                        index = artist_name_list.index(artist)
+
                                         song_artist = SongArtist(id_song=song.id, id_artist=artist_id_list.__getitem__(index))
                                         local_session.add(song_artist)
+
                       
                 local_session.commit()
         
