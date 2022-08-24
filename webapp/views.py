@@ -1,5 +1,3 @@
-import re
-from threading import local
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import insert, select, subquery, update, delete, func
@@ -10,12 +8,9 @@ from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
 from webapp.models.PlaylistSong import PlaylistSong
 from webapp.models.Playlist import Playlist
-from webapp.models.GenreSong import GenreSong
 from webapp.models.Genre import Genre
 from webapp.models.AlbumArtist import AlbumArtist
 from webapp.models.Album import Album
-from itertools import chain
-import json
 
 local_session = db_session()
 
@@ -275,7 +270,10 @@ def favourite_remove_song(id_song):
 @views.route('/albums', methods=['GET', 'POST'])
 #@login_required
 def albums():
-        stmt = select(Album.name, Album.id)
+        stmt = (select(Album.name, Album.id).
+                join(AlbumArtist, AlbumArtist.id_album==Album.id).
+                where(AlbumArtist.id_artist==session['userid'])
+        )
         album_list = local_session.execute(stmt).all()
         return render_template("albums.html", album_list = album_list)
 
@@ -376,17 +374,18 @@ def create_song(id_album):
                 yearSong = request.form.get('yearSong')
                 minSong= request.form.get('minSong')
                 secSong= request.form.get('secSong')
+                genreSong = request.form.get('selectGenre')
 
                 tot_length = minSong *60 + secSong
 
-                song = Song(title=titleSong, year=yearSong, length=tot_length,id_album=id_album)
+                song = Song(title=titleSong, year=yearSong, length=tot_length,id_album=id_album, name=genreSong)
                 local_session.add(song)
                 local_session.commit()
                 local_session.flush()
                 local_session.refresh(song)
 
-                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
-                local_session.add(album_artist)
+                song_artist = SongArtist(id_song=song.id, id_artist=session['userid'])
+                local_session.add(song_artist)
 
                 if (option=="yes"):
                         list_art= (
@@ -411,8 +410,8 @@ def create_song(id_album):
                         for artist in setArtist:
                                 if(artist in artist_name_list):
                                         index = artist_name_list.index(artist)
-                                        album_artist = AlbumArtist(id_album=album.id, id_artist=artist_id_list.__getitem__(index))
-                                        local_session.add(album_artist)
+                                        song_artist = SongArtist(id_song=song.id, id_artist=artist_id_list.__getitem__(index))
+                                        local_session.add(song_artist)
                       
                 local_session.commit()
         

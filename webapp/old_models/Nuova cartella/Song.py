@@ -1,25 +1,24 @@
 from email.policy import default
 from webapp import Base
-from sqlalchemy import CheckConstraint, Column, Integer,ForeignKey,DateTime,String
+from sqlalchemy import *
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
-from . import Playlist, Genre, Album, PlaylistSong, SongArtist
+from . import Playlist, Genre, Album, PlaylistSong, GenreSong, SongArtist
 
 
 
 class Song(Base):
     __tablename__ = "songs"
-
     id  = Column(Integer, primary_key=True)
-    title = Column(String(50), nullable=False)
-    year = Column(Integer, CheckConstraint('year > 1900 and year <= 2022'), nullable=False)
-    length = Column(Integer, CheckConstraint('length > 0 and length < 3600 '), nullable=False)
-    date_created = Column(DateTime(timezone=True), server_default=func.now())
+    title = Column(String(150))
+    year = Column(Integer)
+    length = Column(Integer)
+    num_in_album = Column(Integer)
     id_album = Column(Integer, ForeignKey("album.id", ondelete="CASCADE"))
-    genre = Column(String(50), ForeignKey('genres.name'))
     album = relationship("Album", back_populates="songs")
     playlist = relationship("PlaylistSong", back_populates="song")
+    genres = relationship("GenreSong", back_populates="song")
     artists = relationship("SongArtist", back_populates="song")
     
     

@@ -3,10 +3,11 @@ from sqlalchemy import *
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
-from . import Song, GenreSong
 
 class Genre(Base):
     __tablename__ = "genres"
-    id  = Column(Integer, primary_key=True)
-    name = Column(String(150))
-    songs = relationship("GenreSong", back_populates="genre")
+    name  = Column(String(50), primary_key=True)
+    num_of_plays = Column(Integer, default=0)
+    id_playlist = Column(Integer, ForeignKey('playlist.id', ondelete="CASCADE"))
+    playlist = relationship("Playlist", backref="genres", uselist=False)
+    song = relationship("Song")

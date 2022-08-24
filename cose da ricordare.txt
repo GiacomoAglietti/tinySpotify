@@ -9,6 +9,7 @@ a serialized string and handled by the server. Since let data = req.body is an o
 
 2)ALTER SEQUENCE songs_id_seq RESTART WITH 1 //songs nome della tabella
 
+3)passive_delete= True per permettere l'ON DELETE CASCADE
 
 3)
 <i class="bi bi-heart" id="icona{{ song.id }}" onclick="changeHearticon(this, '{{song.id}}','{{actual_playlist}}')" ></i>
@@ -51,6 +52,7 @@ function changeHearticon(icon, songId, id_playlist){
 -genere con più ascolti
 
 TODO:
+-sistemare title jinja
 -cambire le insert con le add
 -da sistemare icona nel cerca
 -aggiungere flash message dove necessario
