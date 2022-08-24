@@ -57,15 +57,10 @@ TODO:
 -da sistemare icona nel cerca
 -aggiungere flash message dove necessario
 -gestire ogni commit al database con un try-catch: vedere -> https://stackoverflow.com/questions/2193670/catching-sqlalchemy-exceptions
--fare views per lista delle playlist
 -mettere i @login_required e togliere i "if session.get('userid'):" dove non servono
--fare trigger per inserimento canzone già presente nella playlist?
--sezione per artisti preferiti?
--sezione per album preferiti?
  -----parte artista------
--mettere tasto per aggiungere/togliere album
+-mettere tasto per togliere album
 -fare trigger per annullare inserimento doppio album
--fare trigger per annullare inserimento doppia canzone in un album
 
 
 assunzioni:

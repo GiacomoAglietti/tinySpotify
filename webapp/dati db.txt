@@ -27,10 +27,22 @@ BEGIN
         new.num_order=1;
 END
 
+CREATE TRIGGER create_fav_playlist 
+   after insert ON users
+   FOR  ROW 
+   EXECUTE PROCEDURE create_fav_playlist() 
+
 create_fav_playlist
 BEGIN
-     insert into playlist(name, id_user)
-     values ('Preferiti', new.id);
+     insert into playlist(name, isPremium)
+     values ('Preferiti', False);
+     RETURN NEW;
+END
+
+esempio con new
+BEGIN
+     insert into user_playlist(id_user, id_playlist)
+     values (new.id, 1);
      RETURN NEW;
 END
 

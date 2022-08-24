@@ -46,6 +46,8 @@ def create_app():
     from webapp.models.Genre import Genre
     from webapp.models.PlaylistSong import PlaylistSong
     from webapp.models.SongArtist import SongArtist
+    from webapp.models.UserPlaylist import UserPlaylist
+    from webapp.models.MyFunctions import FunctionSession
 
 
     

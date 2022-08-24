@@ -415,7 +415,7 @@ def create_song(id_album):
 
                         for artist in setArtist:
                                 if(artist in artist_name_list):
-
+                                        index = artist_name_list.index(artist)
                                         song_artist = SongArtist(id_song=song.id, id_artist=artist_id_list.__getitem__(index))
                                         local_session.add(song_artist)
 

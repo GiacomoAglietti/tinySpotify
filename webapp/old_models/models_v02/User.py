@@ -1,3 +1,4 @@
+from email.policy import default
 from webapp import Base
 from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, Boolean, CheckConstraint
 from sqlalchemy.orm import relationship
@@ -10,16 +11,17 @@ from .Playlist import Playlist
 #time_updated = Column(DateTime(timezone=True), onupdate=func.now())
 
 
+
 class User(Base, UserMixin):   
     __tablename__ = "users"
 
     id  = Column(Integer, primary_key=True)
-    name  = Column(String(50),index=True, unique=True, nullable=False)
-    email  = Column(String(50), index=True, unique=True, nullable=False)
+    name  = Column(String(50), unique=True, nullable=False)
+    email  = Column(String(50), unique=True, nullable=False)
     password  = Column(String(150), nullable=False)
     isArtist = Column(Boolean, default=False)
     isPremium = Column(Boolean, default=False)
-    playlist = relationship("UserPlaylist", back_populates="user", passive_deletes=True)
+    playlist = relationship("Playlist",cascade="all, delete", passive_deletes=True)
     songs = relationship("SongArtist", back_populates="artist", passive_deletes=True)
     album = relationship("AlbumArtist", back_populates="artist", passive_deletes=True)
 
