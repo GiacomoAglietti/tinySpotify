@@ -1,10 +1,16 @@
 from webapp import Base
 from flask import session
 from sqlalchemy import Column, Integer, Boolean, String, event
+from sqlalchemy import insert
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy.sql import func
-from . import User, Song, PlaylistSong, Genre, UserPlaylist
+from . import User, Song, PlaylistSong, Genre
+from webapp.models.UserPlaylist import UserPlaylist
+from webapp import db_session
+
+local_session = db_session()
+
 
 class Playlist(Base):
     __tablename__ = "playlist"
@@ -17,11 +23,13 @@ class Playlist(Base):
 
 @event.listens_for(Playlist, "after_insert")
 def after_insert(mapper, connection, target):
-    
-    newUserPlaylist = UserPlaylist(
-                id_user = session['userid'], 
-                id_playlist = target.id)
 
-    target.album_artist.append(newUserPlaylist)
+    stmt = (insert(UserPlaylist).
+            values(id_playlist = target.id).
+            values(id_user = session['userid']))
 
-    print ("insert into UserPlaylist: id_artist=" + session['userid'] + ', id_album=' + target.id)
+    connection.execute(stmt)
+    local_session.commit()
+
+    print ("insert into UserPlaylist: id_artist=" + str(session['userid']) + ', id_album=' + str(target.id))
+

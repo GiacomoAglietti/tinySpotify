@@ -39,7 +39,7 @@
         <tbody>
           {%- for song in songs_list -%}
             <tr>
-              <td>{{ song.num_in_album }}</td>
+              <td>{{ loop.index }}</td>
               <td>{{ song.title }}</td>
               <td>10000</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>

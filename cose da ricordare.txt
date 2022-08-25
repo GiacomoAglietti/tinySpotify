@@ -43,24 +43,50 @@ function changeHearticon(icon, songId, id_playlist){
             xhr.send(songId);
         }
 
+    if(request.headers.get('Content-Type')=='addToFav'):
+                        idSong=int(request.data.decode("utf-8"))
+                        ps1= PlaylistSong(id_playlist=1, id_song=idSong)
+                        local_session.add(ps1)
+                        update_song = (
+                                update(Song).
+                                where(Song.id == idSong).
+                                values(favourite=True)
+                                )
+                        local_session.execute(update_song)
+                        local_session.commit()
+                if(request.headers.get('Content-Type')=='removeFromFav'):
+                        idSong=int(request.data.decode("utf-8"))
+                        delete_song= (
+                                delete(PlaylistSong).
+                                where(PlaylistSong.id_playlist==1).
+                                where(PlaylistSong.id_song==idSong)
+                                )
+                        local_session.execute(delete_song)
+                        update_song = (
+                                update(Song).
+                                where(Song.id == idSong).
+                                values(favourite=False)
+                                )
+                        local_session.execute(update_song)
+                        local_session.commit()     
 
-5)
--numero album artista
--numero canzoni artista
--canzoni con più ascolti
--album con più ascolti
--genere con più ascolti
+
 
 TODO:
+-sistemare statistiche utente
+-sistemare la home con playlist premium
+-sistemare le card
+-creare pagina per errori
+-creare playlist premium
+-aggiungere tasto per diventare premium per un utente/artista
 -sistemare title jinja
--cambire le insert con le add
 -da sistemare icona nel cerca
 -aggiungere flash message dove necessario
--gestire ogni commit al database con un try-catch: vedere -> https://stackoverflow.com/questions/2193670/catching-sqlalchemy-exceptions
--mettere i @login_required e togliere i "if session.get('userid'):" dove non servono
+-gestire l'eccezione di una doppia canzone + messaggio d'errore
+-gestire l'eccezione di un utente già presente (email e/o name)+ messaggio d'errore
  -----parte artista------
 -mettere tasto per togliere album
--fare trigger per annullare inserimento doppio album
+-fare trigger per annullare inserimento doppio album+ messaggio d'errore
 
 
 assunzioni:

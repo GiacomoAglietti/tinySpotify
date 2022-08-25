@@ -3,8 +3,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from webapp import db_session
 from webapp.models.User import User
 from webapp.models.Playlist import Playlist
+from webapp.models.UserPlaylist import UserPlaylist
 from flask_login import login_user, login_required, logout_user, current_user
-from sqlalchemy import select
+from sqlalchemy import select, exc
 
 local_session = db_session()
 
@@ -18,25 +19,35 @@ def login():
         password = request.form.get('password')
 
         stmt = (select(User).where(User.email == email))
-        user = local_session.execute(stmt).scalars().first()
+        user = None
+        try:
+            user = local_session.execute(stmt).scalars().first()                
+        except exc.SQLAlchemyError as e:
+            return str(e.orig)
 
         if user:
             if check_password_hash(user.password, password):
-                flash('Login effettuato con successo', category='success')
                 login_user(user, remember=True)
 
                 stmt = (
                     select(Playlist.id).
-                    where(Playlist.id_user == user.id).
+                    join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
+                    where(UserPlaylist.id_user == user.id).
                     where(Playlist.name == "Preferiti"))
 
-                id_fav_playlist= local_session.execute(stmt).scalar()
+                id_fav_playlist = None
+                try:
+                    id_fav_playlist= local_session.execute(stmt).scalar()            
+                except exc.SQLAlchemyError as e:
+                    return str(e.orig)
 
-                print(id_fav_playlist)
                 session['userid'] = user.id
                 session['username'] = user.name
                 session['id_fav_playlist'] = id_fav_playlist
                 session['isArtist'] = user.isArtist
+                session['isPremium'] = user.isPremium
+                
+                flash('Login effettuato con successo', category='success')
                 return redirect("/home")
             else:                
                 flash('Credenziali sbagliate, riprovare.', category='error')
@@ -81,16 +92,23 @@ def signUp():
                     password=generate_password_hash(password, method='sha256')
                     )
             if (selectResult == 'Si'):
-                 newUser = User(
+                newUser = User(
                     name=nomeUtente, 
                     email=email, 
                     password=generate_password_hash(password, method='sha256'),
                     isArtist = True
                     )
             
+            try:
+                local_session.add(newUser)
+                local_session.commit()
 
-            local_session.add(newUser)
-            local_session.commit()
+            except exc.SQLAlchemyError as e:
+                local_session.rollback()
+                return str(e.orig)
+            finally:                        
+                local_session.close()
+
             flash('Account creato!', category='success')
             return redirect(url_for('views.home'))
 
