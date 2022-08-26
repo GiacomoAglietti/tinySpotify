@@ -13,7 +13,7 @@
             </div>
             <div class="col right">
                 <h6>ALBUM</h6>
-                <!-- Button trigger modal -->
+                <h5>--Da Aggiungere Artista qui--</h5>
                 <h5>{{album_name}}</h5>
                 <h5>{{num_songs}} brani, {{tot_length// 3600 }} ore {{tot_length// 60 }} minuti  </h5>
             </div>
@@ -62,14 +62,6 @@
                             </button>
                             <ul class="dropstart-menu playlist">
                               <li><a class="dropdown-item-playlist" href="#">Vai 1</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 2</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 3</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 4</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 5</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 6</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 7</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 8</a></li>
-                              <li><a class="dropdown-item-playlist" href="#">Vai 9</a></li>
                             </ul>
                         </div>
                       </li>
@@ -168,8 +160,6 @@
       div.innerHTML = '';
   }
 
-
-
   function addArtist(x){
       if(x==1)
           document.getElementById('new-artist').style.display='block';
@@ -177,8 +167,6 @@
           document.getElementById('new-artist').style.display='none';
       return;
   }
-
-
 
   const itemGenrelist = JSON.parse('{{ itemGenrelist | tojson }}');
   let select = document.getElementById('selectGenre')

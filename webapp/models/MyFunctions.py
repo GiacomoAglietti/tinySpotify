@@ -1,5 +1,5 @@
 from webapp import Base
-from flask import session
+from flask import session, flash
 from webapp import db_session
 from sqlalchemy import Column, Integer, Boolean, String, exc
 from sqlalchemy.orm import relationship
@@ -117,4 +117,18 @@ class FunctionSession:
             return str(e.orig)
 
         return genres
+
+    def insert_playlist_song(playlistId, songId):
+        insertPlaylistSong = PlaylistSong(id_playlist=playlistId, id_song=songId)
+
+        try:
+                local_session.add(insertPlaylistSong)
+                local_session.commit()
+
+        except exc.SQLAlchemyError as e:
+                local_session.rollback()
+                return str(e.orig)
+        finally:
+                flash('Canzone aggiunta con successo', category='success')                       
+                local_session.close()
       

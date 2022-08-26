@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from webapp import db_session
+from webapp import db_session, conn
 from webapp.models.User import User
 from webapp.models.Playlist import Playlist
 from webapp.models.UserPlaylist import UserPlaylist
@@ -97,19 +97,31 @@ def signUp():
                     email=email, 
                     password=generate_password_hash(password, method='sha256'),
                     isArtist = True
-                    )
-            
-            try:
-                local_session.add(newUser)
-                local_session.commit()
+                    )            
 
+            cur = conn.cursor()
+
+            try:
+                local_session.add(newUser)                
+                local_session.commit()
+                local_session.flush()
+                local_session.refresh(newUser)
+
+                cur.execute("CALL create_fav_playlist(%s);", [newUser.id])    
+
+                conn.commit()
+                local_session.commit()
+                          
             except exc.SQLAlchemyError as e:
                 local_session.rollback()
                 return str(e.orig)
-            finally:                        
+            finally:
+                cur.close()
+                conn.close()                    
                 local_session.close()
 
+
             flash('Account creato!', category='success')
-            return redirect(url_for('views.home'))
+            return render_template("login.html")
 
     return render_template("signUp.html")

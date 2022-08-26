@@ -24,50 +24,99 @@ header{
   margin-top: 5vh;
 }
 
-/* home, albums, playlist style*/
+/* home, albums, playlist, artist-select and search styles*/
+
 header h1{
     color: #fff;
     margin-left: 15px;
 }
 
-.card-container{
-    margin-left: 15px;
-    width: 90%;
-    height: 90%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;     
-}
-
 .card{
-    width: 200px !important;
-    position: relative !important; 
     background: rgb(51, 49, 49) !important;
     cursor: pointer;  
 }
 
 .card img{
-    padding: 10px;
-    width: 200px;
-    height: 200px;
-    align-self: center;
+  padding: 10px;
+  width: 180px;
+  height: 180px;
+  align-self: center;
 }
 
 .card .img-artist{
-    border-radius: 50%;
+  border-radius: 50%;
 }
 
 .col{
-    padding-top: 15px;
-    position: relative;    
+  position: relative;   
+  width: 200px !important;
 }
 
 .col a{
-  text-decoration: none;    
+  text-decoration: none;   
 }
 
 .card-body .bi-trash-fill{
     color: #fff;    
+}
+
+.card .card-body h3{ 
+  font-size: 18px;
+  color: #fff;
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+.card .card-body h5{
+  font-size: 15px;
+  color: rgb(179, 179, 179);
+  white-space: nowrap;
+  overflow:hidden;
+  text-overflow: ellipsis;
+}
+
+.card .card-body form{ 
+  text-align: center;
+}
+.card .card-body form button{ 
+  width: 100%;
+  background: black;
+}
+
+/* artist-select style */
+/*
+
+.card-container{
+  margin-left: 15px;
+  width: 90%;
+  height: 100%;
+  display: flex;
+  /* align-items: center; */
+  /*
+  justify-content: space-between;
+   
+}*/
+/*
+.card{
+  width: 200px;
+  position: relative;
+}
+
+.card img{
+  padding: 10px;
+  width: 200px;
+  height: 200px;
+  align-self: center;
+}
+
+.card .img-artist{
+  border-radius: 50%;
+}
+
+.col{
+  padding-top: 15px;
+  position: relative;
 }
 
 .card-body h3{
@@ -80,15 +129,15 @@ header h1{
   text-overflow: ellipsis;
 }
 
-.card-body h5{
-  width: 170px;
-  position: relative;
-  font-size: 15px;
-  color: rgb(179, 179, 179);
-  white-space: nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
+h3{
+  color: #fff;
+  font-size: 30px;
+  margin-left: 15px;
+  padding-top: 20px;
+  font-weight: bold;
 }
+*/
+
 
 /* playlist-select, album-select, artists-select style */
 .playlist-select-container{
@@ -465,57 +514,6 @@ form .data label{
     background: #efefef;
   }
 
- /* artist-select style*/
-
-
-.card-container{
-  margin-left: 15px;
-  width: 90%;
-  height: 100%;
-  display: flex;
-  /* align-items: center; */
-  justify-content: space-between;
-  
-}
-
-.card{
-  width: 200px;
-  position: relative;
-}
-
-.card img{
-  padding: 10px;
-  width: 200px;
-  height: 200px;
-  align-self: center;
-}
-
-.card .img-artist{
-  border-radius: 50%;
-}
-
-.col{
-  padding-top: 15px;
-  position: relative;
-}
-
-.card-body h3{
-  width: 170px;
-  position: relative;
-  font-size: 18px;
-  color: #fff;
-  white-space: nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
-}
-
-h3{
-  color: #fff;
-  font-size: 30px;
-  margin-left: 15px;
-  padding-top: 20px;
-  font-weight: bold;
-}
 
 /*artist-profile tables*/
 

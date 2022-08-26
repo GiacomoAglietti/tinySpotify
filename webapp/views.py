@@ -1,8 +1,10 @@
+from genericpath import exists
+from unittest import result
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import insert, select, subquery, update, delete, func, exc
 from sqlalchemy.orm import aliased
-from webapp import db_session, engine
+from webapp import db_session, conn
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
@@ -43,15 +45,28 @@ def create_playlist():
                 nomePlaylist = request.form.get('nomePlaylist')
 
                 newPlaylist = Playlist(name = nomePlaylist)
+                """
+                cur = conn.cursor()
 
                 try:
                         local_session.add(newPlaylist)
+                        local_session.commit()
+                        local_session.flush()
+                        local_session.refresh(newPlaylist)
+
+                        cur.execute("CALL add_user_playlist(%s, %s);", [newPlaylist.id, session['userid']])    
+
+                        conn.commit()
                         local_session.commit()
                 except exc.SQLAlchemyError as e:
                         local_session.rollback()
                         return str(e.orig)
                 finally:
-                        local_session.close()             
+                        cur.close()
+                        conn.close()
+                        local_session.close()   
+
+                """        
 
         playlists = FunctionSession.get_user_playlist(False)
 
@@ -151,23 +166,7 @@ def get_playlist_selected(id_playlist_selected):
 @login_required
 def playlist_add_song(id_playlist_selected,idPlaylist_ToAddSong, id_song):
 
-        insertPlaylistSong = (
-                insert(PlaylistSong).
-                values(id_playlist=idPlaylist_ToAddSong).
-                values(id_song=id_song)
-        )
-
-        try:
-                local_session.execute(insertPlaylistSong)
-                local_session.commit()
-
-        except exc.SQLAlchemyError as e:
-                local_session.rollback()
-                return str(e.orig)
-        finally:                        
-                local_session.close()
-
-        flash('Canzone aggiunta con successo', category='success')
+        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)
 
         return get_playlist_selected(id_playlist_selected)
 
@@ -242,20 +241,9 @@ def get_favourite():
 
 @views.route('/favourites/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
-def favourite_add_song(idPlaylist_ToAddSong,id_song):        
+def favourite_add_song(idPlaylist_ToAddSong,id_song):      
 
-        insertPlaylistSong = PlaylistSong(id_playlist=idPlaylist_ToAddSong, id_song=id_song)
-        try:
-                local_session.add(insertPlaylistSong)
-                local_session.commit()
-
-        except exc.SQLAlchemyError as e:
-                local_session.rollback()
-                return str(e.orig)
-        finally:                        
-                local_session.close()
-
-        flash('Canzone aggiunta con successo', category='success')               
+        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)              
 
         return get_favourite()
 
@@ -296,50 +284,32 @@ def albums():
 @login_required
 def get_album_selected(id_album_selected):
 
+        itemArtistlist = None
+        itemGenrelist = None
+
         stmt_album = (
                 select(Album.name).
                 where(Album.id == id_album_selected))
         
         stmt_song= (
-                select(Song.id, Song.title, Song.length, User.name.label("name_artist"), User.id.label("id_artist")).
+                select(Song.id, Song.title, Song.length, Song.num_of_plays, User.name.label("name_artist"), User.id.label("id_artist")).
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 where(Song.id_album==id_album_selected).
                 order_by(Song.num_in_album)
         )
 
-        subquery = (
-                select(AlbumArtist.id_album).
-                where(AlbumArtist.id_artist == session['userid']).
-                where(AlbumArtist.id_album == id_album_selected)
-        )
-
-        stmt_album_artist = (
-                select(Album.name).
-                filter(Album.id.in_(subquery))
-        )
-        
         album_name = None    
-        songs_list = None 
-        album_artist = None
+        songs_list = None
 
         try:
                 album_name = local_session.execute(stmt_album).scalar() 
                 #if (album_name==None):
                 #       TODO: aggiungere controllo sull'utente che visita la pagina
-                songs_list = local_session.execute(stmt_song).all()
-                album_artist = local_session.execute(stmt_album_artist).scalar()         
+                songs_list = local_session.execute(stmt_song).all()       
                 
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
-        
-
-        playlist_list = FunctionSession.get_user_playlist(True)
-        listArtist_db = FunctionSession.get_artists_list(True)      
-        list_genre= FunctionSession.get_genre_list()
-
-        itemArtistlist = [r[0] for r in listArtist_db]
-        itemGenrelist = [r[0] for r in list_genre]
 
         num_songs = 0
         tot_length = 0
@@ -348,10 +318,39 @@ def get_album_selected(id_album_selected):
                 num_songs += 1
                 tot_length += song.length
 
-        if (session['isArtist'] and album_artist):
-                return render_template("album-select-artist.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, itemArtistlist=itemArtistlist, itemGenrelist=itemGenrelist,playlist_list=playlist_list)
-        else:
-                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected,playlist_list=playlist_list)
+        playlist_list = FunctionSession.get_user_playlist(True)
+
+        if(session['isArtist']):
+
+                amIowner = (
+                        exists().
+                        where(AlbumArtist.id_artist == session['userid']).
+                        where(AlbumArtist.id_album == id_album_selected)
+                )
+
+                #stmt_album_artist = (
+                #        select(Album.name).
+                #        filter(Album.id.in_(subquery))
+                #)        
+         
+                #album_artist = None        
+                result = None        
+
+                try:
+                        result = local_session.execute(amIowner).scalar()    
+                        
+                except exc.SQLAlchemyError as e:
+                        return str(e.orig)     
+
+                listArtist_db = FunctionSession.get_artists_list(True)      
+                list_genre= FunctionSession.get_genre_list()
+
+                itemArtistlist = [r[0] for r in listArtist_db]
+                itemGenrelist = [r[0] for r in list_genre]             
+
+                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, playlist_list=playlist_list, itemArtistlist=itemArtistlist, itemGenrelist=itemGenrelist, owner = result)
+
+        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected,playlist_list=playlist_list, itemArtistlist=[], itemGenrelist=[], owner = False)
 
 
 @views.route('/album_added/<id_album>', methods=['GET', 'POST'])
@@ -427,21 +426,8 @@ def create_song(id_album):
 @views.route('/albums/<int:id_album_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
 def album_add_song(id_album_selected,idPlaylist_ToAddSong,id_song):
-        
-        insertPlaylistSong = PlaylistSong(id_playlist=idPlaylist_ToAddSong, id_song=id_song)
-        
-        try:
-                local_session.add(insertPlaylistSong)
-                local_session.commit()
 
-        except exc.SQLAlchemyError as e:
-                local_session.rollback()
-                return str(e.orig)
-        finally:                        
-                local_session.close()
-
-        
-        flash('Canzone aggiunta con successo', category='success') 
+        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)
 
         return get_album_selected(id_album_selected)
 
@@ -497,20 +483,8 @@ def get_artist_selected(id_artist_selected):
 @views.route('/artists/<int:id_artist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
 def artist_add_song(id_artist_selected,idPlaylist_ToAddSong,id_song):
-        
-        insertPlaylistSong = PlaylistSong(id_playlist=idPlaylist_ToAddSong, id_song=id_song)
 
-        try:
-                local_session.add(insertPlaylistSong)
-                local_session.commit()
-
-        except exc.SQLAlchemyError as e:
-                local_session.rollback()
-                return str(e.orig)
-        finally:                        
-                local_session.close()
-
-        flash('Canzone aggiunta con successo', category='success')
+        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)
 
         return get_artist_selected(id_artist_selected)
 
@@ -533,7 +507,8 @@ def search():
                 lookingFor = request.form['search']
 
 
-        list_art= FunctionSession.get_artists_list(False)
+        list_art= ( select(User.name).
+                    where(User.isArtist==True))
 
 
         list_alb= (select(Album.name))
@@ -563,7 +538,8 @@ def search_result(result=None):
                 lookingFor = request.form['search']
 
 
-        list_art= FunctionSession.get_artists_list(False)
+        list_art= ( select(User.name).
+                    where(User.isArtist==True))
 
         list_alb= (select(Album.name))
 
@@ -623,19 +599,8 @@ def search_result(result=None):
 @login_required
 def search_add_song(result, playlistId, songId):
 
-        insertPlaylistSong = PlaylistSong(id_playlist=playlistId, id_song=songId)
-
-        try:
-                local_session.add(insertPlaylistSong)
-                local_session.commit()
-
-        except exc.SQLAlchemyError as e:
-                local_session.rollback()
-                return str(e.orig)
-        finally:                        
-                local_session.close()
-
-        flash('Canzone aggiunta con successo', category='success')
+        FunctionSession.insert_playlist_song(playlistId, songId)
+        
 
         return search_result(result)
 

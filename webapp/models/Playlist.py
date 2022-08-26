@@ -19,17 +19,3 @@ class Playlist(Base):
     isPremium = Column(Boolean, default=False)
     songs = relationship("PlaylistSong", back_populates="playlist")
     users = relationship("UserPlaylist", back_populates="playlist")    
-
-
-@event.listens_for(Playlist, "after_insert")
-def after_insert(mapper, connection, target):
-
-    stmt = (insert(UserPlaylist).
-            values(id_playlist = target.id).
-            values(id_user = session['userid']))
-
-    connection.execute(stmt)
-    local_session.commit()
-
-    print ("insert into UserPlaylist: id_artist=" + str(session['userid']) + ', id_album=' + str(target.id))
-
