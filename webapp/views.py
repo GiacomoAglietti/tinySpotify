@@ -672,17 +672,62 @@ def profile():
 
         if (session['isArtist']):
 
+                listArtist_db = FunctionSession.get_artists_list(False)    
+
+
                 playlist_list = FunctionSession.get_user_playlist(True)
 
+                stmt_count_song=(
+                        select(func.count(Song.id)).
+                        join(SongArtist, Song.id == SongArtist.id_song).
+                        where(SongArtist.id_artist == session['userid'])
+                )
+
+                stmt_count_album=(
+                        select(func.count(Album.id)).
+                        join(AlbumArtist, AlbumArtist.id_album == Album.id).
+                        where(SongArtist.id_artist == session['userid'])
+                )
+
+                stmt_genre=(
+                        select(Song.genre, func.sum(Song.num_of_plays).label('tot_plays_genre')).
+                        join(SongArtist, SongArtist.id_song == Song.id).
+                        where(SongArtist.id_artist == session['userid']).
+                        group_by(Song.genre)
+                )
+
+                subq = stmt_genre.subquery()
+
+                stmt_max_genre=(
+                        select(stmt_genre.genre, func.max(stmt_genre.tot_plays_genre).label('max_plays_genre'))
+                )
 
                 stmt_song=(
-                        select(Song.id, Song.title, Song.length).
-                        order_by(Song.date_created)).limit(5)
+                        select(Song.id, Song.title, Song.length, Song.num_of_plays).
+                        join(SongArtist, SongArtist.id_song == Song.id).
+                        where(SongArtist.id_artist == session['userid']).
+                        order_by(Song.num_of_plays)).limit(5)
 
+                stmt_album=(
+                        select(Album.id, Album.name, func.sum(Song.num_of_plays).label('tot_plays')).
+                        join(Song, Song.id_album == Album.id).
+                        join(AlbumArtist, AlbumArtist.id_album == Album.id).
+                        where(AlbumArtist.id_artist == session['userid']).
+                        group_by(Album.id)).limit(5)
+
+                album_list = None
                 songs_list = None
-                listArtist_db = FunctionSession.get_artists_list(False)
+
+                count_song = None
+                count_album = None
+                top_genre = None
+
                 try:
-                        songs_list = local_session.execute(stmt_song).all()     
+                        album_list = local_session.execute(stmt_album).all()
+                        songs_list = local_session.execute(stmt_song).all()
+                        top_genre = local_session.execute(stmt_max_genre).scalar_one()
+                        count_song = local_session.execute(stmt_count_song).scalar_one()
+                        count_album = local_session.execute(stmt_count_album).scalar_one()
                         
                 except exc.SQLAlchemyError as e:
                         return str(e.orig)
@@ -690,7 +735,7 @@ def profile():
                 itemlist = [r[0] for r in listArtist_db]
 
 
-                return render_template("artist-profile.html", playlists = playlist_list, songs_list = songs_list,  itemlist = itemlist)
+                return render_template("artist-profile.html", playlists = playlist_list, album_list = album_list, songs_list = songs_list,  itemlist = itemlist, count_song = count_song, count_album = count_album, top_genre = top_genre)
         else:
                 return render_template("user-profile.html")
 
