@@ -40,7 +40,7 @@
                   <tr>
                     <td>{{ loop.index }}</td>
                     <td>{{ song.title }}</td>
-                    <td>{{10000 - (loop.index *15) }} </td>
+                    <td>{{ song.num_of_plays }} </td>
                   </tr>
                 {%- endfor -%}
               </tbody>
@@ -55,11 +55,11 @@
                 </tr>
               </thead>
               <tbody>
-                {%- for song in songs_list -%}
+                {%- for album in album_list -%}
                   <tr>
                     <td>{{ loop.index }}</td>
-                    <td>{{ song.title }}</td>
-                    <td>{{10000 - (loop.index *15) }} </td>
+                    <td>{{ album.name }}</td>
+                    <td>{{ album.tot_plays }} </td>
                   </tr>
                 {%- endfor -%}
               </tbody>
@@ -70,13 +70,19 @@
             <div class="container-ap">
               <div class="col">
                 <div class="row-ap">
-                  Numero totale canzoni: 15
+                  Numero totale canzoni: {{ count_song }}
                 </div>
                 <div class="row-ap">
-                  Numero totale album: 2
+                  Numero totale album: {{ count_album }}
                 </div>
                 <div class="row-ap">
-                  Genere più ascoltato: Pop
+                  Genere più ascoltato: {%- for genre in top_genre -%}
+                                          {% if loop.last %}
+                                            {{ top_genre.genre }} 
+                                          {% else %}
+                                            {{ top_genre.genre }},
+                                          {% endif %}
+                                        {%{%- endfor -%}
                 </div>
               </div>
             </div>
