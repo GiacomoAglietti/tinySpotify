@@ -2,7 +2,7 @@ from genericpath import exists
 from unittest import result
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy import insert, select, subquery, update, delete, func, exc
+from sqlalchemy import insert, select, subquery, update, delete, func, exc, desc
 from sqlalchemy.orm import aliased
 from webapp import db_session, conn
 from webapp.models.User import User
@@ -693,20 +693,15 @@ def profile():
                         select(Song.genre, func.sum(Song.num_of_plays).label('tot_plays_genre')).
                         join(SongArtist, SongArtist.id_song == Song.id).
                         where(SongArtist.id_artist == session['userid']).
-                        group_by(Song.genre)
-                )
-
-                subq = stmt_genre.subquery()
-
-                stmt_max_genre=(
-                        select(stmt_genre.genre, func.max(stmt_genre.tot_plays_genre).label('max_plays_genre'))
+                        group_by(Song.genre).
+                        order_by(desc(func.sum(Song.num_of_plays))).limit(1)
                 )
 
                 stmt_song=(
                         select(Song.id, Song.title, Song.length, Song.num_of_plays).
                         join(SongArtist, SongArtist.id_song == Song.id).
                         where(SongArtist.id_artist == session['userid']).
-                        order_by(Song.num_of_plays)).limit(5)
+                        order_by(desc(Song.num_of_plays))).limit(5)
 
                 stmt_album=(
                         select(Album.id, Album.name, func.sum(Song.num_of_plays).label('tot_plays')).
@@ -725,9 +720,9 @@ def profile():
                 try:
                         album_list = local_session.execute(stmt_album).all()
                         songs_list = local_session.execute(stmt_song).all()
-                        top_genre = local_session.execute(stmt_max_genre).scalar_one()
-                        count_song = local_session.execute(stmt_count_song).scalar_one()
-                        count_album = local_session.execute(stmt_count_album).scalar_one()
+                        top_genre = local_session.execute(stmt_genre).all()
+                        count_song = local_session.execute(stmt_count_song).scalar()
+                        count_album = local_session.execute(stmt_count_album).scalar()
                         
                 except exc.SQLAlchemyError as e:
                         return str(e.orig)

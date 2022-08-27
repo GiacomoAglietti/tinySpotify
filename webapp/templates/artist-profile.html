@@ -83,11 +83,11 @@
                 <div class="row-ap">
                   Genere più ascoltato: {%- for genre in top_genre -%}
                                           {% if loop.last %}
-                                            {{ top_genre.genre }} 
+                                            {{ genre.genre }} 
                                           {% else %}
-                                            {{ top_genre.genre }},
+                                            {{ genre.genre }},
                                           {% endif %}
-                                        {%{%- endfor -%}
+                                        {%- endfor -%}
                 </div>
               </div>
             </div>
