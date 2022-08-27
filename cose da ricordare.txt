@@ -70,6 +70,8 @@ function changeHearticon(icon, songId, id_playlist){
                         local_session.execute(update_song)
                         local_session.commit()     
 
+Motivo della funzione di aggregazione in Order by: https://docs.intersystems.com/irislatest/csp/docbook/DocBook.UI.Page.cls?KEY=RSQL_AGGREGATEFUNCTIONS#:~:text=An%20aggregate%20function%20cannot%20be,alias%20or%20selectItem%20sequence%20number.
+https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqlalchemy-query
 
 
 TODO:

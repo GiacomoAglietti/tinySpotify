@@ -686,7 +686,7 @@ def profile():
                 stmt_count_album=(
                         select(func.count(Album.id)).
                         join(AlbumArtist, AlbumArtist.id_album == Album.id).
-                        where(SongArtist.id_artist == session['userid'])
+                        where(AlbumArtist.id_artist == session['userid'])
                 )
 
                 stmt_genre=(
