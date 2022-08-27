@@ -9,26 +9,26 @@
 
 
 <main>
-    
-      <div class="row row-cols-1 row-cols-md-3 g-4">
-        {%- for playlist in playlists -%}
-          <div class="col">
-            <a href="{{url_for('views.get_playlist_selected',id_playlist_selected=playlist.id)}}">
-              <div class="card h-100" style="position:relative;">
-                <img src="https://bit.ly/3PiIDrx">
-                <div class="card-body">
-                    <h3>{{ playlist.name }} </h3>
-                    <form action="{{url_for('views.delete_playlist',id=playlist.id)}}" method="POST">
-                      <button type="submit"  class="btn" name="delete-playlist">
-                        <i class="bi bi-trash-fill" ></i>
-                      </button>  
-                    </form>                 
-                  </div>
+  <h4 class="h4-playlist" style="color: #fff; margin-bottom: 20px; margin-top: 20px">Playlist</h4>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {%- for playlist in playlists -%}
+      <div class="col">
+        <a href="{{url_for('views.get_playlist_selected',id_playlist_selected=playlist.id)}}">
+          <div class="card h-100" style="position:relative;">
+            <img src="https://bit.ly/3PiIDrx">
+            <div class="card-body">
+                <h3>{{ playlist.name }} </h3>
+                <form action="{{url_for('views.delete_playlist',id=playlist.id)}}" method="POST">
+                  <button type="submit"  class="btn" name="delete-playlist">
+                    <i class="bi bi-trash-fill" ></i>
+                  </button>  
+                </form>                 
               </div>
-            </a>
           </div>
-        {%- endfor -%}
+        </a>
       </div>
+    {%- endfor -%}
+  </div>
   
 </main>
 

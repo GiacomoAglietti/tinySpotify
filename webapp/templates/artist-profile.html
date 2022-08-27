@@ -13,7 +13,12 @@
             </div>
             <div class="col right">
                 <h6>PROFILO ARTISTA</h6>
-                <h4>{{session['username']}}</h4>        
+                <h4>{{session['username']}}</h4> 
+                {% if session['isPremium'] %}
+                  <h5>Sei un membro Premium! </h5>
+                {% else %}
+                  <h5>Non sei un membro Premium! </h5> <h5><a class="text-activate-premium-link" href="#" data-bs-toggle="modal" data-bs-target="#premium-subscribe">Diventa Premium a soli 9,99€</a></h5>
+                {% endif %}       
             </div>
             <div class="col right">
               <div class="buttons">
@@ -121,6 +126,34 @@
         </div>
         <div class="modal-footer">
           <button type="submit" class="btn btn-primary" name="create_album">Salva</button>
+        </div>
+      </div>
+      </div>
+  </div>
+</form>
+
+<form action="{{url_for('views.premium_subscription')}}" method="POST">
+  <div class="modal fade" id="premium-subscribe" tabindex="-1" aria-labelledby="addAlbumLabel" aria-hidden="true">
+      <div class="modal-dialog centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addAlbumLabel" style="color: black;">Attiva Premium</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <p>A soli 9,99€ potrai diventare un membro premium, che ti darà accesso a:</p>
+            <ol class="list-group list-group-numbered">
+              <li class="list-group-item">Nuove Playlist: saranno disponibili delle playlist contenenti le 10 migliori canzoni per ogni genere musicale</li>
+              <li class="list-group-item">Suggerimenti: in base alle canzoni salvate nelle tue playlist ti verranno suggerite delle nuove canzoni</li>
+            </ol>
+            <br>
+            <p style="font-size: 15px;">Se decidi di attivare il premium verrai reindirizzato al login</p>
+            </ol>
+          </div>    
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" name="create_album">Attiva</button>
         </div>
       </div>
       </div>

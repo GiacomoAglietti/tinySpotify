@@ -38,8 +38,8 @@ header h1{
 
 .card img{
   padding: 10px;
-  width: 180px;
-  height: 180px;
+  width: 170px;
+  height: 170px;
   align-self: center;
 }
 
@@ -78,10 +78,12 @@ header h1{
 
 .card .card-body form{ 
   text-align: center;
+  height: 50px;
 }
 .card .card-body form button{ 
   width: 100%;
   background: black;
+  margin: 0 !important;
 }
 
 /* artist-select style */
@@ -673,4 +675,16 @@ form .data label{
     color: rgb(189, 188, 188);
     text-decoration: underline;
     text-decoration-color: rgb(189, 188, 188);
-  } 
+  }
+
+  .text-activate-premium-link{
+    color: rgb(104, 100, 100);
+    text-decoration: underline !important;
+    text-decoration-color: rgb(104, 100, 100);
+  }
+
+  .text-activate-premium-link:hover{
+    color: rgb(136, 131, 131);
+    text-decoration: underline;
+    text-decoration-color: rgb(136, 131, 131);
+  }

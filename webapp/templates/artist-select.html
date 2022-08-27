@@ -71,43 +71,21 @@
         </tbody>
       </table>
       <h4 class="h4-album">Album</h4>
-      <div class="card-container">
-        <div class="row">
-          {%- for album in album_list -%}
-            <div class="col">
-              <a href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
-                <div class="card bg-dark">
-                    <img src="https://bit.ly/3PiIDrx">
-                    <div class="card-body">
-                      <h3>{{ album.name }}</h3>
-                      <h5>{{ album.year }}</h5>
-                    </div>
-                </div>
-              </a>
-            </div>        
-          {%- endfor -%}
-        </div>
-    </div>
-    <script>
-        function changeHearticon(icon, songId, id_playlist){
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/playlists/"+id_playlist, true);
-            
-            let typeIcon = null
-        
-            if (icon.classList.contains('bi-heart')) {
-                typeIcon="addToFav"
-                icon.classList.remove("bi-heart");
-                icon.classList.add("bi-heart-fill");
-            } else {
-                typeIcon="removeFromFav"
-                icon.classList.add("bi-heart");
-                icon.classList.remove("bi-heart-fill");
-            }
-            xhr.setRequestHeader('Content-Type', typeIcon);
-            xhr.send(songId);
-        }
-    </script>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {%- for album in album_list -%}
+          <div class="col">
+            <a href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
+              <div class="card h-100" style="position:relative;">
+                <img src="https://bit.ly/3PiIDrx">
+                <div class="card-body">
+                  <h3>{{ album.name }}</h3>
+                  <h5>{{ album.year }}</h5>                               
+                  </div>
+              </div>
+            </a>
+          </div>
+        {%- endfor -%}
+      </div>
 </main>
 
 {% endblock %}

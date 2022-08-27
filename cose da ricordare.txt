@@ -74,11 +74,11 @@ function changeHearticon(icon, songId, id_playlist){
 
 TODO:
 -sistemare statistiche utente
--sistemare le card
--sistemare la home con playlist premium
+-aggiungere bottone per aumentare i num_of_plays
+-sistemare la home con canzoni consigliate, ,playlist premium
 -creare pagina per errori
-fare in modo che altri artisti non possono modificare album di altri
 -creare playlist premium
+-mettere indici
 -aggiungere tasto per diventare premium per un utente/artista
 -sistemare title jinja
 -da sistemare icona nel cerca

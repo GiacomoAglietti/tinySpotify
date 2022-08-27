@@ -16,7 +16,7 @@ class Album(Base):
     image = Column(String(100))
     artists = relationship("AlbumArtist", back_populates="album")
     songs = relationship("Song",cascade="all,delete", back_populates="album")
-
+"""
 @event.listens_for(Album, "after_insert")
 def after_insert(mapper, connection, target):
     
@@ -27,3 +27,4 @@ def after_insert(mapper, connection, target):
     target.album_artist.append(newAlbumArtist)
 
     print ("insert into AlbumArtist: id_artist=" + session['userid'] + ', id_album=' + target.id)
+"""

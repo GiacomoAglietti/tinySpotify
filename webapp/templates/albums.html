@@ -9,21 +9,26 @@
 
 
 <main>
-    <div class="card-container">
-      <div class="row">
-        {%- for album in album_list -%}
-          <div class="col">
-            <a href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
-              <div class="card bg-dark">
-                  <img src="https://bit.ly/3PiIDrx">
-                  <div class="card-body">
-                    <h3>{{ album.name }}</h3>
-                  </div>
+  <h4 class="h4-album" style="color: #fff; margin-bottom: 20px; margin-top: 20px">Album</h4>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    {%- for album in album_list -%}
+      <div class="col">
+        <a href="{{url_for('views.get_album_selected',id_album_selected=album.id)}}">
+          <div class="card h-100" style="position:relative;">
+            <img src="https://bit.ly/3PiIDrx">
+            <div class="card-body">
+              <h3>{{ album.name }}</h3>
+              <h5>{{ album.year }}</h5>
+                <form action="{{url_for('views.delete_album',id=album.id)}}" method="POST">
+                  <button type="submit"  class="btn" name="delete-album">
+                    <i class="bi bi-trash-fill" ></i>
+                  </button>  
+                </form>                 
               </div>
-            </a>
           </div>
-        {%- endfor -%}
+        </a>
       </div>
+    {%- endfor -%}
   </div>
 </main>
 

@@ -78,8 +78,8 @@
           {%- endfor -%}
         </tbody>
       </table>
-      {% if owner %}
-      <form action="{{url_for('views.create_song', id_album=id_album)}}" method="POST">
+      
+      <form action="{{url_for('views.create_song', id_album=actual_album)}}" method="POST">
         <div class="modal fade" id="addSong" tabindex="-1" aria-labelledby="addSongLabel" aria-hidden="true">
             <div class="modal-dialog centered">
             <div class="modal-content">
@@ -126,13 +126,13 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
+                <button type="submit" class="btn btn-primary" name="create_album">Salva</button>
                 </div>
             </div>
             </div>
         </div>
       </form>
-      {% endif %}
+      
 </main>
 
 <script>

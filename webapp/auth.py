@@ -109,19 +109,17 @@ def signUp():
 
                 cur.execute("CALL create_fav_playlist(%s);", [newUser.id])    
 
-                conn.commit()
-                local_session.commit()
-                          
+                conn.commit()                          
             except exc.SQLAlchemyError as e:
                 local_session.rollback()
                 return str(e.orig)
             finally:
                 cur.close()
-                conn.close()                    
+                #conn.close()                    
                 local_session.close()
 
 
             flash('Account creato!', category='success')
-            return render_template("login.html")
+            return redirect(url_for('auth.login'))
 
     return render_template("signUp.html")

@@ -35,20 +35,23 @@ class FunctionSession:
                 where(PlaylistSong.id_playlist == id_playlist))
         songs = None
         try:            
-            songs = local_session.execute(stmt).all()
+            songs = local_session.execute(stmt).scalars()
                 
         except exc.SQLAlchemyError as e:
             return str(e.orig)
 
         return songs
 
-    def get_user_playlist(withFav):
+    
+    def get_user_playlist(withFav) -> list:
         playlists = None    
         if (withFav) :
             stmt = (
                 select(Playlist.id, Playlist.name).
                 join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
-                where(UserPlaylist.id_user == session['userid']))
+                where(UserPlaylist.id_user == session['userid']).
+                where(Playlist.isPremium == False).
+                order_by(Playlist.name))
             try:
                 playlists = local_session.execute(stmt).all()
                     
@@ -59,7 +62,9 @@ class FunctionSession:
                 select(Playlist.id, Playlist.name).
                 join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
                 where(UserPlaylist.id_user == session['userid']).
-                where(Playlist.name != session['id_fav_playlist']))
+                where(Playlist.id != session['id_fav_playlist']).
+                where(Playlist.isPremium == False).
+                order_by(Playlist.name))
             try:
                 playlists = local_session.execute(stmt).all()
                     
@@ -67,7 +72,7 @@ class FunctionSession:
                 return str(e.orig)
 
         return playlists
-
+    
     def get_albums_list():
         stmt = (
                 select(Album.name, Album.id, Album.year).
@@ -129,6 +134,6 @@ class FunctionSession:
                 local_session.rollback()
                 return str(e.orig)
         finally:
-                flash('Canzone aggiunta con successo', category='success')                       
+                flash('Canzone aggiunta con successo', category='success')                                       
                 local_session.close()
       
