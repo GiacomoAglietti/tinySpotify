@@ -11,22 +11,95 @@
     <header>
         <h1>Bentornato {{session['username']}}!</h1>
     </header>
+    {% if playlist_list %}
+        <hr style="color: black;">
+        <h4 class="h4-playlist" style="color: #fff; margin-bottom: 20px; margin-top: 20px">Playlist create da te</h4>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {%- for playlist in playlist_list -%}                                
+                <div class="col">
+                    <a href="{{url_for('views.get_playlist_selected',id_playlist_selected=playlist.id)}}">
+                    <div class="card h-100" style="position:relative;">
+                        <img src="https://bit.ly/3PiIDrx">
+                        <div class="card-body">
+                            <h3>{{ playlist.name }} </h3>            
+                        </div>
+                    </div>
+                    </a>
+                </div>           
+            {%- endfor -%}
+        </div>
+    {% endif %}
     {% if session['isPremium'] %} 
+        <hr style="color: black;">
         <h4 class="h4-playlist" style="color: #fff; margin-bottom: 20px; margin-top: 20px">Playlist Premium</h4>
         <div class="row row-cols-1 row-cols-md-3 g-4">
-        {%- for playlist in genre_playlists -%}
-            <div class="col">
-            <a href="{{url_for('views.get_playlist_selected',id_playlist_selected=playlist.id)}}">
-                <div class="card h-100" style="position:relative;">
-                <img src="https://bit.ly/3PiIDrx">
-                <div class="card-body">
-                    <h3>{{ playlist.name }} </h3>                             
+            {%- for playlist in genre_playlists -%}
+                <div class="col">
+                <a href="{{url_for('views.get_premium_playlist_selected',name_playlist_selected=playlist.name)}}">
+                    <div class="card h-100" style="position:relative;">
+                    <img src="https://bit.ly/3PiIDrx">
+                    <div class="card-body">
+                        <h3 style="white-space: normal;">{{ playlist.name }} </h3>                             
+                        </div>
                     </div>
+                </a>
                 </div>
-            </a>
-            </div>
-        {%- endfor -%}
+            {%- endfor -%}
         </div>
+        <hr style="color: black;">
+        <h4 class="h4-playlist" style="color: #fff; margin-bottom: 20px; margin-top: 20px">Canzoni consigliate</h4>
+        <table class="content-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>TITOLO</th>
+                <th>ALBUM</th>
+                {% if isPlPremium %}
+                  <th>N° ASCOLTI</th>
+                {% endif %}
+                <th><i class="bi bi-clock"></i></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {%- for song in list_songs_raccomemded -%}
+                <tr>
+                  <td>{{ loop.index }}</td>
+                  <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
+                  <td>{{ song.name_album }}</td>
+                  {% if isPlPremium %}
+                    <td>{{ song.tot_plays_genre }}</td>
+                  {% endif %}
+                  <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                  <td class="fav-col">                
+                    <div class="btn-group dropend">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                          <i class="bi bi-three-dots"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li class="submenu">
+                            <div class="btn-group dropstart btn-group-playlist">
+                                <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                    Aggiungi alla playlist
+                                    <i class="bi bi-caret-right-fill"></i>
+                                </button>
+                                <ul class="dropstart-menu playlist">
+                                  {%- for playlist in playlist_list -%}                                
+                                    <li><a class="dropdown-item-playlist" href="{{url_for('views.home_add_song', idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
+                                  {%- endfor -%}
+                                </ul>
+                              </div>
+                            </li>
+                          <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
+                          <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
+                        </ul>
+                    </div>
+                  </td>
+                  
+                </tr>
+              {%- endfor -%}
+            </tbody>
+        </table>
     {% endif %}      
 
 </main>

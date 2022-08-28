@@ -31,24 +31,98 @@ def home():
 
 @views.route('/home', methods=['GET', 'POST'])
 @login_required
-def home_authenticated():
+def home_authenticated():      
 
-        #TODO: sistemare home
-        #playlist = FunctionSession.get_user_playlist(False) 
-         
-        genre_playlists = None
 
-        stmt = (select(Playlist.id, Playlist.name).
+        stmt_playlist =(
+                select(Playlist.id, Playlist.name).
                 join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
                 where(UserPlaylist.id_user == session['userid']).
-                where(Playlist.isPremium == True))
-        try:
-                genre_playlists = local_session.execute(stmt).all()
-                
-        except exc.SQLAlchemyError as e:
-                return str(e.orig)      
+                where(Playlist.isPremium == False).
+                order_by(Playlist.name)).limit
 
-        return render_template("home.html" , genre_playlists=genre_playlists)
+        playlist_list = None
+        try:                     
+                playlist_list = local_session.execute(stmt_playlist).all()
+        except exc.SQLAlchemyError as e:
+                return str(e.orig)
+
+        for playlist in playlist_list:
+                if(playlist.id == session['id_fav_playlist']):
+                        playlist_list.remove(playlist)
+
+        
+        genre_playlists = None
+        list_songs_raccomemded =None
+        if(session['isPremium']):
+         
+
+                genre_playlists_stmt = (select(Playlist.id, Playlist.name).
+                        join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
+                        where(UserPlaylist.id_user == session['userid']).
+                        where(Playlist.isPremium == True))
+
+                stmt_genre=(
+                        select(Song.genre).
+                        join(SongArtist, SongArtist.id_song == Song.id).
+                        where(SongArtist.id_artist == session['userid']).
+                        group_by(Song.genre).
+                        order_by(desc(func.sum(Song.num_of_plays))).limit(1)
+                )
+
+                songs_already_added_stmt = (
+                                select(PlaylistSong.id_song).
+                                join(UserPlaylist, UserPlaylist.id_playlist == PlaylistSong.id_playlist).
+                                where(UserPlaylist.id_user == session['userid'])
+                )              
+                
+
+                if(session['isArtist']):                      
+      
+                        songs_created_stmt = (
+                                select(SongArtist.id_song).
+                                where(SongArtist.id_artist == session['userid'])
+                        )
+                        stmt_songs_raccomended=(
+                                select(Song.id,  Song.title, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'), Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                join(SongArtist, SongArtist.id_song == Song.id).
+                                join(User, User.id == SongArtist.id_artist).
+                                join(Album, Song.id_album == Album.id).
+                                where(SongArtist.id_artist == session['userid']).
+                                where(Song.genre.in_(stmt_genre)).
+                                where(Song.id.notin_(songs_already_added_stmt)).
+                                where(Song.id.notin_(songs_created_stmt)).
+                                group_by(Song.id,  Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                order_by(desc(func.sum(Song.num_of_plays))).limit(5)
+                        )
+                else:
+                        stmt_songs_raccomended=(
+                                select(Song.id,  Song.title, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'), Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                join(SongArtist, SongArtist.id_song == Song.id).
+                                join(User, User.id == SongArtist.id_artist).
+                                join(Album, Song.id_album == Album.id).
+                                where(SongArtist.id_artist == session['userid']).
+                                where(Song.genre.in_(stmt_genre)).
+                                where(Song.id.notin_(songs_already_added_stmt)).
+                                group_by(Song.id,  Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                order_by(desc(func.sum(Song.num_of_plays))).limit(5)
+                        )
+        
+                try:
+                        genre_playlists = local_session.execute(genre_playlists_stmt).all()
+                        list_songs_raccomemded = local_session.execute(stmt_songs_raccomended).all()                        
+                except exc.SQLAlchemyError as e:
+                        return str(e.orig)        
+
+        return render_template("home.html" , genre_playlists=genre_playlists, list_songs_raccomemded=list_songs_raccomemded,playlist_list=playlist_list)
+
+@views.route('/home/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
+@login_required
+def home_add_song(idPlaylist_ToAddSong,id_song):      
+
+        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)              
+
+        return home_authenticated()
 
 @views.route('/create-playlist', methods=['GET', 'POST'])
 @login_required
@@ -89,9 +163,10 @@ def playlists():
         playlists = None
 
         stmt = (
-        select(Playlist.id, Playlist.name).
+                select(Playlist.id, Playlist.name).
                 join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
                 where(UserPlaylist.id_user == session['userid']).
+                where(Playlist.isPremium == False).
                 where(UserPlaylist.id_playlist != session['id_fav_playlist']))
         try:
                 playlists = local_session.execute(stmt).all()
@@ -163,6 +238,53 @@ def get_playlist_selected(id_playlist_selected):
         
 
         stmt_playlist =(
+                select(Playlist.id, Playlist.name).
+                join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
+                where(UserPlaylist.id_user == session['userid']).
+                where(Playlist.isPremium == False).
+                order_by(Playlist.name))
+
+        songsPlaylist = None
+        playlist_list = None
+
+        try:            
+            songsPlaylist = local_session.execute(stmt_song).all()
+            playlist_list = local_session.execute(stmt_playlist).all()
+                
+        except exc.SQLAlchemyError as e:
+            return str(e.orig)
+
+        playlist_name=None
+
+        for playlist in playlist_list:
+                if(id_playlist_selected == playlist.id):
+                        playlist_name=playlist.name
+
+        num_songs = 0
+        tot_length = 0
+
+        for song in songsPlaylist:
+                num_songs += 1
+                tot_length += song.length
+
+        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=False)
+
+@views.route('/playlists/<string:name_playlist_selected>', methods=['GET', 'POST'])
+@login_required
+def get_premium_playlist_selected(name_playlist_selected):
+
+
+        stmt_song= (
+                select(Song.id, Song.title, Song.genre, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'),  Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
+                where(Song.genre == name_playlist_selected).
+                group_by(Song.genre, Song.id, Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                order_by(desc(func.sum(Song.num_of_plays))).limit(10)
+        )
+
+        stmt_playlist =(
                 select(Playlist.id, Playlist.name, Playlist.isPremium).
                 join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
                 where(UserPlaylist.id_user == session['userid']).
@@ -178,17 +300,17 @@ def get_playlist_selected(id_playlist_selected):
         except exc.SQLAlchemyError as e:
             return str(e.orig)
 
-        playlist_name=None
+        id_playlist_selected=None
         isPlPremium = False
         playlist_list = []
 
         for playlist in all_playlist_list:
-                playlist_list.append(playlist.name)
-                if(id_playlist_selected == playlist.id):
-                        playlist_name=playlist.name
-                        if(playlist.isPremium):
+                if(playlist.isPremium):
+                        if(name_playlist_selected == playlist.name):
+                                id_playlist_selected=playlist.id
                                 isPlPremium = True
-
+                else:
+                        playlist_list.append(playlist)          
         
         num_songs = 0
         tot_length = 0
@@ -197,7 +319,8 @@ def get_playlist_selected(id_playlist_selected):
                 num_songs += 1
                 tot_length += song.length
 
-        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=isPlPremium)
+        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = name_playlist_selected, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=isPlPremium)
+
 
 @views.route('/playlists/<int:id_playlist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
