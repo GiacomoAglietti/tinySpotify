@@ -131,6 +131,9 @@ header h1{
   text-overflow: ellipsis;
 }
 
+*/
+
+
 h3{
   color: #fff;
   font-size: 30px;
@@ -138,7 +141,6 @@ h3{
   padding-top: 20px;
   font-weight: bold;
 }
-*/
 
 
 /* playlist-select, album-select, artists-select style */
@@ -179,32 +181,36 @@ h3{
 }
 
 .button-container{
-    height: auto;
-    width: 90%;
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-    margin-bottom: 20px;
-    position: relative;
-    /* border: 1px solid #fff; */
+  border: none;
+  background: none;
+  height: auto;
+  display: flex;
+  align-items: center;
+  position: relative;
 }
 
-.button-container .row .col i{
-    color: rgb(0, 255, 76);
-    font-size: 30px;
+.col-b{
+  width: 25px;
 }
 
-.button-container .row .col .bi-play-circle-fill{
-    font-size: 50px;
+.row-b{
+  width: 25px;
 }
 
-.button-container .row .col .bi-play-circle-fill:hover{
-    font-size: 51px;
+.button-container .row-b .col-b i{
+  color: rgb(0, 183, 255);
+}
+
+.button-container .row-b .col-b .bi-play-circle-fill{
+    font-size: 18px;
+}
+
+.button-container .row-b .col-b .bi-play-circle-fill:hover{
+    font-size: 23px;
 }
 
 
-.button-container .row .share{
-    margin-left: 8px;
+.button-container .row-b .share{
     align-self: center;  
 }
 
@@ -571,6 +577,10 @@ form .data label{
   /*overflow: hidden;*/
   overflow: inherit;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.col-ap{
+  position: relative;
 }
 
 .h1ap{

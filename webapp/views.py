@@ -835,9 +835,14 @@ def profile():
                         where(AlbumArtist.id_artist == session['userid']).
                         group_by(Album.id)).limit(5)
 
+                stmt_user=(
+                        select(User.name, User.email).
+                        where(User.id == session['userid'])
+                )
+
                 album_list = None
                 songs_list = None
-
+                user_in = None
                 count_song = None
                 count_album = None
                 top_genre = None
@@ -848,6 +853,7 @@ def profile():
                         top_genre = local_session.execute(stmt_genre).all()
                         count_song = local_session.execute(stmt_count_song).scalar()
                         count_album = local_session.execute(stmt_count_album).scalar()
+                        user_in = local_session.execute(stmt_user).all()
                         
                 except exc.SQLAlchemyError as e:
                         return str(e.orig)
@@ -855,9 +861,23 @@ def profile():
                 itemlist = [r[0] for r in listArtist_db]
 
 
-                return render_template("artist-profile.html", playlists = playlist_list, album_list = album_list, songs_list = songs_list,  itemlist = itemlist, count_song = count_song, count_album = count_album, top_genre = top_genre)
+                return render_template("artist-profile.html", playlists = playlist_list, album_list = album_list, songs_list = songs_list,  itemlist = itemlist, count_song = count_song, count_album = count_album, top_genre = top_genre, user_in = user_in)
         else:
-                return render_template("user-profile.html")
+
+                stmt_user=(
+                        select(User.name, User.email).
+                        where(User.id == session['userid'])
+                )
+
+                user_in = None
+
+                try:
+                        user_in = local_session.execute(stmt_user).all()
+
+                except exc.SQLAlchemyError as e:
+                        return str(e.orig)
+
+                return render_template("user-profile.html", user_in = user_in)
 
 @views.route('/profile/premium-subscription', methods=['GET', 'POST'])
 @login_required
