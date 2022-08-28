@@ -77,6 +77,7 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 TODO:
 -aggiungere bottone per aumentare i num_of_plays
 -creare pagina per errori
+-sistemare i title nei file html
 -mettere indici
 -aggiungere tasto per diventare premium per un utente/artista
 -sistemare title jinja

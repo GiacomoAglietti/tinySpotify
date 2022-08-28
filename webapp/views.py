@@ -44,12 +44,14 @@ def home_authenticated():
         playlist_list = None
         try:                     
                 playlist_list = local_session.execute(stmt_playlist).all()
-        except exc.SQLAlchemyError as e:
-                return str(e.orig)
 
-        for playlist in playlist_list:
-                if(playlist.id == session['id_fav_playlist']):
-                        playlist_list.remove(playlist)
+        except Exception as e:
+                print(e)
+
+        if(playlist_list):
+                for playlist in playlist_list:
+                        if(playlist.id == session['id_fav_playlist']):
+                                playlist_list.remove(playlist)
 
         
         genre_playlists = None
@@ -952,3 +954,8 @@ def create_album():
         
         return get_album_selected(album.id)
 
+@views.route('/page-not-found')
+@login_required
+def page_not_found():
+
+        return render_template("page-not-found.html")
