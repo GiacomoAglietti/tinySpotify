@@ -27,11 +27,41 @@
             </div>
         </div>
     </div>
+    <div class="h1ap">Account</div>
+    <div class="container-ap">
+        <table width="100%">
+            <tr>
+                <th>
+                    <div class="col-ap">
+                        <div class="row-ap">Nome utente:</div>
+                        <div class="row-ap">Email:</div>
+                        <div class="row-ap">Account premium:</div>
+                    </div>
+                </th>
+                <th>
+                    <div class="col-ap">
+                        {% for user in user_in %}
+                        <div class="row-ap"> {{ user.name }} </div>
+                        <div class="row-ap"> {{ user.email }} </div>
+                        <div class="row-ap"> 
+                            {%if session['isPremium'] %}
+                                Si 
+                            {% else %}
+                                No <h5><a class="text-activate-premium-link" href="#" data-bs-toggle="modal" data-bs-target="#premium-subscribe">Diventa Premium a soli 9,99€</a></h5>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <hr style="color: black;">
     <table width="100%">
       <thead>
         <tr>
           <th>
-            <h3 color="#fff">Canzoni con più ascolti</h3>
+            <div class="h1ap">Canzoni con più ascolti</div>
             <table class="artist-table">
               <thead>
                 <tr>
@@ -50,7 +80,7 @@
                 {%- endfor -%}
               </tbody>
             </table>
-            <h3 color="#fff">Album con più ascolti</h3>
+            <div class="h1ap">Album con più ascolti</div>
             <table class="artist-table">
               <thead>
                 <tr>
@@ -73,7 +103,7 @@
           <th>
             <div class="h1ap">Statistiche</div>
             <div class="container-ap">
-              <div class="col">
+              <div class="col-ap">
                 <div class="row-ap">
                   Numero totale canzoni: {{ count_song }}
                 </div>

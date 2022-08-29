@@ -28,17 +28,11 @@
           {% endif %}
         </div>
     </div>
-    <div class="button-container">
-        <div class="row">
-            <div class="col">
-                <i class="bi bi-play-circle-fill"></i>
-            </div>
-        </div>
-    </div>
     <table class="content-table">
         <thead>
           <tr>
             <th>#</th>
+            <th></th>
             <th>TITOLO</th>
             <th>N° ASCOLTI</th>
             <th><i class="bi bi-clock"></i></th>
@@ -49,8 +43,10 @@
           {%- for song in songs_list -%}
             <tr>
               <td>{{ loop.index }}</td>
+              <td>
+                <button class="button-container"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></div></td>
               <td>{{ song.title }}</td>
-              <td>{{ song.num_of_plays }}</td>
+              <td id="plays">{{ song.num_of_plays }}</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
@@ -131,7 +127,7 @@
                   </div>
                 </div>
                 <div class="modal-footer">
-                <button type="submit" class="btn btn-primary" name="create_album">Salva</button>
+                <button type="submit" class="btn btn-primary" name="create_song">Salva</button>
                 </div>
             </div>
             </div>
