@@ -124,16 +124,24 @@ class FunctionSession:
         return genres
 
     def insert_playlist_song(playlistId, songId):
-        insertPlaylistSong = PlaylistSong(id_playlist=playlistId, id_song=songId)
 
-        try:
-                local_session.add(insertPlaylistSong)
-                local_session.commit()
+        exists_PlaylistSong = local_session.execute(
+            select(PlaylistSong).
+            where(PlaylistSong.id_playlist==playlistId).
+            where(PlaylistSong.id_song==songId)).scalar()
 
-        except exc.SQLAlchemyError as e:
-                local_session.rollback()
-                return str(e.orig)
-        finally:
-                flash('Canzone aggiunta con successo', category='success')                                       
-                local_session.close()
+        if(exists_PlaylistSong is not None):
+            flash('La canzone è già presente nella playlist', category='error')
+        else:
+            insertPlaylistSong = PlaylistSong(id_playlist=playlistId, id_song=songId)
+            try:
+                    local_session.add(insertPlaylistSong)
+                    local_session.commit()
+
+                    flash('Canzone aggiunta con successo', category='success')                                       
+            except exc.SQLAlchemyError as e:
+                    local_session.rollback()
+                    return str(e.orig)
+            finally:
+                    local_session.close()
       

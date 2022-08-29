@@ -1,6 +1,6 @@
 {% extends "base.html" %} 
 
-{% block title %}Home
+{% block title %}{{album_name}}
 {% endblock %}
 
 {% block content %}
@@ -13,8 +13,10 @@
           </div>
           <div class="col right">
               <h6>ALBUM</h6>
-              <h5>--Da Aggiungere Artista qui--</h5>
-              <h5>{{album_name}}</h5>
+              {% for album in album_info%}
+                <h5>{{album.name}}</h5>
+                <h5>{{album.nameArtist}}</h5>
+              {% endfor %}
               <h5>{{num_songs}} brani, {{tot_length// 3600 }} ore {{tot_length// 60 }} minuti  </h5>
           </div>
           {% if owner %}
@@ -69,6 +71,9 @@
                             </ul>
                         </div>
                       </li>
+                      {% if owner %}
+                        <li><a class="dropdown-item" href="{{url_for('views.album_remove_song', id_album_selected=actual_album, id_song=song.id)}}">Rimuovi da questo album</a></li>
+                      {% endif %}
                       <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
                       <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=actual_album)}}">Vai all'album</a></li>
                     </ul>

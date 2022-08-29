@@ -75,24 +75,19 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 
 
 TODO:
+-sistemare immagini
+-togliere num_of_plays in Genre
 -aggiungere bottone per aumentare i num_of_plays
--creare pagina per errori
--sistemare i title nei file html
 -mettere indici
--aggiungere tasto per diventare premium per un utente/artista
--sistemare title jinja
--da sistemare icona nel cerca
--aggiungere flash message dove necessario
--gestire l'eccezione di una doppia canzone + messaggio d'errore
--gestire l'eccezione di un utente già presente (email e/o name)+ messaggio d'errore
--fare trigger per annullare inserimento doppio album + messaggio d'errore
+-sistemare minuti e song nell'aggiunta di una canzone nell'album
 
 
 assunzioni:
 -si assume che non si può avere due o più canzoni uguali nella stessa playlist
--ogni utente ha le sue playlist e non si possono condividere
+-ogni utente ha le sue playlist e delle playlist premium
 -ogni canzone può far parte solo di un album
-
+-una playlist non può avere due o più canzoni uguali
+-una album non può avere due o più canzoni uguali
 
 
 

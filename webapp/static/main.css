@@ -24,6 +24,14 @@ header{
   margin-top: 5vh;
 }
 
+#flash-msg-close-btn{
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  padding: 1.25rem 1rem;
+}
+
 /* home, albums, playlist, artist-select and search styles*/
 
 header h1{
@@ -688,3 +696,31 @@ form .data label{
     text-decoration: underline;
     text-decoration-color: rgb(136, 131, 131);
   }
+
+  /* page-not-found */
+.form-page-not-found{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.form-page-not-found h1, h5{
+  color: #fff;
+}
+
+.form-page-not-found h5{
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.form-page-not-found a{
+  background-color: transparent;
+  border: none;
+}
+.form-page-not-found a:hover{
+  background-color: transparent;
+  border: none;
+}
+  

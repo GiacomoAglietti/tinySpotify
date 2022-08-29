@@ -83,8 +83,20 @@ def signUp():
         elif password != passwordc:
             flash('Le password non corrispondono', category='error')
         else:
-            newUser = None
+
+            exists_name = local_session.execute(select(User.name).where(User.name == nomeUtente)).scalar()
+
+            exists_email = local_session.execute(select(User.email).where(User.email == email)).scalar()
+
+            if(exists_name is not None):
+                flash('Il nome utente esiste già', category='error')
+                return render_template("signUp.html")
+            if (exists_email is not None):
+                flash('L\'email esiste già', category='error')
+                return render_template("signUp.html")
+
             
+            newUser = None
             if (selectResult == 'No'):
                 newUser = User(
                     name=nomeUtente, 
@@ -109,17 +121,17 @@ def signUp():
 
                 cur.execute("CALL create_fav_playlist(%s);", [newUser.id])    
 
-                conn.commit()                          
+                conn.commit()  
+                flash('Account creato!', category='success')
+                return redirect(url_for('auth.login'))
             except exc.SQLAlchemyError as e:
                 local_session.rollback()
                 return str(e.orig)
-            finally:
-                cur.close()
-                #conn.close()                    
-                local_session.close()
-
-
-            flash('Account creato!', category='success')
-            return redirect(url_for('auth.login'))
-
+                
+            finally:                   
+                cur.close()                  
+                local_session.close()            
+    
     return render_template("signUp.html")
+
+        

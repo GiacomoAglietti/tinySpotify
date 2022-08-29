@@ -19,13 +19,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <title>
+      Pagina non trovata
+    </title>
+
   </head>
-  <body>
-    <div class="form-container">
+  <body style="background-color: rgba(0,0,0,.75);">
+    <div class="form-page-not-found">
       <h1> Pagina non trovata</h1>
-      <div class="btn">
+      <h5> Non riusciamo a trovare la pagina che cerchi</h5>
+      <div class="btn" style="background: black;">
       <a class="btn btn-primary" href="{{url_for('views.home_authenticated')}}" role="button">Torna alla Home</a>
       </div>
-   </div>
+    </div>
   </body>
 

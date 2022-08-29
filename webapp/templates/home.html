@@ -21,8 +21,13 @@
                     <div class="card h-100" style="position:relative;">
                         <img src="https://bit.ly/3PiIDrx">
                         <div class="card-body">
-                            <h3>{{ playlist.name }} </h3>            
-                        </div>
+                            <h3>{{ playlist.name }} </h3>
+                            <form action="{{url_for('views.delete_playlist',id=playlist.id)}}" method="POST">
+                              <button type="submit"  class="btn" name="delete-playlist">
+                                <i class="bi bi-trash-fill" ></i>
+                              </button>  
+                            </form>             
+                        </div>                        
                     </div>
                     </a>
                 </div>           

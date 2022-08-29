@@ -18,6 +18,9 @@
       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
   
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+
+    <title>Login</title>
+
   </head>
   <body>
     
@@ -28,12 +31,12 @@
             {% if category == 'error' %}
               <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" id="flash-msg-close-btn" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
             {% else %}
               <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" id="flash-msg-close-btn" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
             {% endif %} 
           {% endfor %} 

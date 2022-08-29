@@ -28,7 +28,7 @@ def create_app():
 
     
 
-    app = Flask(__name__)
+    app = Flask(__name__, template_folder='templates')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = connection_string
     #app.config['DATABASE_URL'] = connection_string_elephantSQL
