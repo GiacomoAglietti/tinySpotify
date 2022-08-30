@@ -44,9 +44,9 @@
             <tr>
               <td>{{ loop.index }}</td>
               <td>
-                <button class="button-container"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></div></td>
+                <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('plays{{song.id}}', '{{actual_album}}', '{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
               <td>{{ song.title }}</td>
-              <td id="plays">{{ song.num_of_plays }}</td>
+              <td id="plays{{song.id}}">{{ song.num_of_plays }}</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
@@ -183,7 +183,19 @@
     option.innerHTML = tmpList[j];
     select.appendChild(option);    
   }
-  
+
+  function addPlays(plays, id_album, songId){
+      var element = document.getElementById(plays);
+      var value = element.innerHTML;
+      ++value;
+      document.getElementById(plays).innerHTML = value;
+      sender = JSON.stringify(value, songId);
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/albums/"+id_album, true);
+      xhr.setRequestHeader('Content-type', 'addPlays');
+      xhr.send(songId);
+  }
+
 </script>
 
 {% endblock %}
