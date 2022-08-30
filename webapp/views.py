@@ -1006,9 +1006,7 @@ def get_artist_selected(id_artist_selected):
         for song in songs_list:
                 print(song)
 
-        #songs_list = reversed(sorted(songs_list, key=lambda song: {for k,v in song.items(): if(k=='num_of_plays'): print(v)  } if (type(song)==dict) else song.num_of_plays))
-
-
+        songs_list = reversed(sorted(songs_list, key=lambda song: next(v for k,v in song.items() if(k=='num_of_plays')) if (type(song)==dict) else song.num_of_plays))
 
         return render_template("artist-select.html", songs_list = songs_list, album_list = album_list,actual_artist=id_artist_selected, tot_length=tot_length, artist_name=artist_name,playlist_list=playlist_list)
 
