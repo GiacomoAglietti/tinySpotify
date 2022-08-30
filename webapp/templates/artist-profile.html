@@ -9,16 +9,11 @@
     <div class="playlist-select-container">
         <div class="row">
             <div class="col left">
-                <img src="https://bit.ly/3PiIDrx" alt="nomeAlbum">
+                <img src="https://bit.ly/3PiIDrx" alt="nomeAlbum" style="border-radius: 50%;">
             </div>
             <div class="col right">
                 <h6>PROFILO ARTISTA</h6>
-                <h4>{{session['username']}}</h4> 
-                {% if session['isPremium'] %}
-                  <h5>Sei un membro Premium! </h5>
-                {% else %}
-                  <h5>Non sei un membro Premium! </h5> <h5><a class="text-activate-premium-link" href="#" data-bs-toggle="modal" data-bs-target="#premium-subscribe">Diventa Premium a soli 9,99€</a></h5>
-                {% endif %}       
+                <h4>{{session['username']}}</h4>      
             </div>
             <div class="col right">
               <div class="buttons">
@@ -153,7 +148,7 @@
           <div id="new-artist" style="display: none;">
             <form id="form">
               <div class="form-group">
-                <label style="color: black;">Inserire numero di artisti</label>
+                <label style="color: black;">Inserire numero di artisti da aggiungere</label>
                 <input type="number" id="idname" oninput="fun()" value="" min="0"max="20" name="numArtist">
                 <div id="parent"></div>
               </div>

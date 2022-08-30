@@ -67,6 +67,64 @@
         </thead>
         <tbody>
           {%- for song in songs_list -%}
+            {% if song is mapping %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ song.title }}<br>
+                  {% for key, value in song.artists_data.items() %}
+                    {% if loop.last %}
+                    <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a> 
+                    {% else %}
+                    <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a>,
+                    {% endif %}
+                  {% endfor %}
+                </td>
+                <td>{{ song.name_album }}</td>
+                {% if isPlPremium %}
+                  <td>{{ song.tot_plays_genre }}</td>
+                {% endif %}
+                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td class="fav-col">                
+                  <div class="btn-group dropend">
+                      <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li class="submenu">
+                          <div class="btn-group dropstart btn-group-playlist">
+                              <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                  Aggiungi alla playlist
+                                  <i class="bi bi-caret-right-fill"></i>
+                              </button>
+                              <ul class="dropstart-menu playlist">
+                                {%- for playlist in playlist_list -%}                                
+                                  <li><a class="dropdown-item-playlist" href="{{url_for('views.playlist_add_song', id_playlist_selected=actual_playlist, idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
+                                {%- endfor -%}
+                              </ul>
+                            </div>
+                          </li>
+                        {% if not isPlPremium %}
+                          <li><a class="dropdown-item" href="{{url_for('views.playlist_remove_song', id_playlist_selected=actual_playlist, id_song=song.id)}}">Rimuovi da questa playlist</a></li>
+                        {% endif %}
+                        <li class="submenu">
+                          <div class="btn-group dropstart btn-group-playlist">
+                              <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                Vai all'artista
+                                  <i class="bi bi-caret-right-fill"></i>
+                              </button>
+                              <ul class="dropstart-menu artist">
+                                {% for key, value in song.artists_data.items() %}
+                                <li><a class="dropdown-item-playlist" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a></li>
+                                {% endfor %}
+                              </ul>
+                          </div>
+                        </li>
+                        <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
+                      </ul>
+                  </div>
+                </td>
+              </tr>
+            {% else %}
             <tr>
               <td>{{ loop.index }}</td>
               <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
@@ -74,36 +132,36 @@
               {% if isPlPremium %}
                 <td>{{ song.tot_plays_genre }}</td>
               {% endif %}
-              <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
-              <td class="fav-col">                
-                <div class="btn-group dropend">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
-                      <i class="bi bi-three-dots"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                      <li class="submenu">
-                        <div class="btn-group dropstart btn-group-playlist">
-                            <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
-                                Aggiungi alla playlist
-                                <i class="bi bi-caret-right-fill"></i>
-                            </button>
-                            <ul class="dropstart-menu playlist">
-                              {%- for playlist in playlist_list -%}                                
-                                <li><a class="dropdown-item-playlist" href="{{url_for('views.playlist_add_song', id_playlist_selected=actual_playlist, idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
-                              {%- endfor -%}
-                            </ul>
-                          </div>
-                        </li>
-                      {% if not isPlPremium %}
-                        <li><a class="dropdown-item" href="{{url_for('views.playlist_remove_song', id_playlist_selected=actual_playlist, id_song=song.id)}}">Rimuovi da questa playlist</a></li>
-                      {% endif %}
-                      <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
-                      <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
-                    </ul>
-                </div>
-              </td>
-              
-            </tr>
+                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td class="fav-col">                
+                  <div class="btn-group dropend">
+                      <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                        <i class="bi bi-three-dots"></i>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li class="submenu">
+                          <div class="btn-group dropstart btn-group-playlist">
+                              <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                  Aggiungi alla playlist
+                                  <i class="bi bi-caret-right-fill"></i>
+                              </button>
+                              <ul class="dropstart-menu playlist">
+                                {%- for playlist in playlist_list -%}                                
+                                  <li><a class="dropdown-item-playlist" href="{{url_for('views.playlist_add_song', id_playlist_selected=actual_playlist, idPlaylist_ToAddSong=playlist.id, id_song=song.id)}}">{{ playlist.name }}</a></li>
+                                {%- endfor -%}
+                              </ul>
+                            </div>
+                          </li>
+                        {% if not isPlPremium %}
+                          <li><a class="dropdown-item" href="{{url_for('views.playlist_remove_song', id_playlist_selected=actual_playlist, id_song=song.id)}}">Rimuovi da questa playlist</a></li>
+                        {% endif %}
+                        <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
+                        <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
+                      </ul>
+                  </div>
+                </td>
+              </tr>
+            {% endif %}
           {%- endfor -%}
         </tbody>
       </table>

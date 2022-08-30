@@ -76,18 +76,18 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 
 TODO:
 -sistemare immagini
--togliere num_of_plays in Genre
+-sistemare close-btn nei form
 -aggiungere bottone per aumentare i num_of_plays
+-togliere num_of_plays in Genre
 -mettere indici
--sistemare minuti e song nell'aggiunta di una canzone nell'album
+-sistemare minuti e song nell'aggiunta di una canzone nell'album (non si può aggiungere una canzone con x>0 minuti e 0 secondi)
 
 
-assunzioni:
--si assume che non si può avere due o più canzoni uguali nella stessa playlist
--ogni utente ha le sue playlist e delle playlist premium
+si assume che:
+-ogni utente ha le sue playlist e le playlist premium solo se utente premium
 -ogni canzone può far parte solo di un album
 -una playlist non può avere due o più canzoni uguali
--una album non può avere due o più canzoni uguali
+-una artista non può creare due o più canzoni uguali
 
 
 

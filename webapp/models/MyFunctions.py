@@ -73,26 +73,22 @@ class FunctionSession:
 
         return playlists
     
-    def get_albums_list():
+    def get_albums_list_stmt(id_artist):
         stmt = (
-                select(Album.name, Album.id, Album.year).
+                select(Album.name, Album.id, Album.year, User.name.label('name_artist'), User.id.label("id_artist")).
                 join(AlbumArtist, AlbumArtist.id_album==Album.id).
-                where(AlbumArtist.id_artist==session['userid']).
-                order_by(Album.year))
-        albums = None
-        try:
-            albums = local_session.execute(stmt).all()            
-                
-        except exc.SQLAlchemyError as e:
-            return str(e.orig)
+                join(User, User.id==AlbumArtist.id_artist).
+                where(AlbumArtist.id_artist==id_artist).
+                order_by(Album.name, Album.year, Album.id))
+        
 
-        return albums
+        return stmt
 
-    def get_artists_list(noCurrentArtist):
+    def get_artists_list(noCurrentArtist) -> list:
         artists = None
         if(noCurrentArtist) :
             stmt = (
-                    select(User.name).
+                    select(User.name, User.id).
                     where(User.isArtist==True).
                     where(User.name != session['username']))
             try:
@@ -102,7 +98,7 @@ class FunctionSession:
 
         else :
             stmt = (
-                    select(User.name).
+                    select(User.name, User.id).
                     where(User.isArtist==True))
             try:
                 artists = local_session.execute(stmt).all()     

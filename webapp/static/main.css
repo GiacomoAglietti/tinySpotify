@@ -94,61 +94,13 @@ header h1{
   margin: 0 !important;
 }
 
-/* artist-select style */
-/*
-
-.card-container{
+/*artist-select style*/
+.h4-album, .h4-popular-song{
   margin-left: 15px;
-  width: 90%;
-  height: 100%;
-  display: flex;
-  /* align-items: center; */
-  /*
-  justify-content: space-between;
-   
-}*/
-/*
-.card{
-  width: 200px;
-  position: relative;
-}
-
-.card img{
-  padding: 10px;
-  width: 200px;
-  height: 200px;
-  align-self: center;
-}
-
-.card .img-artist{
-  border-radius: 50%;
-}
-
-.col{
-  padding-top: 15px;
-  position: relative;
-}
-
-.card-body h3{
-  width: 170px;
-  position: relative;
-  font-size: 18px;
   color: #fff;
-  white-space: nowrap;
-  overflow:hidden;
-  text-overflow: ellipsis;
+  margin-top: 15px;
 }
 
-*/
-
-
-h3{
-  color: #fff;
-  font-size: 30px;
-  margin-left: 15px;
-  padding-top: 20px;
-  font-weight: bold;
-}
 
 
 /* playlist-select, album-select, artists-select style */
@@ -167,7 +119,6 @@ h3{
 }
 
 .playlist-select-container .row .right{
-    text-align: left center;
     color: #fff;
     margin-left: -20px;
     position: relative;
@@ -320,6 +271,7 @@ h3{
   border: 1px solid rgb(20, 20, 20);
 }
 
+
 .content-table tbody tr .fav-col .submenu .playlist .dropdown-item-playlist{
   color: #fff;
   text-decoration: none;
@@ -343,6 +295,49 @@ h3{
   display: block;
   right: 191px;
   top:0;
+}
+
+.content-table tbody tr .fav-col .submenu .artist .dropdown-item-playlist{
+  color: #fff;
+  text-decoration: none;
+  display: block;
+  padding-bottom: 3px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.content-table tbody tr .fav-col .submenu .artist .dropdown-item-playlist i{
+  padding-left: 20px;
+
+}
+
+.content-table tbody tr .fav-col .submenu .artist .dropdown-item-playlist:hover{
+  background-color: rgb(129, 123, 125);
+
+}
+
+.content-table tbody tr .fav-col .submenu:hover .artist{
+  display: block;
+  right: 135px;
+  top:0;
+}
+
+
+.content-table tbody tr .fav-col .submenu .artist{
+  display: none;
+  list-style: none;
+  position: absolute;
+  background-color: rgb(51, 50, 50);
+  float:none;
+  height: 200px;
+  max-width:200px;
+  min-width:210px;
+  padding: 2px 2px 2px 2px;
+  overflow: inherit;
+  overflow-y:scroll;
+  top: -1px;
+  margin-top: -1px;
+  border: 1px solid rgb(20, 20, 20);
 }
 
 
@@ -690,6 +685,17 @@ form .data label{
   }
 
   .text-artist-link:hover{
+    color: rgb(189, 188, 188);
+    text-decoration: underline;
+    text-decoration-color: rgb(189, 188, 188);
+  }
+
+  .text-artist-link-in-album{
+    color: white;
+    text-decoration: none;
+  }
+
+  .text-artist-link-in-album:hover{
     color: rgb(189, 188, 188);
     text-decoration: underline;
     text-decoration-color: rgb(189, 188, 188);

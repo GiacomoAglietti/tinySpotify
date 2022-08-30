@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from sqlalchemy import insert, select, subquery, update, delete, func, exc, desc
 from sqlalchemy.orm import aliased
 from webapp import db_session, conn
+from collections import namedtuple
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
@@ -110,11 +111,38 @@ def home_authenticated():
         
                 try:
                         genre_playlists = local_session.execute(genre_playlists_stmt).all()
-                        list_songs_raccomemded = local_session.execute(stmt_songs_raccomended).all()                        
+                        list_songs_raccomended = local_session.execute(stmt_songs_raccomended).all()                        
                 except exc.SQLAlchemyError as e:
-                        return str(e.orig)        
+                        return str(e.orig)
 
-        return render_template("home.html" , genre_playlists=genre_playlists, list_songs_raccomemded=list_songs_raccomemded,playlist_list=playlist_list)
+                i = 0 
+                while i < len(list_songs_raccomended)-1:
+                        if(list_songs_raccomended[i].title == list_songs_raccomended[i+1].title):
+                                x=i
+                                dict_artist={}
+                                dict_artist["id"] = list_songs_raccomended[x].id
+                                dict_artist["title"] = list_songs_raccomended[x].title
+                                dict_artist["tot_plays_genre"] = list_songs_raccomended[x].tot_plays_genre
+                                dict_artist["name_album"] = list_songs_raccomended[x].name_album
+                                dict_artist["id_album"] = list_songs_raccomended[x].id_album
+                                dict_artist["artists_data"] = {}
+                                dict_artist["artists_data"]['artist'+str(x)] = []
+                                dict_artist["artists_data"]['artist'+str(x)].append(list_songs_raccomended[x].id_artist)
+                                dict_artist["artists_data"]['artist'+str(x)].append(list_songs_raccomended[x].name_artist)
+                                j=i+1
+                                y=j
+                                while (j < len(list_songs_raccomended)) and (list_songs_raccomended[i].title == list_songs_raccomended[j].title) :
+                                        dict_artist["artists_data"]['artist'+str(y)] = []
+                                        dict_artist["artists_data"]['artist'+str(y)].append(list_songs_raccomended[j].id_artist)
+                                        dict_artist["artists_data"]['artist'+str(y)].append(list_songs_raccomended[j].name_artist)
+                                        list_songs_raccomended.pop(j)
+                                        y=y+1
+
+                                list_songs_raccomended.pop(i)
+                                list_songs_raccomended.insert(i,dict_artist)
+                        i=i+1        
+
+        return render_template("home.html" , genre_playlists=genre_playlists, list_songs_raccomended=list_songs_raccomended,playlist_list=playlist_list)
 
 @views.route('/home/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
@@ -266,6 +294,33 @@ def get_playlist_selected(id_playlist_selected):
                 num_songs += 1
                 tot_length += song.length
 
+        i = 0 
+        while i < len(songsPlaylist)-1:
+                if(songsPlaylist[i].title == songsPlaylist[i+1].title):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = songsPlaylist[x].id
+                        dict_artist["title"] = songsPlaylist[x].title
+                        dict_artist["length"] = songsPlaylist[x].length
+                        dict_artist["name_album"] = songsPlaylist[x].name_album
+                        dict_artist["id_album"] = songsPlaylist[x].id_album
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(songsPlaylist)) and (songsPlaylist[i].title == songsPlaylist[j].title) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].name_artist)
+                                songsPlaylist.pop(j)
+                                y=y+1
+
+                        songsPlaylist.pop(i)
+                        songsPlaylist.insert(i,dict_artist)
+                i=i+1
+
         return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=False)
 
 @views.route('/playlists/<string:name_playlist_selected>', methods=['GET', 'POST'])
@@ -395,6 +450,33 @@ def get_favourite():
         for song in songsPlaylist:
                 num_songs += 1
                 tot_length += song.length
+        
+        i = 0 
+        while i < len(songsPlaylist)-1:
+                if(songsPlaylist[i].title == songsPlaylist[i+1].title):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = songsPlaylist[x].id
+                        dict_artist["title"] = songsPlaylist[x].title
+                        dict_artist["length"] = songsPlaylist[x].length
+                        dict_artist["name_album"] = songsPlaylist[x].name_album
+                        dict_artist["id_album"] = songsPlaylist[x].id_album
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(songsPlaylist)) and (songsPlaylist[i].title == songsPlaylist[j].title) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].name_artist)
+                                songsPlaylist.pop(j)
+                                y=y+1
+
+                        songsPlaylist.pop(i)
+                        songsPlaylist.insert(i,dict_artist)
+                i=i+1
 
         return render_template("favourite-playlist.html", songs_list = songsPlaylist, num_songs=num_songs, tot_length=tot_length,playlist_list=playlist_list)
 
@@ -434,7 +516,14 @@ def favourite_remove_song(id_song):
 @login_required
 def albums():
 
-        album_list = FunctionSession.get_albums_list()
+        album_list_stmt = FunctionSession.get_albums_list_stmt(session['userid'])
+
+        album_list = None
+        try:
+            album_list = local_session.execute(album_list_stmt).all()            
+                
+        except exc.SQLAlchemyError as e:
+            return str(e.orig)        
 
         return render_template("albums.html", album_list = album_list)
         
@@ -445,11 +534,14 @@ def get_album_selected(id_album_selected):
         itemArtistlist = None
         itemGenrelist = None
 
-        stmt_album = (
-                select(Album.name, User.name.label('nameArtist')).
-                join(AlbumArtist, Album.id == AlbumArtist.id_album).
-                join(User, User.id == AlbumArtist.id_artist).
+        stmt_album_name = (
+                select(Album.name).
                 where(Album.id == id_album_selected))
+
+        stmt_album_artists = (
+                select(User.id,User.name).
+                join(AlbumArtist, AlbumArtist.id_artist == User.id).
+                where(AlbumArtist.id_album == id_album_selected))
         
         stmt_song= (
                 select(Song.id, Song.title, Song.length, Song.num_of_plays, User.name.label("name_artist"), User.id.label("id_artist")).
@@ -459,19 +551,18 @@ def get_album_selected(id_album_selected):
                 order_by(Song.date_created)
         )
 
-        album_info = None    
+        album_name = None    
         songs_list = None
-
+        album_artists = None
         try:
-                album_info = local_session.execute(stmt_album).all() 
-                if(album_info is None):
+                album_name = local_session.execute(stmt_album_name).scalar_one() 
+                album_artists = local_session.execute(stmt_album_artists).all()
+                if(album_name is None or album_artists is None):
                         return page_not_found()
                 songs_list = local_session.execute(stmt_song).all()       
                 
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
-
-
 
         num_songs = 0
         tot_length = 0
@@ -480,6 +571,37 @@ def get_album_selected(id_album_selected):
                 num_songs += 1
                 tot_length += song.length
 
+        i = 0 
+        while i < len(songs_list)-1:
+                if(songs_list[i].title == songs_list[i+1].title):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = songs_list[x].id
+                        dict_artist["title"] = songs_list[x].title
+                        dict_artist["length"] = songs_list[x].length
+                        dict_artist["num_of_plays"] = songs_list[x].num_of_plays
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(songs_list[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(songs_list[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(songs_list)) and (songs_list[i].title == songs_list[j].title) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].name_artist)
+                                songs_list.pop(j)
+                                y=y+1
+
+                        songs_list.pop(i)
+                        songs_list.insert(i,dict_artist)
+                i=i+1
+        
+        for item in songs_list:
+                if(type(item)==dict):
+                        print(item)                       
+        
+                
         playlist_list = FunctionSession.get_user_playlist(True)
 
         if(session['isArtist']):
@@ -488,14 +610,7 @@ def get_album_selected(id_album_selected):
                         select(AlbumArtist.id_artist).
                         where(AlbumArtist.id_artist == session['userid']).
                         where(AlbumArtist.id_album == id_album_selected)
-                )
-
-                #stmt_album_artist = (
-                #        select(Album.name).
-                #        filter(Album.id.in_(subquery))
-                #)        
-         
-                #album_artist = None        
+                )  
                 result = None        
 
                 try:
@@ -510,9 +625,9 @@ def get_album_selected(id_album_selected):
                 itemArtistlist = [r[0] for r in listArtist_db]
                 itemGenrelist = [r[0] for r in list_genre]             
 
-                return render_template("album-select.html", songs_list = songs_list, album_info = album_info, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, playlist_list=playlist_list, itemArtistlist=itemArtistlist, itemGenrelist=itemGenrelist, owner = result)
+                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, album_artists = album_artists,num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, playlist_list=playlist_list, itemArtistlist=itemArtistlist, itemGenrelist=itemGenrelist, owner = result)
 
-        return render_template("album-select.html", songs_list = songs_list, album_info = album_info, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected,playlist_list=playlist_list, itemArtistlist=[], itemGenrelist=[], owner = False)
+        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, album_artists = album_artists, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected,playlist_list=playlist_list, itemArtistlist=[], itemGenrelist=[], owner = False)
 
 
 @views.route('/song_added/<id_album>', methods=['GET', 'POST'])
@@ -567,9 +682,9 @@ def create_song(id_album):
                 if (option=="yes"):
                         listArtist_db = FunctionSession.get_artists_list(True)
                         
-                        artist_name_list = [r[1] for r in listArtist_db]
+                        artist_name_list = [r[0] for r in listArtist_db]
 
-                        artist_id_list = [r[0] for r in listArtist_db]
+                        artist_id_list = [r[1] for r in listArtist_db]
 
                         numArtist = request.form['numArtist']
                         count = 0
@@ -595,6 +710,80 @@ def create_song(id_album):
                         local_session.close()
         
         return get_album_selected(id_album)
+
+@views.route('/album_added', methods=['GET', 'POST'])
+@login_required
+def create_album():
+
+        if request.method == 'POST':
+        
+                option = request.form['rad1']         
+                nameAlbum = request.form.get('nameAlbum')
+                yearAlbum = request.form.get('yearAlbum')
+
+                exists_Album = local_session.execute(
+                        select(Album).
+                        join(AlbumArtist, AlbumArtist.id_album == Album.id).
+                        where(Album.name==nameAlbum).
+                        where(AlbumArtist.id_artist==session['userid'])).scalar()
+
+                if(exists_Album is not None):
+                        flash('Hai già creato un album con questo nome', category='error')
+                        return profile()
+
+                album = Album(name=nameAlbum, year=yearAlbum)
+
+                try:
+                        local_session.add(album)
+                        local_session.commit()
+                        local_session.flush()
+                        local_session.refresh(album)
+
+                except exc.SQLAlchemyError as e:
+                        local_session.rollback()
+                        return str(e.orig)
+                finally:                        
+                        local_session.close()
+
+                
+
+                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
+                local_session.add(album_artist)
+
+                if (option=="yes"):
+                        print("sono dentro")
+                        listArtist_db = FunctionSession.get_artists_list(True)
+
+
+                        artist_name_list = [r[0] for r in listArtist_db]
+                        artist_id_list = [r[1] for r in listArtist_db]
+
+
+                        numArtist = request.form['numArtist']
+                        count = 0
+                        setArtist = set()
+                        while(count<int(numArtist)):
+                                nameArtist = request.form.get('nameArtist'+str(count))
+                                count += 1
+                                setArtist.add(nameArtist)                               
+
+                        for artist in setArtist:
+                                if(artist in artist_name_list):
+                                        index = artist_name_list.index(artist)
+                                        album_artist = AlbumArtist(id_album=album.id, id_artist=artist_id_list.__getitem__(index))
+                                        local_session.add(album_artist)
+                      
+                      
+                try:
+                        local_session.commit()
+                        flash('Album creato con successo', category='success')
+                except exc.SQLAlchemyError as e:
+                        local_session.rollback()
+                        return str(e.orig)
+                finally:                        
+                        local_session.close()
+        
+        return get_album_selected(album.id)
 
 @views.route('/album_added/<id_album_selected>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
@@ -637,7 +826,14 @@ def delete_album(id):
                 finally:                        
                         local_session.close() 
                
-        album_list = FunctionSession.get_albums_list()
+        album_list_stmt = FunctionSession.get_albums_list_stmt(session['userid'])
+
+        album_list = None
+        try:
+            album_list = local_session.execute(album_list_stmt).all()            
+                
+        except exc.SQLAlchemyError as e:
+            return str(e.orig)
 
         return render_template("albums.html", album_list = album_list)
 
@@ -664,14 +860,52 @@ def artists():
 def get_artist_selected(id_artist_selected):
 
 
-        album_list = FunctionSession.get_albums_list()
+        album_artist_list_stmt = (
+                select(Album.id).
+                join(AlbumArtist, AlbumArtist.id_album==Album.id).
+                join(User, User.id==AlbumArtist.id_artist).
+                where(AlbumArtist.id_artist==id_artist_selected).
+                order_by(Album.name, Album.year, Album.id))
+
+        album_list_stmt = (
+                select(Album.name, Album.id, Album.year, User.name.label('name_artist'), User.id.label("id_artist")).
+                join(AlbumArtist, AlbumArtist.id_album==Album.id).
+                join(User, User.id==AlbumArtist.id_artist).
+                where(Album.id.in_(album_artist_list_stmt)).
+                order_by(Album.name, Album.year, Album.id))
+
+        
+
+        """
+        songs_list = (
+                select(Song.id).
+                join(PlaylistSong, Song.id == PlaylistSong.id_song).
+                where(PlaylistSong.id_playlist == id_playlist_selected))
 
         stmt_song= (
-                select(Song.id, Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album")).
+                select(Song.id, Song.title, Song.id_album, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
+                filter(Song.id.in_(songs_list)).
+                order_by(Song.date_created)
+        )
+        """
+
+        stmt_song_id= (
+                select(Song.id).
                 join(Album, Song.id_album == Album.id).
                 join(SongArtist, Song.id == SongArtist.id_song).
                 where(SongArtist.id_artist == id_artist_selected).
-                order_by(Song.num_of_plays)).limit(5) 
+                order_by(desc(Song.num_of_plays))).limit(5) 
+
+        stmt_song = (
+                select(Song.id, Song.title, Song.num_of_plays, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                join(Album, Song.id_album == Album.id).
+                join(SongArtist, Song.id == SongArtist.id_song).
+                join(User, User.id == SongArtist.id_artist).
+                where(Song.id.in_(stmt_song_id)).
+                order_by(Song.title, Song.id))
 
 
         stmt_artist = (
@@ -681,13 +915,41 @@ def get_artist_selected(id_artist_selected):
 
         artist_name = None
         songs_list = None
+        album_list = None
+
 
         try:
+                album_list = local_session.execute(album_list_stmt).all()            
                 artist_name = local_session.execute(stmt_artist).scalar()
                 songs_list = local_session.execute(stmt_song).all()
               
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
+
+        i = 0 
+        while i < len(album_list)-1:
+                if(album_list[i].name == album_list[i+1].name):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = album_list[x].id
+                        dict_artist["name"] = album_list[x].name
+                        dict_artist["year"] = album_list[x].year
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(album_list[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(album_list[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(album_list)) and (album_list[i].name == album_list[j].name) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(album_list[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(album_list[j].name_artist)
+                                album_list.pop(j)
+                                y=y+1
+
+                        album_list.pop(i)
+                        album_list.insert(i,dict_artist)
+                i=i+1
 
         
         playlist_list = FunctionSession.get_user_playlist(True)
@@ -695,7 +957,45 @@ def get_artist_selected(id_artist_selected):
         tot_length = 0
 
         for song in songs_list:
+                print(song)
                 tot_length += song.length
+
+
+        i = 0 
+        while i < len(songs_list)-1:
+                if(songs_list[i].title == songs_list[i+1].title):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = songs_list[x].id
+                        dict_artist["title"] = songs_list[x].title
+                        dict_artist["length"] = songs_list[x].length
+                        dict_artist["num_of_plays"] = songs_list[x].num_of_plays
+                        dict_artist["name_album"] = songs_list[x].name_album
+                        dict_artist["id_album"] = songs_list[x].id_album
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(songs_list[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(songs_list[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(songs_list)) and (songs_list[i].title == songs_list[j].title) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].name_artist)
+                                songs_list.pop(j)
+                                y=y+1
+
+                        songs_list.pop(i)
+                        songs_list.insert(i,dict_artist)
+                i=i+1
+
+        print("sjadhjkashdjhjklhd")
+        for song in songs_list:
+                print(song)
+
+        #songs_list = reversed(sorted(songs_list, key=lambda song: {for k,v in song.items(): if(k=='num_of_plays'): print(v)  } if (type(song)==dict) else song.num_of_plays))
+
+
 
         return render_template("artist-select.html", songs_list = songs_list, album_list = album_list,actual_artist=id_artist_selected, tot_length=tot_length, artist_name=artist_name,playlist_list=playlist_list)
 
@@ -722,7 +1022,6 @@ def search():
         lookingFor = None
 
         if request.method == 'POST':
-                #lookingFor = "Avicii"
                 lookingFor = request.form['search']
 
 
@@ -788,7 +1087,9 @@ def search_result(result=None):
         )
 
         searchInAlbum= (
-                select(Album.name, Album.year, Album.id).
+                select(Album.name, Album.year, Album.id, User.name.label('name_artist'), User.id.label("id_artist")).
+                join(AlbumArtist, Album.id==AlbumArtist.id_album).
+                join(User, User.id==AlbumArtist.id_artist).
                 where((Album.name).like('%' + lookingFor + '%')).
                 order_by(Album.name,Album.year)
         )
@@ -812,6 +1113,58 @@ def search_result(result=None):
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
 
+        i = 0 
+        while i < len(song_result)-1:
+                if(song_result[i].title == song_result[i+1].title):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = song_result[x].id
+                        dict_artist["title"] = song_result[x].title
+                        dict_artist["length"] = song_result[x].length
+                        dict_artist["name_album"] = song_result[x].name_album
+                        dict_artist["id_album"] = song_result[x].id_album
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(song_result[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(song_result[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(song_result)) and (song_result[i].title == song_result[j].title) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(song_result[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(song_result[j].name_artist)
+                                song_result.pop(j)
+                                y=y+1
+
+                        song_result.pop(i)
+                        song_result.insert(i,dict_artist)
+                i=i+1
+
+        i = 0 
+        while i < len(album_result)-1:
+                if(album_result[i].name == album_result[i+1].name):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = album_result[x].id
+                        dict_artist["name"] = album_result[x].name
+                        dict_artist["year"] = album_result[x].year
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(album_result[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(album_result[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(album_result)) and (album_result[i].name == album_result[j].name) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(album_result[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(album_result[j].name_artist)
+                                album_result.pop(j)
+                                y=y+1
+
+                        album_result.pop(i)
+                        album_result.insert(i,dict_artist)
+                i=i+1
+
         return render_template("search.html", list_item=itemlist, song_result=song_result, album_result=album_result,user_result=user_result, playlist_list=playlist_list,lookingFor=lookingFor)
 
 @views.route('/search/<result>/<int:playlistId>/<int:songId>', methods=['GET', 'POST'])
@@ -829,7 +1182,7 @@ def profile():
 
         if (session['isArtist']):
 
-                listArtist_db = FunctionSession.get_artists_list(False)    
+                listArtist_db = FunctionSession.get_artists_list(True)    
 
 
                 playlist_list = FunctionSession.get_user_playlist(True)
@@ -945,77 +1298,6 @@ def premium_subscription():
                 
         return redirect(url_for('auth.logout'))
 
-@views.route('/album_added', methods=['GET', 'POST'])
-@login_required
-def create_album():
-
-        if request.method == 'POST':
-        
-                option = request.form['rad1']         
-                nameAlbum = request.form.get('nameAlbum')
-                yearAlbum = request.form.get('yearAlbum')
-
-                exists_Album = local_session.execute(
-                        select(Album).
-                        join(AlbumArtist, AlbumArtist.id_album == Album.id).
-                        where(Album.name==nameAlbum).
-                        where(AlbumArtist.id_artist==session['userid'])).scalar()
-
-                if(exists_Album is not None):
-                        flash('Hai già creato un album con questo nome', category='error')
-                        return profile()
-
-                album = Album(name=nameAlbum, year=yearAlbum)
-
-                try:
-                        local_session.add(album)
-                        local_session.commit()
-                        local_session.flush()
-                        local_session.refresh(album)
-
-                except exc.SQLAlchemyError as e:
-                        local_session.rollback()
-                        return str(e.orig)
-                finally:                        
-                        local_session.close()
-
-                
-
-                album_artist = AlbumArtist(id_album=album.id, id_artist=session['userid'])
-                local_session.add(album_artist)
-
-                if (option=="yes"):
-                        listArtist_db = FunctionSession.get_artists_list(True)
-                        
-                        artist_name_list = [r[1] for r in listArtist_db]
-
-                        artist_id_list = [r[0] for r in listArtist_db]
-
-                        numArtist = request.form['numArtist']
-                        count = 0
-                        setArtist = set()
-                        while(count<int(numArtist)):
-                                nameArtist = request.form.get('nameArtist'+str(count))
-                                count += 1
-                                setArtist.add(nameArtist)                               
-
-                        for artist in setArtist:
-                                if(artist in artist_name_list):
-                                        index = artist_name_list.index(artist)
-                                        album_artist = AlbumArtist(id_album=album.id, id_artist=artist_id_list.__getitem__(index))
-                                        local_session.add(album_artist)
-                      
-                      
-                try:
-                        local_session.commit()
-                        flash('Album creato con successo', category='success')
-                except exc.SQLAlchemyError as e:
-                        local_session.rollback()
-                        return str(e.orig)
-                finally:                        
-                        local_session.close()
-        
-        return get_album_selected(album.id)
 
 @views.route('/page-not-found')
 @login_required
