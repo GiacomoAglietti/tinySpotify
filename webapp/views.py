@@ -227,6 +227,7 @@ def delete_playlist(id):
 @views.route('/playlists/<int:id_playlist_selected>', methods=['GET', 'POST'])
 @login_required
 def get_playlist_selected(id_playlist_selected):
+
         if request.method == 'POST':                            
                 if 'change-name-playlist' in request.form:
                         nomePlaylist = request.form.get('nomePlaylist')
@@ -455,7 +456,6 @@ def playlist_remove_song(id_playlist_selected, id_song):
 @login_required
 def get_favourite():
 
-
         songs_list = (
                 select(Song.id).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
@@ -573,16 +573,6 @@ def albums():
 @views.route('/albums/<int:id_album_selected>', methods=['GET', 'POST'])
 @login_required
 def get_album_selected(id_album_selected):
-
-        if(request.headers.get('Content-type') == 'addPlays'):
-                idSong=int(request.data.decode("utf-8"))
-                update_plays = (
-                        update(Song).
-                        where(Song.id == idSong).
-                        values(num_of_plays = Song.num_of_plays + 1)
-                )
-                local_session.execute(update_plays)
-                local_session.commit()
 
         itemArtistlist = None
         itemGenrelist = None
@@ -914,7 +904,6 @@ def artists():
 @views.route('/artists/<int:id_artist_selected>', methods=['GET', 'POST'])
 @login_required
 def get_artist_selected(id_artist_selected):
-
 
         album_artist_list_stmt = (
                 select(Album.id).
@@ -1358,3 +1347,19 @@ def page_not_found():
         #playlist premium, utente no premium
 
         return render_template("page-not-found.html")
+
+@views.route('/addPlays', methods=['GET', 'POST'])
+@login_required
+def addPlays():
+
+        if(request.headers.get('Content-type') == 'addPlays'):
+                idSong=int(request.data.decode("utf-8"))
+                update_plays = (
+                        update(Song).
+                        where(Song.id == idSong).
+                        values(num_of_plays = Song.num_of_plays + 1)
+                )
+                local_session.execute(update_plays)
+                local_session.commit()
+        
+        return redirect('/')

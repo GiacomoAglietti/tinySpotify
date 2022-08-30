@@ -17,18 +17,12 @@
             </div>
         </div>
     </div>
-    <div class="button-container">
-        <div class="row">
-            <div class="col">
-                <i class="bi bi-play-circle-fill"></i>
-            </div>
-        </div>
-    </div>
     <h4 class="h4-popular-song">Canzoni Popolari</h4>
     <table class="content-table">
         <thead>
           <tr>
             <th>#</th>
+            <th></th>
             <th>TITOLO</th>
             <th>N° ASCOLTI</th>
             <th><i class="bi bi-clock"></i></th>
@@ -40,6 +34,8 @@
             {% if song is mapping %}
               <tr>
                 <td>{{ loop.index }}</td>
+                <td>
+                  <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('plays{{song.id}}', '{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
                 <td>{{ song.title }}<br>
                   {% for key, value in song.artists_data.items() %}
                       {% if loop.last %}
@@ -48,8 +44,8 @@
                       <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a>,
                       {% endif %}
                   {% endfor %}
-              </td>
-                <td>{{ song.num_of_plays }} </td>
+                </td>
+                <td id="plays{{song.id}}">{{ song.num_of_plays }} </td>
                 <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
                 <td class="fav-col">                
                   <div class="btn-group dropend">
@@ -79,8 +75,10 @@
             {% else %}
             <tr>
               <td>{{ loop.index }}</td>
+              <td>
+                <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('plays{{song.id}}', '{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
               <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
-              <td>{{ song.num_of_plays }} </td>
+              <td id="plays{{song.id}}"> {{ song.num_of_plays }} </td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
@@ -154,6 +152,19 @@
         {%- endfor -%}
       </div>
 </main>
+
+<script>
+  function addPlays(plays, songId){
+    var element = document.getElementById(plays);
+    var value = element.innerHTML;
+    ++value;
+    document.getElementById(plays).innerHTML = value;
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/addPlays", true);
+    xhr.setRequestHeader('Content-type', 'addPlays');
+    xhr.send(songId);
+  }
+</script>
 
 {% endblock %}
 
