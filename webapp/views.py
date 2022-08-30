@@ -55,7 +55,7 @@ def home_authenticated():
 
         
         genre_playlists = None
-        list_songs_raccomemded =None
+        list_songs_raccomended =None
         if(session['isPremium']):
          
 
@@ -69,7 +69,7 @@ def home_authenticated():
                         join(SongArtist, SongArtist.id_song == Song.id).
                         where(SongArtist.id_artist == session['userid']).
                         group_by(Song.genre).
-                        order_by(desc(func.sum(Song.num_of_plays))).limit(1)
+                        order_by(desc(func.sum(Song.num_of_plays))).limit(3)
                 )
 
                 songs_already_added_stmt = (
@@ -86,7 +86,7 @@ def home_authenticated():
                                 where(SongArtist.id_artist == session['userid'])
                         )
                         stmt_songs_raccomended=(
-                                select(Song.id,  Song.title, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'), Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                select(Song.id,  Song.title, Song.length, Song.num_of_plays, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
                                 join(SongArtist, SongArtist.id_song == Song.id).
                                 join(User, User.id == SongArtist.id_artist).
                                 join(Album, Song.id_album == Album.id).
@@ -94,12 +94,12 @@ def home_authenticated():
                                 where(Song.genre.in_(stmt_genre)).
                                 where(Song.id.notin_(songs_already_added_stmt)).
                                 where(Song.id.notin_(songs_created_stmt)).
-                                group_by(Song.id,  Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                order_by(desc(func.sum(Song.num_of_plays))).limit(5)
+                                group_by(Song.id,  Song.title, Song.length, Song.num_of_plays, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                order_by(desc(Song.num_of_plays)).limit(5)
                         )
                 else:
                         stmt_songs_raccomended=(
-                                select(Song.id,  Song.title, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'), Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                                select(Song.id,  Song.title, Song.length, Song.num_of_plays, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
                                 join(SongArtist, SongArtist.id_song == Song.id).
                                 join(User, User.id == SongArtist.id_artist).
                                 join(Album, Song.id_album == Album.id).
@@ -107,7 +107,7 @@ def home_authenticated():
                                 where(Song.genre.in_(stmt_genre)).
                                 where(Song.id.notin_(songs_already_added_stmt)).
                                 group_by(Song.id,  Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                order_by(desc(func.sum(Song.num_of_plays))).limit(5)
+                                order_by(desc(Song.num_of_plays)).limit(5)
                         )
         
                 try:
@@ -123,7 +123,7 @@ def home_authenticated():
                                 dict_artist={}
                                 dict_artist["id"] = list_songs_raccomended[x].id
                                 dict_artist["title"] = list_songs_raccomended[x].title
-                                dict_artist["tot_plays_genre"] = list_songs_raccomended[x].tot_plays_genre
+                                dict_artist["num_of_plays"] = list_songs_raccomended[x].num_of_plays
                                 dict_artist["name_album"] = list_songs_raccomended[x].name_album
                                 dict_artist["id_album"] = list_songs_raccomended[x].id_album
                                 dict_artist["artists_data"] = {}
@@ -291,12 +291,10 @@ def get_playlist_selected(id_playlist_selected):
         num_songs = 0
         tot_length = 0
 
-        for song in songsPlaylist:
-                num_songs += 1
-                tot_length += song.length
-
         i = 0 
         while i < len(songsPlaylist)-1:
+                num_songs += 1
+                tot_length += songsPlaylist[i].length
                 if(songsPlaylist[i].title == songsPlaylist[i+1].title):
                         x=i
                         dict_artist={}
@@ -321,6 +319,9 @@ def get_playlist_selected(id_playlist_selected):
                         songsPlaylist.pop(i)
                         songsPlaylist.insert(i,dict_artist)
                 i=i+1
+                if(i == len(songsPlaylist)-1):
+                        num_songs += 1
+                        tot_length += songsPlaylist[i].length
 
         return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=False)
 
@@ -330,14 +331,21 @@ def get_premium_playlist_selected(name_playlist_selected):
         if(not session['isPremium']):
                 return page_not_found()
 
+        stmt_song_subquery= (
+                select(Song.id).
+                where(Song.genre == name_playlist_selected).
+                group_by(Song.id).
+                order_by(desc(func.sum(Song.num_of_plays))).limit(10)
+        )
+
         stmt_song= (
                 select(Song.id, Song.title, Song.genre, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'),  Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
                 join(Album, Song.id_album == Album.id).
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
-                where(Song.genre == name_playlist_selected).
+                where(Song.id.in_(stmt_song_subquery)).
                 group_by(Song.genre, Song.id, Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                order_by(desc(func.sum(Song.num_of_plays))).limit(10)
+                order_by(desc(func.sum(Song.num_of_plays) ))
         )
 
         stmt_playlist =(
@@ -371,9 +379,41 @@ def get_premium_playlist_selected(name_playlist_selected):
         num_songs = 0
         tot_length = 0
 
-        for song in songsPlaylist:
+        i = 0 
+        while i < len(songsPlaylist)-1:
                 num_songs += 1
-                tot_length += song.length
+                tot_length += songsPlaylist[i].length
+                if(songsPlaylist[i].title == songsPlaylist[i+1].title):
+                        x=i
+                        dict_artist={}
+                        dict_artist["id"] = songsPlaylist[x].id
+                        dict_artist["title"] = songsPlaylist[x].title
+                        dict_artist["genre"] = songsPlaylist[x].genre 
+                        dict_artist["length"] = songsPlaylist[x].length
+                        dict_artist["tot_plays_genre"] = songsPlaylist[x].tot_plays_genre
+                        dict_artist["name_album"] = songsPlaylist[x].name_album
+                        dict_artist["id_album"] = songsPlaylist[x].id_album
+                        dict_artist["artists_data"] = {}
+                        dict_artist["artists_data"]['artist'+str(x)] = []
+                        dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].id_artist)
+                        dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].name_artist)
+                        j=i+1
+                        y=j
+                        while (j < len(songsPlaylist)) and (songsPlaylist[i].title == songsPlaylist[j].title) :
+                                dict_artist["artists_data"]['artist'+str(y)] = []
+                                dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].id_artist)
+                                dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].name_artist)
+                                songsPlaylist.pop(j)
+                                y=y+1
+
+                        songsPlaylist.pop(i)
+                        songsPlaylist.insert(i,dict_artist)
+                i=i+1
+                if(i == len(songsPlaylist)-1):
+                        num_songs += 1
+                        tot_length += songsPlaylist[i].length
+
+        songsPlaylist = reversed(sorted(songsPlaylist, key=lambda song: next(v for k,v in song.items() if(k=='tot_plays_genre')) if (type(song)==dict) else song.tot_plays_genre))
 
         return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = name_playlist_selected, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=isPlPremium)
 
@@ -447,13 +487,11 @@ def get_favourite():
         
         num_songs = 0
         tot_length = 0
-
-        for song in songsPlaylist:
-                num_songs += 1
-                tot_length += song.length
         
         i = 0 
         while i < len(songsPlaylist)-1:
+                num_songs += 1
+                tot_length += songsPlaylist[i].length
                 if(songsPlaylist[i].title == songsPlaylist[i+1].title):
                         x=i
                         dict_artist={}
@@ -478,6 +516,10 @@ def get_favourite():
                         songsPlaylist.pop(i)
                         songsPlaylist.insert(i,dict_artist)
                 i=i+1
+                if(i == len(songsPlaylist)-1):
+                        num_songs += 1
+                        tot_length += songsPlaylist[i].length
+
 
         return render_template("favourite-playlist.html", songs_list = songsPlaylist, num_songs=num_songs, tot_length=tot_length,playlist_list=playlist_list)
 
@@ -578,12 +620,10 @@ def get_album_selected(id_album_selected):
         num_songs = 0
         tot_length = 0
 
-        for song in songs_list:
-                num_songs += 1
-                tot_length += song.length
-
         i = 0 
         while i < len(songs_list)-1:
+                num_songs += 1
+                tot_length += songs_list[i].length
                 if(songs_list[i].title == songs_list[i+1].title):
                         x=i
                         dict_artist={}
@@ -607,6 +647,9 @@ def get_album_selected(id_album_selected):
                         songs_list.pop(i)
                         songs_list.insert(i,dict_artist)
                 i=i+1
+                if(i == len(songs_list)-1):
+                        num_songs += 1
+                        tot_length += songs_list[i].length
         
         for item in songs_list:
                 if(type(item)==dict):
@@ -969,13 +1012,11 @@ def get_artist_selected(id_artist_selected):
 
         tot_length = 0
 
-        for song in songs_list:
-                print(song)
-                tot_length += song.length
-
 
         i = 0 
         while i < len(songs_list)-1:
+                num_songs += 1
+                tot_length += songs_list[i].length
                 if(songs_list[i].title == songs_list[i+1].title):
                         x=i
                         dict_artist={}
@@ -1001,10 +1042,9 @@ def get_artist_selected(id_artist_selected):
                         songs_list.pop(i)
                         songs_list.insert(i,dict_artist)
                 i=i+1
-
-        print("sjadhjkashdjhjklhd")
-        for song in songs_list:
-                print(song)
+                if(i == len(songs_list)-1):
+                        num_songs += 1
+                        tot_length += songs_list[i].length
 
         songs_list = reversed(sorted(songs_list, key=lambda song: next(v for k,v in song.items() if(k=='num_of_plays')) if (type(song)==dict) else song.num_of_plays))
 

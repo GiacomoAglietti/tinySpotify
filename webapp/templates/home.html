@@ -81,7 +81,7 @@
                       {% endfor %}
                     <td>{{ song.name_album }}</td>
                     {% if isPlPremium %}
-                      <td>{{ song.tot_plays_genre }}</td>
+                      <td>{{ song.num_of_plays }}</td>
                     {% endif %}
                     <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
                     <td class="fav-col">                
@@ -127,7 +127,7 @@
                     <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
                     <td>{{ song.name_album }}</td>
                     {% if isPlPremium %}
-                      <td>{{ song.tot_plays_genre }}</td>
+                      <td>{{ song.num_of_plays }}</td>
                     {% endif %}
                       <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
                       <td class="fav-col">                

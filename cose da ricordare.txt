@@ -76,11 +76,9 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 
 TODO:
 -sistemare immagini
--sistemare close-btn nei form
--aggiungere bottone per aumentare i num_of_plays
+-sistemare minuti e song nell'aggiunta di una canzone nell'album (non si può aggiungere una canzone con x>0 minuti e 0 secondi)
 -togliere num_of_plays in Genre
 -mettere indici
--sistemare minuti e song nell'aggiunta di una canzone nell'album (non si può aggiungere una canzone con x>0 minuti e 0 secondi)
 
 
 si assume che:
