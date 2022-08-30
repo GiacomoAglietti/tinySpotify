@@ -20,17 +20,11 @@
             </div>
         </div>
     </div>
-    <div class="button-container">
-        <div class="row">
-            <div class="col">
-                <i class="bi bi-play-circle-fill"></i>
-            </div>
-        </div>
-    </div>
     <table class="content-table">
         <thead>
           <tr>
             <th>#</th>
+            <th></th>
             <th>TITOLO</th>
             <th>ALBUM</th>
             <th><i class="bi bi-clock"></i></th>
@@ -42,6 +36,8 @@
             {% if song is mapping %}
               <tr>
                 <td>{{ loop.index }}</td>
+                <td>
+                  <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
                 <td>{{ song.title }}<br>
                   {% for key, value in song.artists_data.items() %}
                     {% if loop.last %}
@@ -94,6 +90,8 @@
             {% else %}
             <tr>
               <td>{{ loop.index }}</td>
+              <td>
+                <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
               <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
               <td>{{ song.name_album }}</td>
               <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
@@ -147,6 +145,13 @@
               }
           }
         };
+
+        function addPlays(songId){
+          var xhr = new XMLHttpRequest();
+          xhr.open("POST", "/addPlays", true);
+          xhr.setRequestHeader('Content-type', 'addPlays');
+          xhr.send(songId);
+        }
     </script>
 </main>
 
