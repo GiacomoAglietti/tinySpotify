@@ -1,4 +1,5 @@
 from genericpath import exists
+import json
 from unittest import result
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
@@ -531,6 +532,16 @@ def albums():
 @login_required
 def get_album_selected(id_album_selected):
 
+        if(request.headers.get('Content-type') == 'addPlays'):
+                idSong=int(request.data.decode("utf-8"))
+                update_plays = (
+                        update(Song).
+                        where(Song.id == idSong).
+                        values(num_of_plays = Song.num_of_plays + 1)
+                )
+                local_session.execute(update_plays)
+                local_session.commit()
+
         itemArtistlist = None
         itemGenrelist = None
 
@@ -603,6 +614,8 @@ def get_album_selected(id_album_selected):
         
                 
         playlist_list = FunctionSession.get_user_playlist(True)
+        
+
 
         if(session['isArtist']):
 
