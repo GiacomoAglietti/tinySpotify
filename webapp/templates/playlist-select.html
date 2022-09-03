@@ -140,7 +140,7 @@
               {% if isPlPremium %}
                 <td id="plays{{song.id}}">{{ song.tot_plays_genre }}</td>
               {% endif %}
-                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td id='intToMinSec'> {{ song.length // 60 }}: {{ song.length % 60}} </td>
                 <td class="fav-col">                
                   <div class="btn-group dropend">
                       <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -201,7 +201,7 @@
           xhr.send(songId);
         }
 
-        function addPlays2(plays, songId){
+        function addPlaysPremium(plays, songId){
           var element = document.getElementById(plays);
           var value = element.innerHTML;
           ++value;

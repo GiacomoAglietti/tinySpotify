@@ -340,12 +340,15 @@ def get_premium_playlist_selected(name_playlist_selected):
         )
 
         stmt_song= (
-                select(Song.id, Song.title, Song.genre, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'),  Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                select(Song.id, Song.title, Song.genre, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'),
+                  Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), 
+                  User.id.label("id_artist")).
                 join(Album, Song.id_album == Album.id).
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 where(Song.id.in_(stmt_song_subquery)).
-                group_by(Song.genre, Song.id, Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                group_by(Song.genre, Song.id, Song.title, Song.length, Album.name.label("name_album"),
+                 Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
                 order_by(desc(func.sum(Song.num_of_plays) ))
         )
 
