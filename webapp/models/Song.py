@@ -15,7 +15,7 @@ class Song(Base):
     __table_args__ = (UniqueConstraint('title', 'id_album', name='title_id_album'),
                  )
 
-    id  = Column(Integer, primary_key=True)
+    id  = Column(Integer, primary_key=True, index=True)
     title = Column(String(50), nullable=False)
     year = Column(Integer, CheckConstraint('year > 1900 and year <= 2022'), nullable=False)
     length = Column(Integer, CheckConstraint('length > 0 and length < 3600 '), nullable=False)

@@ -10,7 +10,7 @@ from .AlbumArtist import AlbumArtist
 class Album(Base):
     __tablename__ = "album"
 
-    id  = Column(Integer, primary_key=True)
+    id  = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     year = Column(Integer, CheckConstraint('year > 1900 and year <= 2022'), nullable=False)
     image = Column(String(100))

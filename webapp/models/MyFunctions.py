@@ -4,7 +4,7 @@ from webapp import db_session
 from sqlalchemy import Column, Integer, Boolean, String, exc
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from sqlalchemy.sql import func,  insert, select, subquery, update, delete
+from sqlalchemy.sql import func,  insert, select, subquery, update, delete, or_
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
@@ -89,7 +89,7 @@ class FunctionSession:
         if(noCurrentArtist) :
             stmt = (
                     select(User.name, User.id).
-                    where(User.isArtist==True).
+                    where(or_(User.role == 'ArtistPremium', User.role =='ArtistFree' )).
                     where(User.name != session['username']))
             try:
                 artists = local_session.execute(stmt).all()              
@@ -99,7 +99,7 @@ class FunctionSession:
         else :
             stmt = (
                     select(User.name, User.id).
-                    where(User.isArtist==True))
+                    where(or_(User.role == 'ArtistPremium', User.role =='ArtistFree' )))
             try:
                 artists = local_session.execute(stmt).all()     
             except exc.SQLAlchemyError as e:

@@ -34,7 +34,7 @@
                         <div class="row-ap"> {{ user.name }} </div>
                         <div class="row-ap"> {{ user.email }} </div>
                         <div class="row-ap"> 
-                            {%if session['isPremium'] %}
+                            {%if session['role']=="UserPremium" or session['role']=="ArtistPremium" or session['role']=="Admin" %}
                                 Si 
                             {% else %}
                                 No <h5><a class="text-activate-premium-link" href="#" data-bs-toggle="modal" data-bs-target="#premium-subscribe">Diventa Premium a soli 9,99€</a></h5>

@@ -62,7 +62,19 @@
                 {% endfor %}
               </td>
               <td id="plays{{song.id}}">{{ song.num_of_plays }}</td>
-              <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+              <td id='intToMinSec'> 
+                {% if (song.length // 60) < 10 %}
+                    0{{ song.length // 60 }}:
+                  {% else %}
+                    {{ song.length // 60 }}:
+                  {% endif %}
+                  
+                  {% if (song.length % 60) < 10 %}
+                    0{{ song.length % 60 }}
+                  {% else %}
+                    {{ song.length % 60 }}
+                  {% endif %}  
+              </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
                     <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -112,7 +124,19 @@
                 <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}
               </td>
               <td id="plays{{song.id}}">{{ song.num_of_plays }}</td>
-              <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+              <td id='intToMinSec'> 
+                {% if (song.length // 60) < 10 %}
+                    0{{ song.length // 60 }}:
+                  {% else %}
+                    {{ song.length // 60 }}:
+                  {% endif %}
+                  
+                  {% if (song.length % 60) < 10 %}
+                    0{{ song.length % 60 }}
+                  {% else %}
+                    {{ song.length % 60 }}
+                  {% endif %}  
+              </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
                     <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -165,9 +189,9 @@
                   </div>
                   <div class="form-group">
                     <label style="color: black;">Inserisci i minuti</label>
-                    <input type="number" id="minSong" name="minSong" min="0" max="59" value="0">
+                    <input type="number" id="minSong" name="minSong" min="0" max="59" value="0" onblur="changeMin()">
                     <label style="color: black;">Inserisci i secondi</label>
-                    <input type="number" id="secSong" name="secSong" min="1" max="59" value="0">
+                    <input type="number" id="secSong" name="secSong" max="59" value="0">
                   </div>
 
 
@@ -260,6 +284,15 @@
       xhr.open("POST", "/addPlays", true);
       xhr.setRequestHeader('Content-type', 'addPlays');
       xhr.send(songId);
+  }
+
+  document.getElementById("secSong").setAttribute("min", 0);
+  function changeMin(){
+    var element = document.getElementById("minSong").value;
+    if(val>0)
+      document.getElementById("secSong").setAttribute("min", 0);
+    else
+      document.getElementById("secSong").setAttribute("min", 0);
   }
 
 </script>

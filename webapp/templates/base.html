@@ -42,9 +42,9 @@
             <li class="{% block navbar_class_search %}{% endblock %}"><a href="{{url_for('views.search')}}" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-search px-2"></i>Cerca</a></li>
             <li class="{% block navbar_class_favourite %}{% endblock %}"><a href="{{url_for('views.get_favourite')}}" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-heart-fill px-2"></i></i>Preferiti</a></li>
             <button type="button" class="link2 px-3 py-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i class="bi bi-plus-circle-fill px-2"></i>Crea playlist</button>
-            {% if session['isArtist'] %}
+            {%if session['role']=="ArtistFree" or session['role']=="ArtistPremium" or session['role']=="Admin" %}
               <li class="{% block navbar_class_albums %}{% endblock %}"><a href="{{url_for('views.albums')}}" class="text-decoration-none px-3 py-2 d-block"><i class="bi bi-vinyl-fill px-2"></i>Album</a></li>
-            {% endif %}
+            {% endif %}      
           </ul>
           <hr class="h-color mx-2">
           <ul class="list-unstyled px-2">
@@ -106,15 +106,15 @@
           <div class="modal-dialog centered">
           <div class="modal-content">
               <div class="modal-header">
-              <h5 class="modal-title" id="staticBackdropLabel" style="color: black;">Nome playlist</h5>
+              <h5 class="modal-title" id="staticBackdropLabel" style="color: black;">Crea una nuova playlist</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                  <label style="color: black;">Nome playlist </label>
+                  <label style="color: black;">Inserisci nome playlist </label>
                   <input type="text" id="nomePlaylist" name="nomePlaylist">
               </div>
               <div class="modal-footer">
-              <button type="submit" class="btn btn-primary" name="create_playlist">Salva</button>
+              <button type="submit" class="btn btn-primary" name="create_playlist" value="create_playlist">Salva</button>
               </div>
           </div>
           </div>

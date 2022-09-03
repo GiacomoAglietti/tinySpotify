@@ -44,8 +44,7 @@ def login():
                 session['userid'] = user.id
                 session['username'] = user.name
                 session['id_fav_playlist'] = id_fav_playlist
-                session['isArtist'] = user.isArtist
-                session['isPremium'] = user.isPremium
+                session['role'] = user.role
                 
                 flash('Login effettuato con successo', category='success')
                 return redirect("/home")
@@ -101,15 +100,17 @@ def signUp():
                 newUser = User(
                     name=nomeUtente, 
                     email=email, 
-                    password=generate_password_hash(password, method='sha256')
+                    password=generate_password_hash(password, method='sha256'),
+                    role="UserFree"
                     )
             if (selectResult == 'Si'):
                 newUser = User(
                     name=nomeUtente, 
                     email=email, 
                     password=generate_password_hash(password, method='sha256'),
-                    isArtist = True
-                    )            
+                    role="ArtistFree"
+                    )   
+        
 
             cur = conn.cursor()
 
@@ -122,6 +123,7 @@ def signUp():
                 cur.execute("CALL create_fav_playlist(%s);", [newUser.id])    
 
                 conn.commit()  
+
                 flash('Account creato!', category='success')
                 return redirect(url_for('auth.login'))
             except exc.SQLAlchemyError as e:

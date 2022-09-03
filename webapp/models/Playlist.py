@@ -14,7 +14,7 @@ local_session = db_session()
 
 class Playlist(Base):
     __tablename__ = "playlist"
-    id  = Column(Integer, primary_key=True)
+    id  = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     isPremium = Column(Boolean, default=False)
     songs = relationship("PlaylistSong", back_populates="playlist")

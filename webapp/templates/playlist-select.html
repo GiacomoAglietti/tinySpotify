@@ -15,27 +15,27 @@
                 <h6>PLAYLIST</h6>
 
                 {% if not isPlPremium %}
-                <button type="button" class="link" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                <button type="button" class="link" data-bs-toggle="modal" data-bs-target="#change">
                     {{playlist_name}}
                 </button>
                 {% else %}
                 <h2 style="font-size: 39px;">{{playlist_name}}</h2>
                 {% endif %}
                 
-                <form action="" method="POST">
-                    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <form action="#" method="POST">
+                    <div class="modal fade" id="change" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog centered">
                         <div class="modal-content">
                             <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel" style="color: black;">Cambia nome playlist</h5>
+                            <h5 class="modal-title" id="staticBackdropLabel" style="color: black;">Cambia nome della playlist</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <label style="color: black;">Nome playlist</label>
+                                <label style="color: black;">Inserisci nome playlist</label>
                                 <input type="text" id="nomePlaylist" name="nomePlaylist">
                             </div>
                             <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary" name="change-name-playlist">Salva</button>
+                            <button type="submit" class="btn btn-primary" name="change-name-playlist" value="change-name-playlist">Salva</button>
                             </div>
                         </div>
                         </div>
@@ -84,7 +84,19 @@
                 {% if isPlPremium %}
                   <td id="plays{{song.id}}">{{ song.tot_plays_genre }}</td>
                 {% endif %}
-                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td id='intToMinSec'> 
+                  {% if (song.length // 60) < 10 %}
+                    0{{ song.length // 60 }}:
+                  {% else %}
+                    {{ song.length // 60 }}:
+                  {% endif %}
+                  
+                  {% if (song.length % 60) < 10 %}
+                    0{{ song.length % 60 }}
+                  {% else %}
+                    {{ song.length % 60 }}
+                  {% endif %}
+                </td>
                 <td class="fav-col">                
                   <div class="btn-group dropend">
                       <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -140,7 +152,19 @@
               {% if isPlPremium %}
                 <td id="plays{{song.id}}">{{ song.tot_plays_genre }}</td>
               {% endif %}
-                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td id='intToMinSec'> 
+                  {% if (song.length // 60) < 10 %}
+                    0{{ song.length // 60 }}:
+                  {% else %}
+                    {{ song.length // 60 }}:
+                  {% endif %}
+                  
+                  {% if (song.length % 60) < 10 %}
+                    0{{ song.length % 60 }}
+                  {% else %}
+                    {{ song.length % 60 }}
+                  {% endif %}  
+                </td>
                 <td class="fav-col">                
                   <div class="btn-group dropend">
                       <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -180,7 +204,6 @@
             document.getElementById("myDropdown").classList.toggle("show");
         }
           
-        // Close the dropdown if the user clicks outside of it
         window.onclick = function(event) {
           if (!event.target.matches(".bi-three-dots")) {
               var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -201,7 +224,7 @@
           xhr.send(songId);
         }
 
-        function addPlays2(plays, songId){
+        function addPlaysPremium(plays, songId){
           var element = document.getElementById(plays);
           var value = element.innerHTML;
           ++value;

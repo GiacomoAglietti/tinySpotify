@@ -48,7 +48,19 @@
                   {% endfor %}
                 </td>
                 <td>{{ song.name_album }}</td>
-                <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                <td id='intToMinSec'> 
+                  {% if (song.length // 60) < 10 %}
+                    0{{ song.length // 60 }}:
+                  {% else %}
+                    {{ song.length // 60 }}:
+                  {% endif %}
+                  
+                  {% if (song.length % 60) < 10 %}
+                    0{{ song.length % 60 }}
+                  {% else %}
+                    {{ song.length % 60 }}
+                  {% endif %}
+                </td>
                 <td class="fav-col">                
                   <div class="btn-group dropend">
                       <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -94,7 +106,19 @@
                 <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
               <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
               <td>{{ song.name_album }}</td>
-              <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+              <td id='intToMinSec'> 
+                {% if (song.length // 60) < 10 %}
+                    0{{ song.length // 60 }}:
+                  {% else %}
+                    {{ song.length // 60 }}:
+                  {% endif %}
+                  
+                  {% if (song.length % 60) < 10 %}
+                    0{{ song.length % 60 }}
+                  {% else %}
+                    {{ song.length % 60 }}
+                  {% endif %}
+              </td>
               <td class="fav-col">                
                 <div class="btn-group dropend">
                     <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">

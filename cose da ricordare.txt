@@ -76,9 +76,12 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 
 TODO:
 -sistemare immagini
--sistemare minuti e song nell'aggiunta di una canzone nell'album (non si può aggiungere una canzone con x>0 minuti e 0 secondi)
+-sistemare creazione playlist in una playlist
 -togliere num_of_plays in Genre
 -mettere indici
+-cambiare schemi nel documento di progetto
+-fare esempio pratico dell'algoritmo dei dizionari
+-cambiare nome da tinySpotify a SpotiFake
 
 
 si assume che:

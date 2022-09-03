@@ -13,15 +13,17 @@ from webapp.models.Playlist import Playlist
 class User(Base, UserMixin):   
     __tablename__ = "users"
 
-    id  = Column(Integer, primary_key=True)
-    name  = Column(String(50),index=True, unique=True, nullable=False)
-    email  = Column(String(50), index=True, unique=True, nullable=False)
+    id  = Column(Integer, primary_key=True, index=True)
+    name  = Column(String(50), unique=True, nullable=False)
+    email  = Column(String(50), unique=True, nullable=False)
     password  = Column(String(150), nullable=False)
-    isArtist = Column(Boolean, default=False)
-    isPremium = Column(Boolean, default=False)
+    role = Column(String(50), ForeignKey('roles.name', ondelete="CASCADE", onupdate="CASCADE"))
     playlist = relationship("UserPlaylist", back_populates="user", passive_deletes=True)
     songs = relationship("SongArtist", back_populates="artist", passive_deletes=True)
     album = relationship("AlbumArtist", back_populates="artist", passive_deletes=True)
+
+    def get_role(self):
+            return self.role
 
 """
 @event.listens_for(User, 'after_attach')

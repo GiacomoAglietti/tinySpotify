@@ -34,7 +34,7 @@
             {%- endfor -%}
         </div>
     {% endif %}
-    {% if session['isPremium'] %} 
+    {%if session['role']=="UserPremium" or session['role']=="ArtistPremium" or session['role']=="Admin" %} 
         <hr style="color: black;">
         <h4 class="h4-playlist" style="color: #fff; margin-bottom: 20px; margin-top: 20px">Playlist Premium</h4>
         <div class="row row-cols-1 row-cols-md-3 g-4">
@@ -83,7 +83,19 @@
                     {% if isPlPremium %}
                       <td>{{ song.num_of_plays }}</td>
                     {% endif %}
-                    <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                    <td id='intToMinSec'> 
+                      {% if (song.length // 60) < 10 %}
+                        0{{ song.length // 60 }}:
+                      {% else %}
+                        {{ song.length // 60 }}:
+                      {% endif %}
+                      
+                      {% if (song.length % 60) < 10 %}
+                        0{{ song.length % 60 }}
+                      {% else %}
+                        {{ song.length % 60 }}
+                      {% endif %}
+                    </td>
                     <td class="fav-col">                
                       <div class="btn-group dropend">
                           <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
@@ -129,7 +141,19 @@
                     {% if isPlPremium %}
                       <td>{{ song.num_of_plays }}</td>
                     {% endif %}
-                      <td id='intToMinSec'> {{ song.length // 60 }}:{{ song.length % 60}} </td>
+                      <td id='intToMinSec'>
+                        {% if (song.length // 60) < 10 %}
+                          0{{ song.length // 60 }}:
+                        {% else %}
+                          {{ song.length // 60 }}:
+                        {% endif %}
+                        
+                        {% if (song.length % 60) < 10 %}
+                          0{{ song.length % 60 }}
+                        {% else %}
+                          {{ song.length % 60 }}
+                        {% endif %}  
+                      </td>
                       <td class="fav-col">                
                         <div class="btn-group dropend">
                             <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
