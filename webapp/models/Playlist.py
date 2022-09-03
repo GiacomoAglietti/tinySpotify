@@ -18,4 +18,5 @@ class Playlist(Base):
     name = Column(String(50), nullable=False)
     isPremium = Column(Boolean, default=False)
     songs = relationship("PlaylistSong", back_populates="playlist")
-    users = relationship("UserPlaylist", back_populates="playlist")    
+    users = relationship("UserPlaylist", back_populates="playlist")
+    genre = relationship("Genre", backref="playlist")   
