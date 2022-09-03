@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
-from webapp import db_session, conn
+from webapp import db_session
 from webapp.models.User import User
 from webapp.models.Playlist import Playlist
 from webapp.models.UserPlaylist import UserPlaylist
@@ -111,18 +111,21 @@ def signUp():
                     role="ArtistFree"
                     )   
         
+            playlistPreferiti = Playlist(name='Preferiti') 
 
-            cur = conn.cursor()
 
             try:
-                local_session.add(newUser)                
+                local_session.add(newUser)
+                local_session.add(playlistPreferiti)                
                 local_session.commit()
                 local_session.flush()
                 local_session.refresh(newUser)
+                local_session.refresh(playlistPreferiti) 
 
-                cur.execute("CALL create_fav_playlist(%s);", [newUser.id])    
+                user_playlist = UserPlaylist(id_playlist=playlistPreferiti.id, id_user=newUser.id)
 
-                conn.commit()  
+                local_session.add(user_playlist)                
+                local_session.commit() 
 
                 flash('Account creato!', category='success')
                 return redirect(url_for('auth.login'))
@@ -130,8 +133,7 @@ def signUp():
                 local_session.rollback()
                 return str(e.orig)
                 
-            finally:                   
-                cur.close()                  
+            finally:                                 
                 local_session.close()            
     
     return render_template("signUp.html")

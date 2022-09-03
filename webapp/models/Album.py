@@ -13,7 +13,6 @@ class Album(Base):
     id  = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     year = Column(Integer, CheckConstraint('year > 1900 and year <= 2022'), nullable=False)
-    image = Column(String(100))
     artists = relationship("AlbumArtist", back_populates="album")
     songs = relationship("Song",cascade="all,delete", back_populates="album")
 """

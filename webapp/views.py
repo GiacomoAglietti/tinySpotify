@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import select, subquery, update, delete, func, exc, desc, or_
-from webapp import db_session, conn
+from webapp import db_session
 from functools import wraps
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
@@ -118,7 +118,7 @@ def home_authenticated():
                                 where(Song.genre.in_(stmt_genre)).
                                 where(Song.id.notin_(songs_already_added_stmt)).
                                 group_by(Song.id,  Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                order_by(desc(Song.num_of_plays)).limit(5)
+                                order_by(desc(Song.num_of_plays), Song.id).limit(5)
                         )
         
                 try:
@@ -129,7 +129,7 @@ def home_authenticated():
 
                 i = 0 
                 while i < len(list_songs_raccomended)-1:
-                        if(list_songs_raccomended[i].title == list_songs_raccomended[i+1].title):
+                        if(list_songs_raccomended[i].id == list_songs_raccomended[i+1].id):
                                 x=i
                                 dict_artist={}
                                 dict_artist["id"] = list_songs_raccomended[x].id
@@ -143,7 +143,7 @@ def home_authenticated():
                                 dict_artist["artists_data"]['artist'+str(x)].append(list_songs_raccomended[x].name_artist)
                                 j=i+1
                                 y=j
-                                while (j < len(list_songs_raccomended)) and (list_songs_raccomended[i].title == list_songs_raccomended[j].title) :
+                                while (j < len(list_songs_raccomended)) and (list_songs_raccomended[i].id == list_songs_raccomended[j].id) :
                                         dict_artist["artists_data"]['artist'+str(y)] = []
                                         dict_artist["artists_data"]['artist'+str(y)].append(list_songs_raccomended[j].id_artist)
                                         dict_artist["artists_data"]['artist'+str(y)].append(list_songs_raccomended[j].name_artist)
@@ -173,23 +173,22 @@ def create_playlist():
                         nomePlaylist = request.form.get('nomePlaylist')
 
                         newPlaylist = Playlist(name = nomePlaylist)
-                        cur = conn.cursor()
-
                         try:
                                 local_session.add(newPlaylist)
                                 local_session.commit()
                                 local_session.flush()
                                 local_session.refresh(newPlaylist)
 
-                                cur.execute("CALL add_user_playlist(%s, %s);", [session['userid'], newPlaylist.id])    
-                                conn.commit()
+                                user_playlist = UserPlaylist(id_playlist=newPlaylist.id, id_user=session['userid'])
+
+                                local_session.add(user_playlist)                
+                                local_session.commit()
 
                                 flash('Playlist creata con successo', category='success')
                         except exc.SQLAlchemyError as e:
                                 local_session.rollback()
                                 return str(e.orig)
                         finally:
-                                cur.close()
                                 local_session.close()   
 
         return home_authenticated()
@@ -271,7 +270,7 @@ def get_playlist_selected(id_playlist_selected):
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 filter(Song.id.in_(songs_list)).
-                order_by(Song.date_created)
+                order_by(Song.date_created, Song.id)
         )
 
         
@@ -309,7 +308,7 @@ def get_playlist_selected(id_playlist_selected):
         while i < len(songsPlaylist)-1:
                 num_songs += 1
                 tot_length += songsPlaylist[i].length
-                if(songsPlaylist[i].title == songsPlaylist[i+1].title):
+                if(songsPlaylist[i].id == songsPlaylist[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = songsPlaylist[x].id
@@ -323,7 +322,7 @@ def get_playlist_selected(id_playlist_selected):
                         dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(songsPlaylist)) and (songsPlaylist[i].title == songsPlaylist[j].title) :
+                        while (j < len(songsPlaylist)) and (songsPlaylist[i].id == songsPlaylist[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].name_artist)
@@ -361,7 +360,7 @@ def get_premium_playlist_selected(name_playlist_selected):
                 where(Song.id.in_(stmt_song_subquery)).
                 group_by(Song.genre, Song.id, Song.title, Song.length, Album.name.label("name_album"),
                  Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                order_by(desc(func.sum(Song.num_of_plays) ))
+                order_by(desc(func.sum(Song.num_of_plays)), Song.id)
         )
 
         stmt_playlist =(
@@ -399,7 +398,7 @@ def get_premium_playlist_selected(name_playlist_selected):
         while i < len(songsPlaylist)-1:
                 num_songs += 1
                 tot_length += songsPlaylist[i].length
-                if(songsPlaylist[i].title == songsPlaylist[i+1].title):
+                if(songsPlaylist[i].id == songsPlaylist[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = songsPlaylist[x].id
@@ -415,7 +414,7 @@ def get_premium_playlist_selected(name_playlist_selected):
                         dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(songsPlaylist)) and (songsPlaylist[i].title == songsPlaylist[j].title) :
+                        while (j < len(songsPlaylist)) and (songsPlaylist[i].id == songsPlaylist[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].name_artist)
@@ -482,7 +481,7 @@ def get_favourite():
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 filter(Song.id.in_(songs_list)).
-                order_by(Song.date_created.desc())
+                order_by(Song.date_created.desc(), Song.id)
         )
 
         playlist_list = None
@@ -507,7 +506,7 @@ def get_favourite():
         while i < len(songsPlaylist)-1:
                 num_songs += 1
                 tot_length += songsPlaylist[i].length
-                if(songsPlaylist[i].title == songsPlaylist[i+1].title):
+                if(songsPlaylist[i].id == songsPlaylist[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = songsPlaylist[x].id
@@ -521,7 +520,7 @@ def get_favourite():
                         dict_artist["artists_data"]['artist'+str(x)].append(songsPlaylist[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(songsPlaylist)) and (songsPlaylist[i].title == songsPlaylist[j].title) :
+                        while (j < len(songsPlaylist)) and (songsPlaylist[i].id == songsPlaylist[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(songsPlaylist[j].name_artist)
@@ -608,7 +607,7 @@ def get_album_selected(id_album_selected):
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 where(Song.id_album==id_album_selected).
-                order_by(Song.date_created)
+                order_by(Song.date_created, Song.id)
         )
 
         album_name = None    
@@ -631,7 +630,7 @@ def get_album_selected(id_album_selected):
         while i < len(songs_list)-1:
                 num_songs += 1
                 tot_length += songs_list[i].length
-                if(songs_list[i].title == songs_list[i+1].title):
+                if(songs_list[i].id == songs_list[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = songs_list[x].id
@@ -644,7 +643,7 @@ def get_album_selected(id_album_selected):
                         dict_artist["artists_data"]['artist'+str(x)].append(songs_list[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(songs_list)) and (songs_list[i].title == songs_list[j].title) :
+                        while (j < len(songs_list)) and (songs_list[i].id == songs_list[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].name_artist)
@@ -934,7 +933,7 @@ def get_artist_selected(id_artist_selected):
                 join(AlbumArtist, AlbumArtist.id_album==Album.id).
                 join(User, User.id==AlbumArtist.id_artist).
                 where(Album.id.in_(album_artist_list_stmt)).
-                order_by(Album.name, Album.year, Album.id))
+                order_by(Album.id, Album.name, Album.year))
 
 
         stmt_song_id= (
@@ -950,7 +949,7 @@ def get_artist_selected(id_artist_selected):
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 where(Song.id.in_(stmt_song_id)).
-                order_by(Song.title, Song.id))
+                order_by(Song.id, Song.title))
 
 
         stmt_artist = (
@@ -972,12 +971,10 @@ def get_artist_selected(id_artist_selected):
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
 
-        for item in album_list:
-                print(item)
 
         i = 0 
         while i < len(album_list)-1:
-                if(album_list[i].name == album_list[i+1].name):
+                if(album_list[i].id == album_list[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = album_list[x].id
@@ -989,7 +986,7 @@ def get_artist_selected(id_artist_selected):
                         dict_artist["artists_data"]['artist'+str(x)].append(album_list[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(album_list)) and (album_list[i].name == album_list[j].name) :
+                        while (j < len(album_list)) and (album_list[i].id == album_list[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(album_list[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(album_list[j].name_artist)
@@ -999,10 +996,6 @@ def get_artist_selected(id_artist_selected):
                         album_list.pop(i)
                         album_list.insert(i,dict_artist)
                 i=i+1
-
-        for item in album_list:
-                print(item)
-
         
         playlist_list = FunctionSession.get_user_playlist(True)
 
@@ -1013,7 +1006,7 @@ def get_artist_selected(id_artist_selected):
         while i < len(songs_list)-1:
                 num_songs += 1
                 tot_length += songs_list[i].length
-                if(songs_list[i].title == songs_list[i+1].title):
+                if(songs_list[i].id == songs_list[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = songs_list[x].id
@@ -1028,7 +1021,7 @@ def get_artist_selected(id_artist_selected):
                         dict_artist["artists_data"]['artist'+str(x)].append(songs_list[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(songs_list)) and (songs_list[i].title == songs_list[j].title) :
+                        while (j < len(songs_list)) and (songs_list[i].id == songs_list[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(songs_list[j].name_artist)
@@ -1130,7 +1123,7 @@ def search_result(result=None):
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
                 where((Song.title).like('%' + lookingFor + '%')).
-                order_by(Song.title, Song.year, Song.length)
+                order_by(Song.id, Song.title, Song.year)
         )
 
         searchInAlbum= (
@@ -1138,7 +1131,7 @@ def search_result(result=None):
                 join(AlbumArtist, Album.id==AlbumArtist.id_album).
                 join(User, User.id==AlbumArtist.id_artist).
                 where((Album.name).like('%' + lookingFor + '%')).
-                order_by(Album.name,Album.year)
+                order_by(Album.id,Album.name)
         )
 
         searchInUser= (
@@ -1162,7 +1155,7 @@ def search_result(result=None):
 
         i = 0 
         while i < len(song_result)-1:
-                if(song_result[i].title == song_result[i+1].title):
+                if(song_result[i].id == song_result[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = song_result[x].id
@@ -1176,7 +1169,7 @@ def search_result(result=None):
                         dict_artist["artists_data"]['artist'+str(x)].append(song_result[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(song_result)) and (song_result[i].title == song_result[j].title) :
+                        while (j < len(song_result)) and (song_result[i].id == song_result[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(song_result[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(song_result[j].name_artist)
@@ -1189,7 +1182,7 @@ def search_result(result=None):
 
         i = 0 
         while i < len(album_result)-1:
-                if(album_result[i].name == album_result[i+1].name):
+                if(album_result[i].id == album_result[i+1].id):
                         x=i
                         dict_artist={}
                         dict_artist["id"] = album_result[x].id
@@ -1201,7 +1194,7 @@ def search_result(result=None):
                         dict_artist["artists_data"]['artist'+str(x)].append(album_result[x].name_artist)
                         j=i+1
                         y=j
-                        while (j < len(album_result)) and (album_result[i].name == album_result[j].name) :
+                        while (j < len(album_result)) and (album_result[i].id == album_result[j].id) :
                                 dict_artist["artists_data"]['artist'+str(y)] = []
                                 dict_artist["artists_data"]['artist'+str(y)].append(album_result[j].id_artist)
                                 dict_artist["artists_data"]['artist'+str(y)].append(album_result[j].name_artist)

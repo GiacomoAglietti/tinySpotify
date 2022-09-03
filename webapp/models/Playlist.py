@@ -1,6 +1,6 @@
 from webapp import Base
 from flask import session
-from sqlalchemy import Column, Integer, Boolean, String, event
+from sqlalchemy import Column, Integer, Boolean, String, event, ForeignKey
 from sqlalchemy import insert
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -19,4 +19,3 @@ class Playlist(Base):
     isPremium = Column(Boolean, default=False)
     songs = relationship("PlaylistSong", back_populates="playlist")
     users = relationship("UserPlaylist", back_populates="playlist")
-    genre = relationship("Genre", backref="playlist")   
