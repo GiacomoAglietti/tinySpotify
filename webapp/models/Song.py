@@ -1,19 +1,39 @@
-from email.policy import default
-from flask import session
 from webapp import Base
-from sqlalchemy import CheckConstraint, Column, Integer,ForeignKey,DateTime,String, UniqueConstraint, event
+from sqlalchemy import CheckConstraint, Column, Integer,ForeignKey,DateTime,String, UniqueConstraint
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from sqlalchemy.sql import func
-from . import Playlist, Genre, Album, PlaylistSong, SongArtist
 
 
 
 class Song(Base):
+    """
+    A class used to represent a Playlist
+
+    ...
+
+    Attributes
+    ----------
+    id : Column
+        the id of the playlist
+    title : Column
+        the name of the playlist
+    year : Column
+        indicates whether a playlist is premium or not
+    length : Column
+        the id of the playlist
+    num_of_plays : Column
+        the name of the playlist
+    date_created : Column
+        indicates whether a playlist is premium or not
+    id_album : Column
+        the id of the playlist
+    genre : Column
+        the name of the playlist
+    """
+
     __tablename__ = "songs"
 
-    __table_args__ = (UniqueConstraint('title', 'id_album', name='title_id_album'),
-                 )
+    __table_args__ = (UniqueConstraint('title', 'id_album', name='title_id_album'),)
 
     id  = Column(Integer, primary_key=True, index=True)
     title = Column(String(50), nullable=False)

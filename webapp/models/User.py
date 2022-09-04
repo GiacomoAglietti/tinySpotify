@@ -1,16 +1,34 @@
 from webapp import Base
-from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, Boolean, CheckConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from sqlalchemy.sql import func
 from flask_login import UserMixin
-from webapp.models.Playlist import Playlist
 
-#da mettere in un trigger
-#time_updated = Column(DateTime(timezone=True), onupdate=func.now())
+class User(Base, UserMixin):
+    """
+    A class used to represent an User
 
+    ...
 
-class User(Base, UserMixin):   
+    Attributes
+    ----------
+    id : Column
+        the id of the user
+    name : Column
+        the username 
+    email : Column
+        the email of the user
+    passowrd : Column
+        the password of the user
+    role : Column
+        foreign key for Role table
+        
+
+    Methods
+    -------
+    get_role(self)
+        Returns the user's role
+    """
+
     __tablename__ = "users"
 
     id  = Column(Integer, primary_key=True, index=True)
@@ -24,22 +42,4 @@ class User(Base, UserMixin):
 
     def get_role(self):
             return self.role
-
-"""
-@event.listens_for(User, 'after_attach')
-def add_favourite_songs_playlist(session, instance):
-    favSongsPlaylist = Playlist(
-        id_user = instance.id,
-        name = "favourite_songs"
-    )
-    session.add(favSongsPlaylist)
-    session.commit()
-
-    playlist_table = Playlist.__table__
-    connection.execute(
-        playlist_table.update().
-        where(playlist_table.c.id==thread.id).
-        values(word_count=sum(c.word_count for c in thread.comments))
-    )
-"""
 

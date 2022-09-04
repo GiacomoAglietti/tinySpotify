@@ -76,15 +76,10 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 
 TODO:
 -sistemare immagini
-
-
-
-si assume che:
--ogni utente ha le sue playlist e le playlist premium solo se utente premium
--ogni canzone può far parte solo di un album
--una playlist non può avere due o più canzoni uguali
--una artista non può creare due o più canzoni uguali
-
+-sistemare struttura del documento
+-commenti nel codice
+-inserimento dati nel database
+-suggerimenti
 
 
 

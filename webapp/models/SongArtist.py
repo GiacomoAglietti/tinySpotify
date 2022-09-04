@@ -1,10 +1,22 @@
 from webapp import Base
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from sqlalchemy.sql import func
 
 class SongArtist(Base):
+    """
+    A class used as association table between Song and User
+
+    ...
+
+    Attributes
+    ----------
+    id_song : Column
+        foreign key for Song table
+    id_artist : Column
+        foreign key for User table
+        
+    """
+
     __tablename__ = "song_artist"
 
     id_artist = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"), primary_key=True)

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy import select, subquery, update, delete, func, exc, desc, or_
+from sqlalchemy import select, update, delete, func, exc, desc, or_
 from webapp import db_session
 from functools import wraps
 from webapp.models.User import User
@@ -8,7 +8,6 @@ from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
 from webapp.models.PlaylistSong import PlaylistSong
 from webapp.models.Playlist import Playlist
-from webapp.models.Genre import Genre
 from webapp.models.AlbumArtist import AlbumArtist
 from webapp.models.Album import Album
 from webapp.models.UserPlaylist import UserPlaylist
@@ -18,8 +17,18 @@ local_session = db_session()
 
 views = Blueprint('views', __name__)
 
-#create a new decorator for user role
 def require_role(role_nedeed):
+        """Function used to create a new decorator for user roles
+
+        Parameters
+        ----------
+        role_nedeed : list
+                The list of strings of roles nedeed to access in the specific endpoint
+
+        Returns
+        -------
+        If the current user's role isn't in the list then page_not_found function is returned, otherwise it allows access to the endpoint to the user 
+        """
 
         def wrapper(fn):
             @wraps(fn)
@@ -34,6 +43,13 @@ def require_role(role_nedeed):
 
 @views.route('/', methods=['GET', 'POST'])
 def home():
+        """Function that redirect the user based on the session
+
+        Returns
+        -------
+        if the userid is in the session then the user is redirected to the home, otherwise at login
+
+        """
         
         if session.get('userid'):
                 return redirect("/home")
@@ -43,7 +59,15 @@ def home():
 
 @views.route('/home', methods=['GET', 'POST'])
 @login_required
-def home_authenticated():      
+def home_authenticated():
+        """Function used to load from the database informations about user's playlist and, only if the user is premium, all premium contents
+
+        Returns
+        -------
+        Return the template "home.html"
+
+        """   
+           
 
 
         stmt_playlist =(
@@ -134,6 +158,7 @@ def home_authenticated():
                                 dict_artist={}
                                 dict_artist["id"] = list_songs_raccomended[x].id
                                 dict_artist["title"] = list_songs_raccomended[x].title
+                                dict_artist["length"] = list_songs_raccomended[x].length
                                 dict_artist["num_of_plays"] = list_songs_raccomended[x].num_of_plays
                                 dict_artist["name_album"] = list_songs_raccomended[x].name_album
                                 dict_artist["id_album"] = list_songs_raccomended[x].id_album
@@ -158,15 +183,42 @@ def home_authenticated():
 
 @views.route('/home/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
-def home_add_song(idPlaylist_ToAddSong,id_song):      
+def home_add_song(idPlaylist_ToAddSong,id_song):
+        """Function used to add a song into the playlist from home page
 
-        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)              
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        idPlaylist_ToAddSong : int
+            The id of the playlist to which we want to add the song
+        id_song : int
+            The id of the song
+
+        Returns
+        -------
+            Return the function home_authenticated()
+        """       
+
+        FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)              
 
         return home_authenticated()
 
 @views.route('/create-playlist', methods=['GET', 'POST'])
 @login_required
 def create_playlist():
+        """Function used to create a playlist
+
+        Decorators
+        ----------
+        @login_required
+
+        Returns
+        -------
+            Return the function home_authenticated()
+        """   
 
         if request.method == 'POST':
                 if request.form["create_playlist"]=="create_playlist":
@@ -193,30 +245,24 @@ def create_playlist():
 
         return home_authenticated()
 
-@views.route('/playlists', methods=['GET', 'POST'])
-@login_required
-def playlists():
-
-        playlists = None
-
-        stmt = (
-                select(Playlist.id, Playlist.name).
-                join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
-                where(UserPlaylist.id_user == session['userid']).
-                where(Playlist.isPremium == False).
-                where(UserPlaylist.id_playlist != session['id_fav_playlist']))
-        try:
-                playlists = local_session.execute(stmt).all()
-                
-        except exc.SQLAlchemyError as e:
-                return str(e.orig)
-
-
-        return render_template("playlists.html", playlists = playlists)
-
 @views.route('/playlists/delete/<int:id>', methods=['GET', 'POST'])
 @login_required
 def delete_playlist(id):
+        """Function to delete a playlist
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        id : int
+            The id of the playlist to delete
+
+        Returns
+        -------
+            Return the function home_authenticated()
+        """ 
         if request.method == 'POST':               
                 delete_playlist = (
                         delete(Playlist).
@@ -238,10 +284,26 @@ def delete_playlist(id):
 @views.route('/playlists/<int:id_playlist_selected>', methods=['GET', 'POST'])
 @login_required
 def get_playlist_selected(id_playlist_selected):
+        """Function to load all songs of a playlist and all user's playlist in case he wants to add a song to one of his playlists. 
+        Songs are sorted in descending order according to their date of inclusion in the playlist
+        It handle also the possibilty of change the playlist's name throught a post request
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        id_playlist_selected : int
+            The id of the playlist that the user has selected
+
+        Returns
+        -------
+            Return the template "playlist-select.html"
+        """ 
 
         if request.method == 'POST':  
                 if request.form["change-name-playlist"]=="change-name-playlist":                          
-                #if 'change-name-playlist' in request.form:
                         nomePlaylist = request.form.get('nomePlaylist')
                         update_playlist = (
                                 update(Playlist).
@@ -259,21 +321,16 @@ def get_playlist_selected(id_playlist_selected):
                         finally:                        
                                 local_session.close()
 
-        songs_list = (
-                select(Song.id).
-                join(PlaylistSong, Song.id == PlaylistSong.id_song).
-                where(PlaylistSong.id_playlist == id_playlist_selected))
 
         stmt_song= (
                 select(Song.id, Song.title, Song.id_album, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
-                filter(Song.id.in_(songs_list)).
-                order_by(Song.date_created, Song.id)
-        )
-
-        
+                where(PlaylistSong.id_playlist == id_playlist_selected).
+                order_by(PlaylistSong.date_created, Song.id)
+        )        
 
         stmt_playlist =(
                 select(Playlist.id, Playlist.name).
@@ -342,6 +399,24 @@ def get_playlist_selected(id_playlist_selected):
 @login_required
 @require_role(role_nedeed=['Admin','ArtistPremium','UserPremium'])
 def get_premium_playlist_selected(name_playlist_selected):
+        """Function to load the top 10 songs of a premium playlist and all user's playlist in case he wants to add a song to one of his playlists. 
+        Songs are sorted in descending order according to their number of plays and their id.
+        This endpoint is only accessible to users with the following roles: 'Admin','ArtistPremium','UserPremium'.
+
+        Decorators
+        ----------
+        @login_required
+        @require_role
+
+        Parameters
+        ----------
+        id_playlist_selected : int
+            The id of the playlist that the user has selected
+
+        Returns
+        -------
+            Return the template "playlist-select.html"
+        """ 
 
         stmt_song_subquery= (
                 select(Song.id).
@@ -351,7 +426,7 @@ def get_premium_playlist_selected(name_playlist_selected):
         )
 
         stmt_song= (
-                select(Song.id, Song.title, Song.genre, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'),
+                select(Song.id, Song.title, Song.length, func.sum(Song.num_of_plays).label('tot_plays_genre'),
                   Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), 
                   User.id.label("id_artist")).
                 join(Album, Song.id_album == Album.id).
@@ -403,7 +478,6 @@ def get_premium_playlist_selected(name_playlist_selected):
                         dict_artist={}
                         dict_artist["id"] = songsPlaylist[x].id
                         dict_artist["title"] = songsPlaylist[x].title
-                        dict_artist["genre"] = songsPlaylist[x].genre 
                         dict_artist["length"] = songsPlaylist[x].length
                         dict_artist["tot_plays_genre"] = songsPlaylist[x].tot_plays_genre
                         dict_artist["name_album"] = songsPlaylist[x].name_album
@@ -436,14 +510,50 @@ def get_premium_playlist_selected(name_playlist_selected):
 @views.route('/playlists/<int:id_playlist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
 def playlist_add_song(id_playlist_selected,idPlaylist_ToAddSong, id_song):
+        """Function used to add a song into the playlist from a playlist page
 
-        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+         id_album_selected : int
+            The id of the playlist selected
+        idPlaylist_ToAddSong : int
+            The id of the playlist to which we want to add the song
+        id_song : int
+            The id of the song
+
+        Returns
+        -------
+            Return the function get_playlist_selected with id_playlist_selected as parameter
+        """
+
+        FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
 
         return get_playlist_selected(id_playlist_selected)
 
 @views.route('/playlists/<int:id_playlist_selected>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
 def playlist_remove_song(id_playlist_selected, id_song):
+        """Function to delete a song in a playlist
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        id_playlist_selected : int
+            The id of the playlist that the user has selected
+        id_playlist_selected : int
+            The id of the song to delete
+
+        Returns
+        -------
+            Return the template "playlist-select.html"
+        """ 
 
         delete_playlist = (
                         delete(PlaylistSong).
@@ -469,19 +579,26 @@ def playlist_remove_song(id_playlist_selected, id_song):
 @views.route('/favourites', methods=['GET', 'POST'])
 @login_required
 def get_favourite():
+        """Function to load all songs of personal "Preferiti" playlist and all user's playlist in case he wants to add a song to one of his playlists. 
+        Songs are sorted in ascending order according to their date of inclusion in the playlist
 
-        songs_list = (
-                select(Song.id).
-                join(PlaylistSong, Song.id == PlaylistSong.id_song).
-                where(PlaylistSong.id_playlist == session['id_fav_playlist']))
+        Decorators
+        ----------
+        @login_required
+
+        Returns
+        -------
+            Return the template favourite-playlist.html
+        """ 
 
         stmt_song= (
                 select(Song.id, Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
+                join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 join(Album, Song.id_album == Album.id).
                 join(SongArtist, Song.id == SongArtist.id_song).
                 join(User, User.id == SongArtist.id_artist).
-                filter(Song.id.in_(songs_list)).
-                order_by(Song.date_created.desc(), Song.id)
+                where(PlaylistSong.id_playlist == session['id_fav_playlist']).
+                order_by(desc(PlaylistSong.date_created),Song.id)
         )
 
         playlist_list = None
@@ -541,7 +658,7 @@ def get_favourite():
 @login_required
 def favourite_add_song(idPlaylist_ToAddSong,id_song):      
 
-        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)              
+        FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)              
 
         return get_favourite()
 
@@ -904,7 +1021,7 @@ def delete_album(id):
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def album_add_song(id_album_selected,idPlaylist_ToAddSong,id_song):
 
-        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)
+        FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
 
         return get_album_selected(id_album_selected)
 
@@ -1000,7 +1117,7 @@ def get_artist_selected(id_artist_selected):
         playlist_list = FunctionSession.get_user_playlist(True)
 
         tot_length = 0
-
+        num_songs=0
 
         i = 0 
         while i < len(songs_list)-1:
@@ -1043,7 +1160,7 @@ def get_artist_selected(id_artist_selected):
 @login_required
 def artist_add_song(id_artist_selected,idPlaylist_ToAddSong,id_song):
 
-        FunctionSession.insert_playlist_song(idPlaylist_ToAddSong, id_song)
+        FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
 
         return get_artist_selected(id_artist_selected)
 
@@ -1211,7 +1328,7 @@ def search_result(result=None):
 @login_required
 def search_add_song(result, playlistId, songId):
 
-        FunctionSession.insert_playlist_song(playlistId, songId)
+        FunctionSession.insert_song_playlist(playlistId, songId)
         
 
         return search_result(result)

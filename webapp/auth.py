@@ -14,6 +14,12 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """Function used to login a user. If the credentials inserted by the user are correct then id, name, id_fav_playlist and role are saved in the session
+
+        Returns
+        -------
+        Return to endpoint /home if users'credentials are correct, otherwise return the template of "login.html"
+    """
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
@@ -58,13 +64,44 @@ def login():
 @auth.route('/logout')
 @login_required
 def logout():
-    session["username"] = None
-    session["userid"] = None
+    """Function used to logout the authenticated user and set all session's variables to None
+
+        Decorators
+        ----------
+        @login_required
+
+        Returns
+        -------
+        Return to auth.login
+    """
+
+    session['userid'] = None
+    session['username'] = None
+    session['id_fav_playlist'] = None
+    session['role'] = None
     logout_user()
     return redirect(url_for('auth.login'))
 
 @auth.route('/signUp', methods=['GET', 'POST'])
 def signUp():
+    """Function used to sign up a user. 
+       Sign up is successful only if
+       the name or the email entered are not already in the database and
+       the password entered and the confirm password are the same and
+       the email has to have at least 4 chars and
+       the name has to have at least 2 chars and
+       the password has to have at least 1 char.
+
+       If any of the above conditions are not respected then a flash message will appear.
+       
+       If, instead, all the conditions have been met, then the user is signed up and assigned a role.
+       In particular, if a user is an artist the role given to him is "ArtistFree", otherwise "UserFree".
+
+
+        Returns
+        -------
+        Return the template of "login.html" if the signed up is successful, otherwise return the template of "signUp.html"
+    """
 
     if request.method == 'POST':
         email = request.form.get('email')

@@ -1,19 +1,25 @@
 from webapp import Base
-from flask import session
-from sqlalchemy import Column, Integer, Boolean, String, event, ForeignKey
-from sqlalchemy import insert
+from sqlalchemy import Column, Integer, Boolean, String
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from sqlalchemy.sql import func
-from . import User, Song, PlaylistSong, Genre
-from webapp.models.UserPlaylist import UserPlaylist
-from webapp import db_session
-
-local_session = db_session()
-
 
 class Playlist(Base):
+    """
+    A class used to represent a Playlist
+
+    ...
+
+    Attributes
+    ----------
+    id : Column
+        the id of the playlist
+    name : Column
+        the name of the playlist
+    isPremium : Column
+        indicates whether a playlist is premium or not
+    """
+
     __tablename__ = "playlist"
+
     id  = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
     isPremium = Column(Boolean, default=False)

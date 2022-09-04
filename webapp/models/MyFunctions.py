@@ -1,10 +1,7 @@
-from webapp import Base
 from flask import session, flash
 from webapp import db_session
-from sqlalchemy import Column, Integer, Boolean, String, exc
-from sqlalchemy.orm import relationship
-from datetime import datetime
-from sqlalchemy.sql import func,  insert, select, subquery, update, delete, or_
+from sqlalchemy import exc
+from sqlalchemy.sql import select, or_
 from webapp.models.User import User
 from webapp.models.SongArtist import SongArtist
 from webapp.models.Song import Song
@@ -18,7 +15,19 @@ from webapp.models.UserPlaylist import UserPlaylist
 local_session = db_session()
 
 class FunctionSession:
-    def get_songs_list():
+    """
+    A class used to contain functions
+
+    """
+
+    def get_songs_list() -> list:
+        """Function used to get all songs from database
+
+        Returns
+        -------
+        list
+            a list of Row which contains all columns of Song
+        """
         stmt = select(Song)
         songs = None
         try:
@@ -30,6 +39,19 @@ class FunctionSession:
         return songs
 
     def get_songs_in_a_playlist_by_id(id_playlist):
+        """Function used to get all songs of a playlist from database
+
+        Parameters
+        ----------
+        id_playlist : int
+            The id of the playlist
+
+        Returns
+        -------
+        ScalarResult
+            a Scalar object which contains the following columns: Song.id, Song.title, Song.num_of_plays, Song.id_album, Song.length, Song.genre, PlaylistSong.date_created
+        """
+
         stmt = (select(Song.id, Song.title, Song.num_of_plays, Song.id_album, Song.length, Song.genre, PlaylistSong.date_created).
                 join(PlaylistSong, Song.id == PlaylistSong.id_song).
                 where(PlaylistSong.id_playlist == id_playlist))
@@ -44,6 +66,19 @@ class FunctionSession:
 
     
     def get_user_playlist(withFav) -> list:
+        """Function used to get all playlist not premium of the current user from database, ordered by Playlist.name 
+
+        Parameters
+        ----------
+        withFav : bool
+            True if you also want the "Preferiti" playlist, False otherwise 
+
+        Returns
+        -------
+        list
+            a list of Row which contains the following columns: Playlist.id, Playlist.name
+        """
+
         playlists = None    
         if (withFav) :
             stmt = (
@@ -74,6 +109,18 @@ class FunctionSession:
         return playlists
     
     def get_albums_list_stmt(id_artist):
+        """Function used to get all albums of an artist from database, ordered by Album.name, Album.year, Album.id
+
+        Parameters
+        ----------
+        id_artist : int
+            The id of the artist
+
+        Returns
+        -------
+        list
+            a list of Row which contains the following columns: Album.name, Album.id, Album.year, User.name.label('name_artist'), User.id.label("id_artist")
+        """
         stmt = (
                 select(Album.name, Album.id, Album.year, User.name.label('name_artist'), User.id.label("id_artist")).
                 join(AlbumArtist, AlbumArtist.id_album==Album.id).
@@ -85,6 +132,18 @@ class FunctionSession:
         return stmt
 
     def get_artists_list(noCurrentArtist) -> list:
+        """Function used to get all artists from database
+
+        Parameters
+        ----------
+        noCurrentArtist : bool
+            True if you also want the current user(only if it's an artist) in the list, False otherwise
+
+        Returns
+        -------
+        list
+            a list of Row which contains the following columns: User.name, User.id
+        """
         artists = None
         if(noCurrentArtist) :
             stmt = (
@@ -107,7 +166,14 @@ class FunctionSession:
 
         return artists   
 
-    def get_genre_list():
+    def get_genre_list() -> list:
+        """Function used to get all genres from database
+
+        Returns
+        -------
+        list
+            a list of Row which contains the following columns: User.name, User.id
+        """
         stmt = select(Genre.name)
         genres = None
         try:
@@ -119,7 +185,18 @@ class FunctionSession:
 
         return genres
 
-    def insert_playlist_song(playlistId, songId):
+    def insert_song_playlist(playlistId, songId):
+        """Function used to insert a song in a playlist. If the song is already in the playlist it returns a flash message
+
+        Parameters
+        ----------
+        playlistId : int
+            The id of the playlist
+
+        songId : int
+            The id of the song
+
+        """
 
         exists_PlaylistSong = local_session.execute(
             select(PlaylistSong).
@@ -140,4 +217,7 @@ class FunctionSession:
                     return str(e.orig)
             finally:
                     local_session.close()
+
+    def add_dict_artist_to_list_song(listSong) -> list:
+        return []
       

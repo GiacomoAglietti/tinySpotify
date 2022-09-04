@@ -1,9 +1,9 @@
 from flask import Flask
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine, select
-from sqlalchemy.orm import relationship, backref, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, current_user
+from flask_login import LoginManager
 from flask_migrate import Migrate
 from flask_session import Session
 import os
@@ -25,7 +25,6 @@ conn = psycopg2.connect("dbname=SpotiFake user=postgres password=admin")
 
 
 def create_app():
-
 
     app = Flask(__name__, template_folder='templates')
 

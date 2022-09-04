@@ -1,12 +1,26 @@
-from enum import unique
 from webapp import Base
-from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, DDL, Sequence
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from sqlalchemy.sql import func
 
 
 class PlaylistSong(Base):
+    """
+    A class used as association table between Playlist and Song
+
+    ...
+
+    Attributes
+    ----------
+    id_playlist : Column
+        foreign key for Playlist table
+    id_song : Column
+        foreign key for Song table
+    date_created: Column
+        indicates when a song has been added to a playlist
+        
+    """
+
     __tablename__ = "playlist_song"
 
     id_playlist = Column(Integer, ForeignKey('playlist.id', ondelete="CASCADE"), primary_key=True)
