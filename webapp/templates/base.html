@@ -124,18 +124,27 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script> 
+
+      /**
+       * Function that highlights the current page in the sidebar
+       */
       $(document).ready(function() {
         $(".sidebar ul li").on('click' , function(){
           $(".sidebar ul li.active").removeClass('active');
           $(this).addClass('active');
-          
         })
-    });
+      });
 
+      /**
+       * Function that opens the sidebar when closed
+       */
       $('.open-btn').on('click', function(){
         $('.sidebar').addClass('active');
       })
 
+      /**
+       * Function that closes the sidebar when open
+       */
       $('.close-btn').on('click', function(){
         $('.sidebar').removeClass('active');
       }) 

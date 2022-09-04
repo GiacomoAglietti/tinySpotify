@@ -149,34 +149,43 @@
           {%- endfor -%}
         </tbody>
       </table>
-    <script>
+  <script>
 
-
-        function showDropdown() {
-            document.getElementById("myDropdown").classList.toggle("show");
-        }
-          
-        // Close the dropdown if the user clicks outside of it
-        window.onclick = function(event) {
-          if (!event.target.matches(".bi-three-dots")) {
-              var dropdowns = document.getElementsByClassName("dropdown-content");
-              var i;
-              for (i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains("show")) {
-                    openDropdown.classList.remove("show");
-                }
-              }
+    /**
+     * Function that show the three-dots menu
+     */
+    function showDropdown() {
+        document.getElementById("myDropdown").classList.toggle("show");
+    }
+      
+    /**
+     * Function that show the contents of the three-dots menu and close it if the user clicks outside
+     * @param {Event} event - event that triggers the function
+     */
+    window.onclick = function(event) {
+      if (!event.target.matches(".bi-three-dots")) {
+          var dropdowns = document.getElementsByClassName("dropdown-content");
+          var i;
+          for (i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains("show")) {
+                openDropdown.classList.remove("show");
+            }
           }
-        };
+      }
+    };
 
-        function addPlays(songId){
-          var xhr = new XMLHttpRequest();
-          xhr.open("POST", "/addPlays", true);
-          xhr.setRequestHeader('Content-type', 'addPlays');
-          xhr.send(songId);
-        }
-    </script>
+    /**
+     * Function associated with a button that increase the num_of_plays attribute of a song.
+     * @param {Integer} songId - The song id 
+     */
+    function addPlays(songId){
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/addPlays", true);
+      xhr.setRequestHeader('Content-type', 'addPlays');
+      xhr.send(songId);
+    }
+  </script>
 </main>
 
 {% endblock %}

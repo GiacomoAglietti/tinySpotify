@@ -656,7 +656,24 @@ def get_favourite():
 
 @views.route('/favourites/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
-def favourite_add_song(idPlaylist_ToAddSong,id_song):      
+def favourite_add_song(idPlaylist_ToAddSong,id_song):
+        """Function used to add a song in favourite playlist
+
+        Decorators
+        ----------
+        @login_required 
+
+        Parameters
+        ----------
+        idPlaylist_ToAddSong : int
+            The id of the playlist to which we want to add the song
+        id_song : int
+            The id of the song
+
+        Returns
+        -------
+            Return the function get_favourite()
+        """      
 
         FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)              
 
@@ -665,6 +682,21 @@ def favourite_add_song(idPlaylist_ToAddSong,id_song):
 @views.route('/favourites/<int:id_song>', methods=['GET', 'POST'])
 @login_required
 def favourite_remove_song(id_song):
+        """Function used to remove a song from favourite playlist
+
+        Decorators
+        ----------
+        @login_required 
+
+        Parameters
+        ----------
+        id_song : int
+            The id of the song to remove
+
+        Returns
+        -------
+            Return the function get_favourite()
+        """
 
         deletePlaylistSong = (
                         delete(PlaylistSong).
@@ -690,7 +722,18 @@ def favourite_remove_song(id_song):
 @login_required
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def albums():
+        """Function used to load all albums of authenticated artist
 
+        Decorators
+        ----------
+        @login_required
+        @require_role   
+
+        Returns
+        -------
+            Return the template of "albums.html"
+        """
+        
         album_list_stmt = FunctionSession.get_albums_list_stmt(session['userid'])
 
         album_list = None
@@ -706,6 +749,22 @@ def albums():
 @login_required
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def get_album_selected(id_album_selected):
+        """Function used to load the album selected from the database
+
+        Decorators
+        ----------
+        @login_required
+        @require_role   
+
+        Parameters
+        ----------
+        id_album_selected : int
+            The id of the album selected
+
+        Returns
+        -------
+            Return the template of "album-select.html"
+        """
 
         itemArtistlist = None
         itemGenrelist = None
@@ -809,6 +868,22 @@ def get_album_selected(id_album_selected):
 @login_required
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def create_song(id_album):
+        """Function used to insert a song in the database
+
+        Decorators
+        ----------
+        @login_required
+        @require_role   
+
+        Parameters
+        ----------
+        id_album : int
+            The id of the album 
+
+        Returns
+        -------
+            Return the function get_album_selected with parameter album.id
+        """
 
         if request.method == 'POST':
         
@@ -891,6 +966,17 @@ def create_song(id_album):
 @login_required
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def create_album():
+        """Function used to insert an album in the database
+
+        Decorators
+        ----------
+        @login_required
+        @require_role   
+
+        Returns
+        -------
+            Return the function get_album_selected with parameter album.id
+        """
 
         if request.method == 'POST':
         
@@ -965,6 +1051,24 @@ def create_album():
 @login_required
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def album_remove_song(id_album_selected, id_song):
+        """Function used to delete a song from the database
+
+        Decorators
+        ----------
+        @login_required
+        @require_role
+
+        Parameters
+        ----------
+        id_album_selected : int
+            The id of the album selected
+        id_song : int
+            The id of the song to remove       
+
+        Returns
+        -------
+            Return the template of "albums.html"   
+        """
 
         delete_song = (
                 delete(Song).
@@ -988,6 +1092,23 @@ def album_remove_song(id_album_selected, id_song):
 @login_required
 @require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def delete_album(id):
+        """Function used to delete an album from the database
+
+        Decorators
+        ----------
+        @login_required
+        @require_role
+
+        Parameters
+        ----------
+        id : int
+            The id of the album to remove    
+
+        Returns
+        -------
+            Return the template of "albums.html"   
+        """
+
         if request.method == 'POST':               
                 delete_album = (
                         delete(Album).
@@ -1018,25 +1139,50 @@ def delete_album(id):
 
 @views.route('/albums/<int:id_album_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
-@require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def album_add_song(id_album_selected,idPlaylist_ToAddSong,id_song):
+        """Function used to add a song into the playlist from album page
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        id_album_selected : int
+            The id of the album selected
+        idPlaylist_ToAddSong : int
+            The id of the playlist to which we want to add the song
+        id_song : int
+            The id of the song
+
+        Returns
+        -------
+            Return the function get_album_selected with parameter id_album_selected    
+        """
 
         FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
 
         return get_album_selected(id_album_selected)
 
-"""
-@views.route('/artists')   #da togliere?
-@login_required
-def artists():
-        stmt = select(User.name, User.id).where(User.isArtist == True)
-        artist_list = local_session.execute(stmt).all()
-        return render_template("artists.html", artist_list = artist_list)
-"""
 
 @views.route('/artists/<int:id_artist_selected>', methods=['GET', 'POST'])
 @login_required
 def get_artist_selected(id_artist_selected):
+        """Function used to load albums and songs of an artist
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        id_artist_selected : ind
+            The id of the artist selected
+
+        Returns
+        -------
+            Return the template of "artist-select.html"    
+        """
 
         album_artist_list_stmt = (
                 select(Album.id).
@@ -1159,6 +1305,25 @@ def get_artist_selected(id_artist_selected):
 @views.route('/artists/<int:id_artist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
 def artist_add_song(id_artist_selected,idPlaylist_ToAddSong,id_song):
+        """Function used to add a song into the playlist from artist page
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        id_artist_selected : int
+            The id of the artist selected
+        idPlaylist_ToAddSong : int
+            The id of the playlist to which we want to add the song
+        id_song : int
+            The id of the song
+
+        Returns
+        -------
+            Return the function get_artist_selected with parameter id_artist_selected    
+        """
 
         FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
 
@@ -1170,6 +1335,17 @@ def artist_add_song(id_artist_selected,idPlaylist_ToAddSong,id_song):
 @views.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
+        """Function used to query the database to get albums, artists and songs
+
+        Decorators
+        ----------
+        @login_required
+
+        Returns
+        -------
+            Return the template of "search.html"    
+        """
+        
 
         song_result = None
         album_result = None
@@ -1205,7 +1381,21 @@ def search():
 @views.route('/search/<result>', methods=['GET', 'POST'])
 @login_required
 def search_result(result=None):
-  
+        """Function used to give the result of albums, artists and songs into the database
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        result : str
+            The value entered by the user. If no value is entered, result is None
+
+        Returns
+        -------
+            Return the template of "search.html"    
+        """
 
         lookingFor = result  
 
@@ -1327,6 +1517,26 @@ def search_result(result=None):
 @views.route('/search/<result>/<int:playlistId>/<int:songId>', methods=['GET', 'POST'])
 @login_required
 def search_add_song(result, playlistId, songId):
+        """Function used to add a song into a playlist from search
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+        result : str
+            The value entered from the user
+        playlistId : int
+            The id of the playlist
+        songId : int
+            The id of the song    
+
+        Returns
+        -------
+        list
+            Return the function search_result with param result.
+        """
 
         FunctionSession.insert_song_playlist(playlistId, songId)
         
@@ -1336,6 +1546,20 @@ def search_add_song(result, playlistId, songId):
 @views.route('/profile')
 @login_required
 def profile():
+        """Function used to show statistics to the user, getting most listened albums and songs
+
+        Decorators
+        ----------
+        @login_required
+
+        Returns
+        -------
+        list
+            if user has one of this roles "ArtistFree", "ArtistPremium" or "Admin"
+            Return the template of "artist-profile.html"
+            Otherwise
+            Return the template of "user-profile.html"         
+        """
 
         if (session['role']=="ArtistFree" or session['role']=="ArtistPremium" or session['role']=="Admin"):
 
@@ -1424,6 +1648,13 @@ def profile():
 @views.route('/profile/premium-subscription', methods=['GET', 'POST'])
 @login_required
 def premium_subscription():
+        """Function used to give the user access to the premium account
+
+        Decorators
+        ----------
+        @login_required
+
+        """
 
         if request.method == 'POST':
                 if (session['role']=="UserFree"):
@@ -1466,13 +1697,26 @@ def premium_subscription():
 @views.route('/page-not-found')
 @login_required
 def page_not_found():
+        """Function that warns the user that the page is not available
+
+        Decorators
+        ----------
+        @login_required
+
+        """
 
         return render_template("page-not-found.html")
 
 @views.route('/addPlays', methods=['GET', 'POST'])
 @login_required
 def addPlays():
+        """Function used to add plays to the num_of_plays attribute of a song
 
+        Decorators
+        ----------
+        @login_required
+
+        """
         if(request.headers.get('Content-type') == 'addPlays'):
                 idSong=int(request.data.decode("utf-8"))
                 update_plays = (

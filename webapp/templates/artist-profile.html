@@ -192,6 +192,10 @@
 </form>
 
 <script>
+
+  /**
+   * Function that creates as many text fields as artists entered
+   */
   function fun() {
     /*Getting the number of text fields*/
     var no = document.getElementById("idname").value;
@@ -216,13 +220,20 @@
       }
     }
   }
+
+  /**
+   * Function that clean a div
+   * @param {element.div} div - The div
+   */
   function cleanDiv(div){
     if(div!=null)
       div.innerHTML = '';
   }
 
-
-
+  /**
+   * Function showing or hiding "new-artist" div
+   * @param {Integer} x - Parameter that can assume values of 0 or 1
+   */
   function addArtist(x){
       if(x==1)
           document.getElementById('new-artist').style.display='block';

@@ -199,11 +199,17 @@
       </table>
     <script>
 
-
+        /**
+         * Function that show the three-dots menu
+         */
         function showDropdown() {
             document.getElementById("myDropdown").classList.toggle("show");
         }
-          
+
+        /**
+         * Function that show the contents of the three-dots menu and close it if the user clicks outside
+         * @param {Event} event - event that triggers the function
+         */  
         window.onclick = function(event) {
           if (!event.target.matches(".bi-three-dots")) {
               var dropdowns = document.getElementsByClassName("dropdown-content");
@@ -216,7 +222,11 @@
               }
           }
         };
-
+        
+        /**
+         * Function associated with a button that increase the num_of_plays attribute of a song.
+         * @param {Integer} songId - The song id 
+         */
         function addPlays(songId){
           var xhr = new XMLHttpRequest();
           xhr.open("POST", "/addPlays", true);
@@ -224,6 +234,11 @@
           xhr.send(songId);
         }
 
+        /**
+         * Function associated with a button that increase the num_of_plays attribute of a song.
+         * @param {Integer} plays - The song num_of_plays
+         * @param {Integer} songId - The song id 
+         */
         function addPlaysPremium(plays, songId){
           var element = document.getElementById(plays);
           var value = element.innerHTML;
