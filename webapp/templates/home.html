@@ -19,7 +19,7 @@
                 <div class="col">
                     <a href="{{url_for('views.get_playlist_selected',id_playlist_selected=playlist.id)}}">
                     <div class="card h-100" style="position:relative;">
-                        <img src="https://bit.ly/3PiIDrx">
+                        <img src="/static/playlist.jpg">
                         <div class="card-body">
                             <h3>{{ playlist.name }} </h3>
                             <form action="{{url_for('views.delete_playlist',id=playlist.id)}}" method="POST">
@@ -42,7 +42,7 @@
                 <div class="col">
                 <a href="{{url_for('views.get_premium_playlist_selected',name_playlist_selected=playlist.name)}}">
                     <div class="card h-100" style="position:relative;">
-                    <img src="https://bit.ly/3PiIDrx">
+                    <img src="/static/playlist.jpg">
                     <div class="card-body">
                         <h3 style="white-space: normal;">{{ playlist.name }} </h3>                             
                         </div>
@@ -67,7 +67,7 @@
               </tr>
             </thead>
             <tbody>
-              {%- for song in list_songs_raccomended -%}
+              {%- for song in list_songs_reccomended -%}
                 {% if song is mapping %}
                   <tr>
                     <td>{{ loop.index }}</td>
