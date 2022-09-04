@@ -9,7 +9,7 @@
     <div class="playlist-select-container">
         <div class="row">
           <div class="col left">
-                <img src="https://bit.ly/3PiIDrx" alt="nomeAlbum">
+                <img src="/static/album.png" alt="nomeAlbum">
           </div>
           <div class="col-6 right">
               <h6>ALBUM</h6>
@@ -228,6 +228,10 @@
 </main>
 
 <script>
+
+  /**
+   * Function that creates as many text fields as artists entered
+   */
   function fun() {
     /*Getting the number of text fields*/
     var no = document.getElementById("idname").value;
@@ -252,11 +256,19 @@
       }
     }
   }
+  /**
+   * Function that clean a div
+   * @param {element.div} div - The div
+   */
   function cleanDiv(div){
     if(div!=null)
       div.innerHTML = '';
   }
 
+  /**
+   * Function showing or hiding "new-artist" div
+   * @param {Integer} x - Parameter that can assume values of 0 or 1
+   */
   function addArtist(x){
       if(x==1)
           document.getElementById('new-artist').style.display='block';
@@ -265,6 +277,9 @@
       return;
   }
 
+  /**
+   * Loads all the genres in the database and inserts them in a drop-down menu
+   */
   const itemGenrelist = JSON.parse('{{ itemGenrelist | tojson }}');
   let select = document.getElementById('selectGenre')
   let tmpList = itemGenrelist;      
@@ -275,6 +290,11 @@
     select.appendChild(option);    
   }
 
+  /**
+   * Function associated with a button that increase the num_of_plays attribute of a song.
+   * @param {Integer} plays - The song num_of_plays
+   * @param {Integer} songId - The song id 
+   */
   function addPlays(plays, songId){
       var element = document.getElementById(plays);
       var value = element.innerHTML;
@@ -286,6 +306,9 @@
       xhr.send(songId);
   }
 
+  /**
+   * Function that changes the "min" attribute of "secSong"
+   */
   document.getElementById("secSong").setAttribute("min", 0);
   function changeMin(){
     var element = document.getElementById("minSong").value;

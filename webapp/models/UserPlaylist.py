@@ -1,8 +1,7 @@
 from enum import unique
 from webapp import Base
-from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, DDL, Sequence
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from sqlalchemy.sql import func
 
 

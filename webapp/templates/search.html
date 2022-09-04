@@ -229,6 +229,9 @@
         let inputBox = searchWrapper.querySelector("input")
         let suggBox = searchWrapper.querySelector(".autocom-box")
 
+        /**
+         * Function that searches the database for items that begin as user-entered input
+         */
         function searchElem() {
             let userData = document.getElementById("input_id").value;
             const listdb = JSON.parse('{{ list_item | tojson }}')
@@ -253,12 +256,20 @@
             }
         }
         
+        /**
+         * Function that insert the value selected by the user into the text field
+         * @param {String} element - Element clicked by user
+         */
         function select(element) {
             let selectUserData = element.textContent;
             inputBox.value = selectUserData;
             searchWrapper.classList.remove("active");
         }
         
+        /**
+         * Function that suggests to the user some results based on the search carried out
+         * @param {List} list - Set of suggested items
+         */
         function showSuggestions(list){
             let listData;
             if(!list.length) {
@@ -271,6 +282,10 @@
             suggBox.innerHTML = listData;
         }
 
+        /**
+         * Function associated with a button that increase the num_of_plays attribute of a song.
+         * @param {Integer} songId - The song id 
+         */
         function addPlays(songId){
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/addPlays", true);

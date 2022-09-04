@@ -1,10 +1,8 @@
 from webapp import Base
-from sqlalchemy import Column, Integer, String, DateTime, event, ForeignKey, Boolean, CheckConstraint
+from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from sqlalchemy.sql import func
 from flask_login import UserMixin
-from webapp.models.Playlist import Playlist
 
 #da mettere in un trigger
 #time_updated = Column(DateTime(timezone=True), onupdate=func.now())
