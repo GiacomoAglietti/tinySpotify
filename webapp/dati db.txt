@@ -63,16 +63,20 @@ stmt = (select(Song, Playlist).
 
 with Session(bind=engine) as session:
         genre1 = Genre(name="Acoustic")
-        genre2 = Genre(name="Musica Classica/Opera Lirica")
+        genre2 = Genre(name="Musica Classica-Opera Lirica")
         genre3 = Genre(name="Blues")
-        genre7 = Genre(name="Dance/Elettronica")
+        genre7 = Genre(name="Dance-Elettronica")
         genre8 = Genre(name="Pop")
         genre10 = Genre(name="Hip Hop")
         genre13 = Genre(name="House")
         genre15 = Genre(name="Jazz")
         genre17 = Genre(name="Latina")
         genre19 = Genre(name="Metal")
-        genre21 = Genre(name="Rock/Indie")
+        genre21 = Genre(name="Rock-Indie")
+
+
+insert into genres
+values ('Acoustic'),('Musica Classica-Opera Lirica'),('Dance-Elettronica'),('Rock-Indie'),('Pop'),('Blues'),('Hip Hop'),('House'),('Jazz'),('Latina'),('Metal')
 
         session.add_all([
             genre1,

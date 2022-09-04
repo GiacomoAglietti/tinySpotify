@@ -21,34 +21,91 @@
     </div>
     {% if lookingFor %}
         {% if song_result %}
-        <h4 class="h4-popolari" style="color: #fff;">Canzoni</h4>
-        <table class="content-table">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th></th>
-                <th>TITOLO</th>
-                <th>ALBUM</th>
-                <th><i class="bi bi-clock"></i></th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-                {%- for song in song_result -%}
-                {% if song is mapping %}
+            <h4 class="h4-popolari" style="color: #fff;">Canzoni</h4>
+            <table class="content-table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th></th>
+                    <th>TITOLO</th>
+                    <th>ALBUM</th>
+                    <th><i class="bi bi-clock"></i></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    {%- for song in song_result -%}
+                    {% if song is mapping %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>
+                                <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
+                            <td>{{ song.title }}<br>
+                                {% for key, value in song.artists_data.items() %}
+                                    {% if loop.last %}
+                                    <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a> 
+                                    {% else %}
+                                    <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a>,
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td><a class="text-link" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">{{ song.name_album }}</a></td>
+                            <td id='intToMinSec'> 
+                                {% if (song.length // 60) < 10 %}
+                                    0{{ song.length // 60 }}:
+                                {% else %}
+                                    {{ song.length // 60 }}:
+                                {% endif %}
+                                
+                                {% if (song.length % 60) < 10 %}
+                                    0{{ song.length % 60 }}
+                                {% else %}
+                                    {{ song.length % 60 }}
+                                {% endif %}    
+                            </td>
+                            <td class="fav-col">                
+                                <div class="btn-group dropend">
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots"></i>
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                    <li class="submenu">
+                                        <div class="btn-group dropstart btn-group-playlist">
+                                            <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                                Aggiungi alla playlist
+                                                <i class="bi bi-caret-right-fill"></i>
+                                            </button>
+                                            <ul class="dropstart-menu playlist">
+                                                {%- for playlist in playlist_list -%}                                
+                                                    <li><a class="dropdown-item-playlist" href="{{url_for('views.search_add_song',result=lookingFor, playlistId=playlist.id, songId=song.id)}}">{{ playlist.name }}</a></li>
+                                                {%- endfor -%}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li class="submenu">
+                                        <div class="btn-group dropstart btn-group-playlist">
+                                            <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
+                                            Vai all'artista
+                                                <i class="bi bi-caret-right-fill"></i>
+                                            </button>
+                                            <ul class="dropstart-menu artist">
+                                            {% for key, value in song.artists_data.items() %}
+                                                <li><a class="dropdown-item-playlist" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a></li>
+                                            {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
+                                    </ul>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>
                             <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
-                        <td>{{ song.title }}<br>
-                            {% for key, value in song.artists_data.items() %}
-                                {% if loop.last %}
-                                <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a> 
-                                {% else %}
-                                <a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a>,
-                                {% endif %}
-                            {% endfor %}
-                        </td>
+                        <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
                         <td><a class="text-link" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">{{ song.name_album }}</a></td>
                         <td id='intToMinSec'> 
                             {% if (song.length // 60) < 10 %}
@@ -82,73 +139,16 @@
                                         </ul>
                                     </div>
                                 </li>
-                                <li class="submenu">
-                                    <div class="btn-group dropstart btn-group-playlist">
-                                        <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
-                                          Vai all'artista
-                                            <i class="bi bi-caret-right-fill"></i>
-                                        </button>
-                                        <ul class="dropstart-menu artist">
-                                          {% for key, value in song.artists_data.items() %}
-                                            <li><a class="dropdown-item-playlist" href="{{url_for('views.get_artist_selected',id_artist_selected=value[0])}}">{{ value[1] }}</a></li>
-                                          {% endfor %}
-                                        </ul>
-                                    </div>
-                                </li>
+                                <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
                                 <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
                                 </ul>
                             </div>
                         </td>
                     </tr>
-                {% else %}
-                <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>
-                        <button class="button-container" id="btn-plays{{song.id}}" onclick="addPlays('{{song.id}}')"><div class="row-b"><div class="col-b"><i class="bi bi-play-circle-fill"></i></div></div></td>
-                    <td>{{ song.title }}<br><a class="text-artist-link" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">{{ song.name_artist }}</td>
-                    <td><a class="text-link" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">{{ song.name_album }}</a></td>
-                    <td id='intToMinSec'> 
-                        {% if (song.length // 60) < 10 %}
-                            0{{ song.length // 60 }}:
-                        {% else %}
-                            {{ song.length // 60 }}:
-                        {% endif %}
-                        
-                        {% if (song.length % 60) < 10 %}
-                            0{{ song.length % 60 }}
-                        {% else %}
-                            {{ song.length % 60 }}
-                        {% endif %}    
-                    </td>
-                    <td class="fav-col">                
-                        <div class="btn-group dropend">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="dropdown">
-                            <i class="bi bi-three-dots"></i>
-                            </button>
-                            <ul class="dropdown-menu">
-                            <li class="submenu">
-                                <div class="btn-group dropstart btn-group-playlist">
-                                    <button type="button" class="btn btn-primary btn-playlist" data-bs-toggle="dropstart">
-                                        Aggiungi alla playlist
-                                        <i class="bi bi-caret-right-fill"></i>
-                                    </button>
-                                    <ul class="dropstart-menu playlist">
-                                        {%- for playlist in playlist_list -%}                                
-                                            <li><a class="dropdown-item-playlist" href="{{url_for('views.search_add_song',result=lookingFor, playlistId=playlist.id, songId=song.id)}}">{{ playlist.name }}</a></li>
-                                        {%- endfor -%}
-                                    </ul>
-                                </div>
-                            </li>
-                            <li><a class="dropdown-item" href="{{url_for('views.get_artist_selected',id_artist_selected=song.id_artist)}}">Vai all'artista</a></li>
-                            <li><a class="dropdown-item" href="{{url_for('views.get_album_selected',id_album_selected=song.id_album)}}">Vai all'album</a></li>
-                            </ul>
-                        </div>
-                    </td>
-                </tr>
-                {% endif %}
-            {%- endfor -%}   
-            </tbody>
-        </table>
+                    {% endif %}
+                {%- endfor -%}   
+                </tbody>
+            </table>
         {% else %}
             <h4 class="h4-popolari" style="color: #fff;">Nessuna canzone trovata</h4>   
         {% endif %}

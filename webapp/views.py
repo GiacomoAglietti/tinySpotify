@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy import select, update, delete, func, exc, desc, or_
+from sqlalchemy import select, update, delete, func, exc, desc, or_, and_
 from webapp import db_session
 from functools import wraps
 from webapp.models.User import User
@@ -358,13 +358,9 @@ def get_playlist_selected(id_playlist_selected):
         if(playlist_name is None):
                 return page_not_found()
 
-        num_songs = 0
-        tot_length = 0
 
         i = 0 
         while i < len(songsPlaylist)-1:
-                num_songs += 1
-                tot_length += songsPlaylist[i].length
                 if(songsPlaylist[i].id == songsPlaylist[i+1].id):
                         x=i
                         dict_artist={}
@@ -389,11 +385,12 @@ def get_playlist_selected(id_playlist_selected):
                         songsPlaylist.pop(i)
                         songsPlaylist.insert(i,dict_artist)
                 i=i+1
-                if(i == len(songsPlaylist)-1):
-                        num_songs += 1
-                        tot_length += songsPlaylist[i].length
 
-        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = playlist_name, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=False)
+                
+        
+        num_songs = len(songsPlaylist)
+
+        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = playlist_name, num_songs=num_songs, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=False)
 
 @views.route('/playlists/<string:name_playlist_selected>', methods=['GET', 'POST'])
 @login_required
@@ -466,13 +463,8 @@ def get_premium_playlist_selected(name_playlist_selected):
                 else:
                         playlist_list.append(playlist)          
         
-        num_songs = 0
-        tot_length = 0
-
         i = 0 
         while i < len(songsPlaylist)-1:
-                num_songs += 1
-                tot_length += songsPlaylist[i].length
                 if(songsPlaylist[i].id == songsPlaylist[i+1].id):
                         x=i
                         dict_artist={}
@@ -498,13 +490,12 @@ def get_premium_playlist_selected(name_playlist_selected):
                         songsPlaylist.pop(i)
                         songsPlaylist.insert(i,dict_artist)
                 i=i+1
-                if(i == len(songsPlaylist)-1):
-                        num_songs += 1
-                        tot_length += songsPlaylist[i].length
+        
+        num_songs = len(songsPlaylist)
 
         songsPlaylist = reversed(sorted(songsPlaylist, key=lambda song: next(v for k,v in song.items() if(k=='tot_plays_genre')) if (type(song)==dict) else song.tot_plays_genre))
 
-        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = name_playlist_selected, num_songs=num_songs, tot_length=tot_length, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=isPlPremium)
+        return render_template("playlist-select.html", songs_list = songsPlaylist, playlist_name = name_playlist_selected, num_songs=num_songs, actual_playlist=id_playlist_selected,playlist_list=playlist_list, isPlPremium=isPlPremium)
 
 
 @views.route('/playlists/<int:id_playlist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
@@ -533,6 +524,33 @@ def playlist_add_song(id_playlist_selected,idPlaylist_ToAddSong, id_song):
         FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
 
         return get_playlist_selected(id_playlist_selected)
+
+@views.route('/playlists/<name_playlist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
+@login_required
+def playlist_premium_add_song(name_playlist_selected,idPlaylist_ToAddSong, id_song):
+        """Function used to add a song into the playlist from a premium playlist page
+
+        Decorators
+        ----------
+        @login_required
+
+        Parameters
+        ----------
+         id_album_selected : int
+            The id of the playlist selected
+        idPlaylist_ToAddSong : int
+            The id of the playlist to which we want to add the song
+        id_song : int
+            The id of the song
+
+        Returns
+        -------
+            Return the function get_playlist_selected with id_playlist_selected as parameter
+        """
+
+        FunctionSession.insert_song_playlist(idPlaylist_ToAddSong, id_song)
+
+        return get_premium_playlist_selected(name_playlist_selected)
 
 @views.route('/playlists/<int:id_playlist_selected>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
@@ -607,8 +625,8 @@ def get_favourite():
         stmt = (
         select(Playlist.id, Playlist.name).
                 join(UserPlaylist, Playlist.id == UserPlaylist.id_playlist).
-                where(UserPlaylist.id_user == session['userid']).
-                where(Playlist.id != session['id_fav_playlist']))
+                where(and_(UserPlaylist.id_user == session['userid'], Playlist.id != session['id_fav_playlist'], Playlist.isPremium == False))
+        )
         
         try:            
                 playlist_list = local_session.execute(stmt).all()
@@ -616,13 +634,9 @@ def get_favourite():
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
         
-        num_songs = 0
-        tot_length = 0
-        
+                
         i = 0 
         while i < len(songsPlaylist)-1:
-                num_songs += 1
-                tot_length += songsPlaylist[i].length
                 if(songsPlaylist[i].id == songsPlaylist[i+1].id):
                         x=i
                         dict_artist={}
@@ -647,12 +661,11 @@ def get_favourite():
                         songsPlaylist.pop(i)
                         songsPlaylist.insert(i,dict_artist)
                 i=i+1
-                if(i == len(songsPlaylist)-1):
-                        num_songs += 1
-                        tot_length += songsPlaylist[i].length
+        
+        num_songs = len(songsPlaylist)
+        
 
-
-        return render_template("favourite-playlist.html", songs_list = songsPlaylist, num_songs=num_songs, tot_length=tot_length,playlist_list=playlist_list)
+        return render_template("favourite-playlist.html", songs_list = songsPlaylist, num_songs=num_songs, playlist_list=playlist_list)
 
 @views.route('/favourites/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
@@ -747,7 +760,6 @@ def albums():
         
 @views.route('/albums/<int:id_album_selected>', methods=['GET', 'POST'])
 @login_required
-@require_role(role_nedeed=['Admin','ArtistFree','ArtistPremium'])
 def get_album_selected(id_album_selected):
         """Function used to load the album selected from the database
 
@@ -799,13 +811,9 @@ def get_album_selected(id_album_selected):
         except exc.SQLAlchemyError as e:
                 return str(e.orig)
 
-        num_songs = 0
-        tot_length = 0
 
         i = 0 
         while i < len(songs_list)-1:
-                num_songs += 1
-                tot_length += songs_list[i].length
                 if(songs_list[i].id == songs_list[i+1].id):
                         x=i
                         dict_artist={}
@@ -829,9 +837,8 @@ def get_album_selected(id_album_selected):
                         songs_list.pop(i)
                         songs_list.insert(i,dict_artist)
                 i=i+1
-                if(i == len(songs_list)-1):
-                        num_songs += 1
-                        tot_length += songs_list[i].length                   
+        
+        num_songs = len(songs_list)           
         
                 
         playlist_list = FunctionSession.get_user_playlist(True)
@@ -859,9 +866,9 @@ def get_album_selected(id_album_selected):
                 itemArtistlist = [r[0] for r in listArtist_db]
                 itemGenrelist = [r[0] for r in list_genre]             
 
-                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, album_artists = album_artists,num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected, playlist_list=playlist_list, itemArtistlist=itemArtistlist, itemGenrelist=itemGenrelist, owner = result)
+                return render_template("album-select.html", songs_list = songs_list, album_name = album_name, album_artists = album_artists,num_songs=num_songs, actual_album=id_album_selected, playlist_list=playlist_list, itemArtistlist=itemArtistlist, itemGenrelist=itemGenrelist, owner = result)
 
-        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, album_artists = album_artists, num_songs=num_songs, tot_length=tot_length, actual_album=id_album_selected,playlist_list=playlist_list, itemArtistlist=[], itemGenrelist=[], owner = False)
+        return render_template("album-select.html", songs_list = songs_list, album_name = album_name, album_artists = album_artists, num_songs=num_songs, actual_album=id_album_selected,playlist_list=playlist_list, itemArtistlist=[], itemGenrelist=[], owner = False)
 
 
 @views.route('/song_added/<id_album>', methods=['GET', 'POST'])
@@ -1262,13 +1269,9 @@ def get_artist_selected(id_artist_selected):
         
         playlist_list = FunctionSession.get_user_playlist(True)
 
-        tot_length = 0
-        num_songs=0
 
         i = 0 
         while i < len(songs_list)-1:
-                num_songs += 1
-                tot_length += songs_list[i].length
                 if(songs_list[i].id == songs_list[i+1].id):
                         x=i
                         dict_artist={}
@@ -1294,13 +1297,10 @@ def get_artist_selected(id_artist_selected):
                         songs_list.pop(i)
                         songs_list.insert(i,dict_artist)
                 i=i+1
-                if(i == len(songs_list)-1):
-                        num_songs += 1
-                        tot_length += songs_list[i].length
 
         songs_list = reversed(sorted(songs_list, key=lambda song: next(v for k,v in song.items() if(k=='num_of_plays')) if (type(song)==dict) else song.num_of_plays))
 
-        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list,actual_artist=id_artist_selected, tot_length=tot_length, artist_name=artist_name,playlist_list=playlist_list)
+        return render_template("artist-select.html", songs_list = songs_list, album_list = album_list,actual_artist=id_artist_selected, artist_name=artist_name,playlist_list=playlist_list)
 
 @views.route('/artists/<int:id_artist_selected>/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required

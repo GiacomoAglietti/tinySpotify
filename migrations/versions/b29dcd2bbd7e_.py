@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: c75086bef991
-Revises: 99bba4eec74a
-Create Date: 2022-09-03 22:01:17.161559
+Revision ID: b29dcd2bbd7e
+Revises: 89af5de2b113
+Create Date: 2022-09-04 17:57:44.538954
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'c75086bef991'
-down_revision = '99bba4eec74a'
+revision = 'b29dcd2bbd7e'
+down_revision = '89af5de2b113'
 branch_labels = None
 depends_on = None
 
@@ -42,19 +42,14 @@ def downgrade():
     sa.PrimaryKeyConstraint('name', name='genres_pkey'),
     postgresql_ignore_search_path=False
     )
-    op.create_table('users',
-    sa.Column('id', sa.INTEGER(), server_default=sa.text("nextval('users_id_seq'::regclass)"), autoincrement=True, nullable=False),
+    op.create_table('playlist',
+    sa.Column('id', sa.INTEGER(), server_default=sa.text("nextval('playlist_id_seq'::regclass)"), autoincrement=True, nullable=False),
     sa.Column('name', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
-    sa.Column('email', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
-    sa.Column('password', sa.VARCHAR(length=150), autoincrement=False, nullable=False),
-    sa.Column('role', sa.VARCHAR(length=50), autoincrement=False, nullable=True),
-    sa.ForeignKeyConstraint(['role'], ['roles.name'], name='users_role_fkey', onupdate='CASCADE', ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id', name='users_pkey'),
-    sa.UniqueConstraint('email', name='users_email_key'),
-    sa.UniqueConstraint('name', name='users_name_key'),
+    sa.Column('isPremium', sa.BOOLEAN(), autoincrement=False, nullable=True),
+    sa.PrimaryKeyConstraint('id', name='playlist_pkey'),
     postgresql_ignore_search_path=False
     )
-    op.create_index('ix_users_id', 'users', ['id'], unique=False)
+    op.create_index('ix_playlist_id', 'playlist', ['id'], unique=False)
     op.create_table('album',
     sa.Column('id', sa.INTEGER(), server_default=sa.text("nextval('album_id_seq'::regclass)"), autoincrement=True, nullable=False),
     sa.Column('name', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
@@ -64,25 +59,21 @@ def downgrade():
     postgresql_ignore_search_path=False
     )
     op.create_index('ix_album_id', 'album', ['id'], unique=False)
-    op.create_table('roles',
-    sa.Column('name', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
-    sa.PrimaryKeyConstraint('name', name='roles_pkey'),
-    postgresql_ignore_search_path=False
+    op.create_table('user_playlist',
+    sa.Column('id_playlist', sa.INTEGER(), autoincrement=False, nullable=False),
+    sa.Column('id_user', sa.INTEGER(), autoincrement=False, nullable=False),
+    sa.Column('date_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), autoincrement=False, nullable=True),
+    sa.ForeignKeyConstraint(['id_playlist'], ['playlist.id'], name='user_playlist_id_playlist_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['id_user'], ['users.id'], name='user_playlist_id_user_fkey', ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id_playlist', 'id_user', name='user_playlist_pkey')
     )
-    op.create_table('playlist',
-    sa.Column('id', sa.INTEGER(), server_default=sa.text("nextval('playlist_id_seq'::regclass)"), autoincrement=True, nullable=False),
-    sa.Column('name', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
-    sa.Column('isPremium', sa.BOOLEAN(), autoincrement=False, nullable=True),
-    sa.PrimaryKeyConstraint('id', name='playlist_pkey'),
-    postgresql_ignore_search_path=False
-    )
-    op.create_index('ix_playlist_id', 'playlist', ['id'], unique=False)
-    op.create_table('song_artist',
-    sa.Column('id_artist', sa.INTEGER(), autoincrement=False, nullable=False),
+    op.create_table('playlist_song',
+    sa.Column('id_playlist', sa.INTEGER(), autoincrement=False, nullable=False),
     sa.Column('id_song', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.ForeignKeyConstraint(['id_artist'], ['users.id'], name='song_artist_id_artist_fkey', ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['id_song'], ['songs.id'], name='song_artist_id_song_fkey', ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id_artist', 'id_song', name='song_artist_pkey')
+    sa.Column('date_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), autoincrement=False, nullable=True),
+    sa.ForeignKeyConstraint(['id_playlist'], ['playlist.id'], name='playlist_song_id_playlist_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['id_song'], ['songs.id'], name='playlist_song_id_song_fkey', ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id_playlist', 'id_song', name='playlist_song_pkey')
     )
     op.create_table('album_artist',
     sa.Column('id_artist', sa.INTEGER(), autoincrement=False, nullable=False),
@@ -109,20 +100,29 @@ def downgrade():
     postgresql_ignore_search_path=False
     )
     op.create_index('ix_songs_id', 'songs', ['id'], unique=False)
-    op.create_table('playlist_song',
-    sa.Column('id_playlist', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.Column('id_song', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.Column('date_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), autoincrement=False, nullable=True),
-    sa.ForeignKeyConstraint(['id_playlist'], ['playlist.id'], name='playlist_song_id_playlist_fkey', ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['id_song'], ['songs.id'], name='playlist_song_id_song_fkey', ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id_playlist', 'id_song', name='playlist_song_pkey')
+    op.create_table('roles',
+    sa.Column('name', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
+    sa.PrimaryKeyConstraint('name', name='roles_pkey'),
+    postgresql_ignore_search_path=False
     )
-    op.create_table('user_playlist',
-    sa.Column('id_playlist', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.Column('id_user', sa.INTEGER(), autoincrement=False, nullable=False),
-    sa.Column('date_created', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), autoincrement=False, nullable=True),
-    sa.ForeignKeyConstraint(['id_playlist'], ['playlist.id'], name='user_playlist_id_playlist_fkey', ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['id_user'], ['users.id'], name='user_playlist_id_user_fkey', ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id_playlist', 'id_user', name='user_playlist_pkey')
+    op.create_table('users',
+    sa.Column('id', sa.INTEGER(), server_default=sa.text("nextval('users_id_seq'::regclass)"), autoincrement=True, nullable=False),
+    sa.Column('name', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
+    sa.Column('email', sa.VARCHAR(length=50), autoincrement=False, nullable=False),
+    sa.Column('password', sa.VARCHAR(length=150), autoincrement=False, nullable=False),
+    sa.Column('role', sa.VARCHAR(length=50), autoincrement=False, nullable=True),
+    sa.ForeignKeyConstraint(['role'], ['roles.name'], name='users_role_fkey', onupdate='CASCADE', ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id', name='users_pkey'),
+    sa.UniqueConstraint('email', name='users_email_key'),
+    sa.UniqueConstraint('name', name='users_name_key'),
+    postgresql_ignore_search_path=False
+    )
+    op.create_index('ix_users_id', 'users', ['id'], unique=False)
+    op.create_table('song_artist',
+    sa.Column('id_artist', sa.INTEGER(), autoincrement=False, nullable=False),
+    sa.Column('id_song', sa.INTEGER(), autoincrement=False, nullable=False),
+    sa.ForeignKeyConstraint(['id_artist'], ['users.id'], name='song_artist_id_artist_fkey', ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['id_song'], ['songs.id'], name='song_artist_id_song_fkey', ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id_artist', 'id_song', name='song_artist_pkey')
     )
     # ### end Alembic commands ###

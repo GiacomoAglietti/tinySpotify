@@ -75,6 +75,10 @@ https://stackoverflow.com/questions/36050890/how-to-use-sum-and-order-by-in-sqla
 
 
 TODO:
+-2-3 album per artista
+-10 canzoni
+
+
 -sistemare immagini
 -sistemare struttura del documento
 -commenti nel codice

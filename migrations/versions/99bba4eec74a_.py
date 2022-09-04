@@ -26,12 +26,12 @@ def upgrade():
     op.drop_index('ix_songs_id', table_name='songs')
     op.drop_table('songs')
     op.drop_table('album')
+    op.drop_table('genres')
     op.drop_index('ix_playlist_id', table_name='playlist')
     op.drop_table('playlist')
     op.drop_index('ix_users_id', table_name='users')
     op.drop_table('users')
     op.drop_table('roles')
-    op.drop_table('genres')
     # ### end Alembic commands ###
 
 
