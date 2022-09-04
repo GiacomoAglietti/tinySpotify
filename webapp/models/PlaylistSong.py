@@ -17,7 +17,7 @@ class PlaylistSong(Base):
     id_song : Column
         foreign key for Song table
     date_created: Column
-        indicates when a song has been added to a playlist
+        indicates when a song has been added into a playlist
         
     """
 

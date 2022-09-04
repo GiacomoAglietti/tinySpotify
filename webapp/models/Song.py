@@ -7,28 +7,28 @@ from sqlalchemy.sql import func
 
 class Song(Base):
     """
-    A class used to represent a Playlist
+    A class used to represent a Song
 
     ...
 
     Attributes
     ----------
     id : Column
-        the id of the playlist
+        the id of the song
     title : Column
-        the name of the playlist
+        the name of the song
     year : Column
-        indicates whether a playlist is premium or not
+        the year of the song
     length : Column
-        the id of the playlist
+        the length of the song
     num_of_plays : Column
-        the name of the playlist
+        the number of plays of the song
     date_created : Column
-        indicates whether a playlist is premium or not
+        indicates when a song has been created and added into an album
     id_album : Column
-        the id of the playlist
+        the album's id of the song
     genre : Column
-        the name of the playlist
+        the genre of the song
     """
 
     __tablename__ = "songs"
