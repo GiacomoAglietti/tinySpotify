@@ -309,13 +309,13 @@
   /**
    * Function that changes the "min" attribute of "secSong"
    */
-  document.getElementById("secSong").setAttribute("min", 0);
+  document.getElementById("secSong").setAttribute("min", 1);
   function changeMin(){
     var element = document.getElementById("minSong").value;
-    if(val>0)
+    if(element>0)
       document.getElementById("secSong").setAttribute("min", 0);
     else
-      document.getElementById("secSong").setAttribute("min", 0);
+      document.getElementById("secSong").setAttribute("min", 1);
   }
 
 </script>

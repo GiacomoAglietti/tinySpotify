@@ -89,7 +89,6 @@ def home_authenticated():
 
         
         genre_playlists = None
-        list_songs_reccomended =None
         if(session['role']=="UserPremium" or session['role']=="ArtistPremium" or session['role']=="Admin" ):
          
 
@@ -108,78 +107,23 @@ def home_authenticated():
                 )
 
                 songs_already_added_stmt = (
-                                select(PlaylistSong.id_song).
-                                join(UserPlaylist, UserPlaylist.id_playlist == PlaylistSong.id_playlist).
-                                where(UserPlaylist.id_user == session['userid'])
-                )              
-                
+                        select(PlaylistSong.id_song).
+                        join(UserPlaylist, UserPlaylist.id_playlist == PlaylistSong.id_playlist).
+                        where(UserPlaylist.id_user == session['userid'])
+                )
 
-                if(session['role']=="ArtistFree" or session['role']=="ArtistPremium" or session['role']=="Admin"):                      
-      
-                        songs_created_stmt = (
-                                select(SongArtist.id_song).
-                                where(SongArtist.id_artist == session['userid'])
-                        )
-                        stmt_songs_reccomended=(
-                                select(Song.id,  Song.title, Song.length, Song.num_of_plays, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                join(SongArtist, SongArtist.id_song == Song.id).
-                                join(User, User.id == SongArtist.id_artist).
-                                join(Album, Song.id_album == Album.id).
-                                where(SongArtist.id_artist == session['userid']).
-                                where(Song.genre.in_(stmt_genre)).
-                                where(Song.id.notin_(songs_already_added_stmt)).
-                                where(Song.id.notin_(songs_created_stmt)).
-                                group_by(Song.id,  Song.title, Song.length, Song.num_of_plays, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                order_by(desc(Song.num_of_plays)).limit(5)
-                        )
-                else:
-                        stmt_songs_reccomended=(
-                                select(Song.id,  Song.title, Song.length, Song.num_of_plays, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                join(SongArtist, SongArtist.id_song == Song.id).
-                                join(User, User.id == SongArtist.id_artist).
-                                join(Album, Song.id_album == Album.id).
-                                where(SongArtist.id_artist == session['userid']).
-                                where(Song.genre.in_(stmt_genre)).
-                                where(Song.id.notin_(songs_already_added_stmt)).
-                                group_by(Song.id,  Song.title, Song.length, Album.name.label("name_album"), Album.id.label("id_album"), User.name.label("name_artist"), User.id.label("id_artist")).
-                                order_by(desc(Song.num_of_plays), Song.id).limit(5)
-                        )
+                reccomended_stmt = (
+                        select(Song.id)
+
+                )              
+        
         
                 try:
-                        genre_playlists = local_session.execute(genre_playlists_stmt).all()
-                        list_songs_reccomended = local_session.execute(stmt_songs_reccomended).all()                        
+                        genre_playlists = local_session.execute(genre_playlists_stmt).all()                       
                 except exc.SQLAlchemyError as e:
                         return str(e.orig)
 
-                i = 0 
-                while i < len(list_songs_reccomended)-1:
-                        if(list_songs_reccomended[i].id == list_songs_reccomended[i+1].id):
-                                x=i
-                                dict_artist={}
-
-                                dict_artist["id"] = list_songs_reccomended[x].id
-                                dict_artist["title"] = list_songs_reccomended[x].title
-                                dict_artist["num_of_plays"] = list_songs_reccomended[x].num_of_plays
-                                dict_artist["name_album"] = list_songs_reccomended[x].name_album
-                                dict_artist["id_album"] = list_songs_reccomended[x].id_album
-                                dict_artist["artists_data"] = {}
-                                dict_artist["artists_data"]['artist'+str(x)] = []
-                                dict_artist["artists_data"]['artist'+str(x)].append(list_songs_reccomended[x].id_artist)
-                                dict_artist["artists_data"]['artist'+str(x)].append(list_songs_reccomended[x].name_artist)
-                                j=i+1
-                                y=j
-                                while (j < len(list_songs_reccomended)) and (list_songs_reccomended[i].id == list_songs_reccomended[j].id) :
-                                        dict_artist["artists_data"]['artist'+str(y)] = []
-                                        dict_artist["artists_data"]['artist'+str(y)].append(list_songs_reccomended[j].id_artist)
-                                        dict_artist["artists_data"]['artist'+str(y)].append(list_songs_reccomended[j].name_artist)
-                                        list_songs_reccomended.pop(j)
-                                        y=y+1
-
-                                list_songs_reccomended.pop(i)
-                                list_songs_reccomended.insert(i,dict_artist)
-                        i=i+1        
-
-        return render_template("home.html" , genre_playlists=genre_playlists, list_songs_reccomended=list_songs_reccomended,playlist_list=playlist_list)
+        return render_template("home.html" , genre_playlists=genre_playlists, playlist_list=playlist_list)
 
 @views.route('/home/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
