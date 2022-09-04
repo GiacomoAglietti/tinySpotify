@@ -1,6 +1,7 @@
+from calendar import month
 from flask import Blueprint, render_template, request, flash, redirect, session, url_for
 from flask_login import login_required, current_user
-from sqlalchemy import select, update, delete, func, exc, desc, or_
+from sqlalchemy import select, update, delete, func, exc, desc, or_, extract
 from webapp import db_session
 from functools import wraps
 from webapp.models.User import User
@@ -97,33 +98,22 @@ def home_authenticated():
                         where(UserPlaylist.id_user == session['userid']).
                         where(Playlist.isPremium == True))
 
-                stmt_genre=(
-                        select(Song.genre).
-                        join(PlaylistSong, PlaylistSong.id_song == Song.id).
-                        join(UserPlaylist, UserPlaylist.id_playlist == PlaylistSong.id_playlist).
-                        where(UserPlaylist.id_user == session['userid']).
-                        group_by(Song.genre).
-                        order_by(desc(func.sum(Song.num_of_plays))).limit(3)
-                )
-
-                songs_already_added_stmt = (
-                        select(PlaylistSong.id_song).
-                        join(UserPlaylist, UserPlaylist.id_playlist == PlaylistSong.id_playlist).
-                        where(UserPlaylist.id_user == session['userid'])
-                )
-
                 reccomended_stmt = (
-                        select(Song.id)
-
+                        select(Song.id, Song.title, Album.name.label('name_album'), Song.length, SongArtist.id_artist, Song.id_album, Song.num_of_plays).
+                        join(Album, Album.id == Song.id_album).
+                        join(SongArtist, SongArtist.id_song == Song.id).
+                        where(extract('month',Song.date_created) == extract('month', func.current_date())).
+                        order_by(desc(Song.num_of_plays)).limit(10)
                 )              
         
         
                 try:
-                        genre_playlists = local_session.execute(genre_playlists_stmt).all()                       
+                        genre_playlists = local_session.execute(genre_playlists_stmt).all() 
+                        list_songs_reccomended = local_session.execute(reccomended_stmt).all()                      
                 except exc.SQLAlchemyError as e:
                         return str(e.orig)
 
-        return render_template("home.html" , genre_playlists=genre_playlists, playlist_list=playlist_list)
+        return render_template("home.html" , genre_playlists=genre_playlists, playlist_list=playlist_list, list_songs_reccomended = list_songs_reccomended)
 
 @views.route('/home/<int:idPlaylist_ToAddSong>/<int:id_song>', methods=['GET', 'POST'])
 @login_required
